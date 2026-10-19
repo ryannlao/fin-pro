@@ -325,6 +325,31 @@ _RE_TRECHO_NUMERICO = re.compile(r"[0-9OoIl|SBZ](?:[0-9OoIl|SBZ.\- \t]){38,}[0-9
 _TRADUCAO_OCR = str.maketrans({"O": "0", "o": "0", "I": "1", "l": "1", "|": "1", "S": "5", "B": "8", "Z": "2"})
 
 
+def _varrer(digitos: str, referencia: date | None, trecho: str,
+            inicios: set[int] | None) -> list[tuple[int, int, CodigoEncontrado]]:
+    """Procura códigos válidos em janelas de 47, 48 e 44 dígitos; com ``inicios``, só nessas posições.
+    Devolve (posição, tamanho, código) de cada achado."""
+    encontrados: list[tuple[int, int, CodigoEncontrado]] = []
+    i = 0
+    while i < len(digitos) - 43:
+        achou = None
+        if inicios is None or i in inicios:
+            for tamanho in (47, 48, 44):
+                janela = digitos[i:i + tamanho]
+                if len(janela) < tamanho:
+                    continue
+                r = analisar(janela, referencia)
+                if r and r.valido:
+                    achou = (r, tamanho)
+                    break
+        if achou:
+            encontrados.append((i, achou[1], CodigoEncontrado(achou[0], trecho)))
+            i += achou[1]
+        else:
+            i += 1
+    return encontrados
+
+
 def _codigos_no_trecho(trecho: str, referencia: date | None) -> list[CodigoEncontrado]:
     digitos = somente_digitos(trecho.translate(_TRADUCAO_OCR))
     if len(digitos) < 44:
@@ -334,26 +359,18 @@ def _codigos_no_trecho(trecho: str, referencia: date | None) -> list[CodigoEncon
     if exato and exato.valido:
         return [CodigoEncontrado(exato, trecho)]
 
-    encontrados: list[CodigoEncontrado] = []
     if len(digitos) > 44:
-        i = 0
-        while i < len(digitos) - 43:
-            achou = None
-            for tamanho in (47, 48, 44):
-                janela = digitos[i:i + tamanho]
-                if len(janela) < tamanho:
-                    continue
-                r = analisar(janela, referencia)
-                if r and r.valido:
-                    achou = (r, tamanho)
-                    break
-            if achou:
-                encontrados.append(CodigoEncontrado(achou[0], trecho))
-                i += achou[1]
-            else:
-                i += 1
-    if encontrados:
-        return encontrados
+        # Primeiro só janelas que começam no início de um grupo de dígitos: letras traduzidas pelo OCR antes da linha
+        # ("OOB | 756-0 |" vira "0081756 01") geram janelas no meio do lixo que às vezes fecham os dígitos por acaso.
+        inicios = {len(somente_digitos(trecho[:m.start()].translate(_TRADUCAO_OCR)))
+                   for m in re.finditer(r"(?:^|(?<=\s))[0-9OoIl|SBZ]", trecho)}
+        alinhados = _varrer(digitos, referencia, trecho, inicios)
+        # A busca em qualquer posição completa a primeira (linha colada a "|" ou "l"), sem aceitar o que se sobrepõe a ela.
+        extras = [(i, n, c) for i, n, c in _varrer(digitos, referencia, trecho, None)
+                  if all(i + n <= a or i >= a + m for a, m, _ in alinhados)]
+        encontrados = [c for _, _, c in sorted(alinhados + extras, key=lambda achado: achado[0])]
+        if encontrados:
+            return encontrados
 
     if len(digitos) in (47, 48) and exato is not None:
         sugestoes = candidatos_correcao(digitos, referencia)

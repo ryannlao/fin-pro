@@ -1,0 +1,12 @@
+# Lint do Python (Ruff). Rode: .venv\Scripts\python -m ruff check
+# O que entra aqui é obrigatório: estava com zero violação quando foi adotado (19/10/2026).
+# Famílias ainda com violações ficam fora deste gate e são medidas à parte (veja docs/quality.md).
+target-version = "py310"
+line-length = 120
+extend-exclude = ["dados", "dados_*", "Kit - Novo Fin Pro", "site/img"]
+
+[lint]
+# E4/E7/E9: erros de importação, comandos e sintaxe; F: Pyflakes (nomes indefinidos, imports sem uso, etc.)
+select = ["E4", "E7", "E9", "F"]
+# E741 (nomes ambíguos como "l") é estilo: 29 ocorrências, sem risco de comportamento.
+ignore = ["E741"]

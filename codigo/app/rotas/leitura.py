@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 from .. import config, ia
 from ..boleto.extrator import ErroLeitura, analisar_linha_digitada, mesclar_ia
 from .. import contexto as ctx
+from ..arquivos import TIPOS_SEGUROS
 from ..servico_leitura import processar_leitura
 from ..tarefas import ErroTarefa
 from .comum import erro
@@ -97,4 +98,6 @@ def visualizar_arquivo(arquivo_id: str):
     if item is None:
         raise erro(404, "arquivo_nao_encontrado", "Arquivo não encontrado.")
     caminho, tipo, nome = item
-    return FileResponse(caminho, media_type=tipo, filename=nome, content_disposition_type="inline")
+    abrir = "inline" if tipo in TIPOS_SEGUROS else "attachment"
+    return FileResponse(caminho, media_type=tipo, filename=nome, content_disposition_type=abrir,
+                        headers={"X-Content-Type-Options": "nosniff"})

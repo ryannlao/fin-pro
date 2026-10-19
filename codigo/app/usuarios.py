@@ -280,10 +280,12 @@ class GerenciadorUsuarios:
 
     def entrar(self, login: str, senha: str, ip: str, aparelho: str = "", local: bool = False) -> tuple[str | None, dict | None, int]:
         """Devolve (token, usuário, segundos de bloqueio)."""
+        login = normalizar_login(login)
+        # Na VPS todos chegam com o IP do proxy: bloquear só pelo IP trancaria o escritório inteiro
+        ip = f"{ip} {login}"
         restante = self.segundos_bloqueado(ip)
         if restante:
             return None, None, restante
-        login = normalizar_login(login)
         with self._lock:
             usuario = next((dict(u) for u in self._estado["usuarios"] if u["login"] == login), None)
         # Mesmo sem usuário, calcula um hash: a resposta demora o mesmo tempo e não revela quais logins existem

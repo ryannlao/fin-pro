@@ -1,0 +1,2201 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fin Pro</title>
+<meta name="description" content="Fin Pro: o sistema financeiro do escritório que lê boletos, Pix, comprovantes, cupons, notas fiscais, cheques e canhotos de diesel por PDF, foto, e-mail ou Telegram.">
+<link rel="icon" href="img/icone.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
+</head>
+<body>
+<style>
+/* Layout: página-ficha. Um trilho escuro com o índice (igual ao menu do próprio sistema) e uma coluna longa de
+   conteúdo; as seções são separadas por linhas de picote, como as vias de um boleto. */
+:root {
+  --f-titulo: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-corpo: "Inter", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  --papel: #f2f5f4;
+  --superficie: #ffffff;
+  --superficie-2: #e8eeec;
+  --tinta: #0b1b1f;
+  --tinta-2: #43555b;
+  --tinta-3: #6d7f85;
+  --linha: #d7e0dd;
+  --linha-forte: #b6c5c1;
+  --marca: #0d7a64;
+  --marca-forte: #09624f;
+  --marca-suave: #dff1eb;
+  --sobre-marca: #ffffff;
+  --ambar: #a85f00;
+  --ambar-suave: #fdf0d8;
+  --erro: #bf2f29;
+  --erro-suave: #fce9e7;
+  --azul: #2a62c7;
+  --azul-suave: #e7eefb;
+  --trilho: #0b1b1f;
+  --trilho-2: #12282d;
+  --trilho-texto: #9fb3b9;
+  --trilho-ativo: #ffffff;
+  --trilho-linha: #1d343a;
+  --sombra: 0 1px 2px rgba(11, 27, 31, .06), 0 22px 44px -24px rgba(11, 27, 31, .38);
+  --tela-filtro: none;
+  --raio: 14px;
+  --raio-p: 8px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --papel: #091114; --superficie: #0f191d; --superficie-2: #142328;
+    --tinta: #e6edf0; --tinta-2: #a6b5bb; --tinta-3: #77898f;
+    --linha: #1f3037; --linha-forte: #30464e;
+    --marca: #2fbf9a; --marca-forte: #5ad6b4; --marca-suave: #0f2f29; --sobre-marca: #04211a;
+    --ambar: #f0a63a; --ambar-suave: #2e2210;
+    --erro: #ff7a70; --erro-suave: #34171a;
+    --azul: #7aa7f5; --azul-suave: #14233d;
+    --trilho: #060d0f; --trilho-2: #0f1d21; --trilho-texto: #8fa4ab; --trilho-ativo: #ffffff; --trilho-linha: #182a30;
+    --sombra: 0 1px 2px rgba(0, 0, 0, .4), 0 22px 44px -24px rgba(0, 0, 0, .85);
+    --tela-filtro: brightness(.9);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --papel: #091114; --superficie: #0f191d; --superficie-2: #142328;
+  --tinta: #e6edf0; --tinta-2: #a6b5bb; --tinta-3: #77898f;
+  --linha: #1f3037; --linha-forte: #30464e;
+  --marca: #2fbf9a; --marca-forte: #5ad6b4; --marca-suave: #0f2f29; --sobre-marca: #04211a;
+  --ambar: #f0a63a; --ambar-suave: #2e2210;
+  --erro: #ff7a70; --erro-suave: #34171a;
+  --azul: #7aa7f5; --azul-suave: #14233d;
+  --trilho: #060d0f; --trilho-2: #0f1d21; --trilho-texto: #8fa4ab; --trilho-ativo: #ffffff; --trilho-linha: #182a30;
+  --sombra: 0 1px 2px rgba(0, 0, 0, .4), 0 22px 44px -24px rgba(0, 0, 0, .85);
+  --tela-filtro: brightness(.9);
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+body { margin: 0; background: var(--papel); color: var(--tinta); font: 400 1rem/1.62 var(--f-corpo); -webkit-font-smoothing: antialiased; }
+h1, h2, h3, h4, p, ul, ol, figure, dl, dd { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+img { display: block; max-width: 100%; height: auto; }
+a { color: var(--marca-forte); text-underline-offset: 3px; }
+a:hover { color: var(--marca); }
+:focus-visible { outline: 3px solid var(--marca); outline-offset: 2px; border-radius: 4px; }
+strong { font-weight: 650; }
+code, kbd, .mono { font-family: var(--f-mono); font-size: .88em; }
+code { background: var(--superficie-2); padding: .1em .38em; border-radius: 5px; overflow-wrap: anywhere; }
+kbd { background: var(--superficie); border: 1px solid var(--linha-forte); border-bottom-width: 2px; padding: .05em .45em; border-radius: 6px; white-space: nowrap; }
+h1, h2, h3 { font-family: var(--f-titulo); text-wrap: balance; letter-spacing: -.02em; }
+h1 { font-size: clamp(2.35rem, 1.3rem + 4.4vw, 4.5rem); line-height: 1.02; font-weight: 800; letter-spacing: -.035em; }
+h2 { font-size: clamp(1.75rem, 1.25rem + 1.9vw, 2.7rem); line-height: 1.08; font-weight: 750; }
+h3 { font-size: 1.12rem; line-height: 1.3; font-weight: 700; letter-spacing: -.01em; }
+.so-leitor { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* ------------------------------------------------------------ estrutura */
+.pagina { display: grid; grid-template-columns: minmax(0, 1fr); }
+.miolo { width: 100%; max-width: 1120px; margin-inline: auto; padding-inline: clamp(16px, 4.2vw, 56px); }
+.secao { padding-block: clamp(56px, 7.5vw, 104px); border-top: 2px dashed var(--linha-forte); }
+.secao-cab { display: grid; gap: 14px; max-width: 46rem; margin-bottom: clamp(26px, 3.4vw, 44px); }
+.rotulo { font: 600 .74rem/1.3 var(--f-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--marca-forte); display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.lide { font-size: 1.14rem; line-height: 1.58; color: var(--tinta-2); max-width: 42rem; }
+.selo { font: 600 .68rem/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; padding: 5px 8px; border-radius: 99px; background: var(--ambar-suave); color: var(--ambar); white-space: nowrap; }
+.selo.ok { background: var(--marca-suave); color: var(--marca-forte); }
+.selo.azul { background: var(--azul-suave); color: var(--azul); }
+
+/* ------------------------------------------------------------ trilho (índice) */
+.trilho { position: fixed; z-index: 40; top: 0; right: 0; bottom: 0; width: min(320px, 88vw); display: flex; flex-direction: column; gap: 6px; overflow-y: auto; background: var(--trilho); color: var(--trilho-ativo); padding: calc(18px + env(safe-area-inset-top, 0px)) 12px 18px; border-left: 1px solid var(--trilho-linha); transform: translateX(105%); visibility: hidden; transition: transform .22s ease, visibility .22s; scrollbar-width: thin; }
+.trilho.aberto { transform: none; visibility: visible; }
+.trilho .marca { padding: 0 10px 10px; }
+.trilho .marca:hover { color: var(--trilho-ativo); }
+.trilho-pe { margin-top: auto; padding: 16px 10px 0; display: grid; gap: 10px; }
+.trilho-pe p { font-size: .76rem; line-height: 1.45; color: var(--trilho-texto); }
+.fundo-indice { position: fixed; inset: 0; z-index: 35; background: rgba(4, 12, 14, .62); border: 0; padding: 0; width: 100%; height: 100%; cursor: pointer; }
+.ic { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.marca { display: flex; align-items: center; gap: 10px; font: 800 1.2rem/1 var(--f-titulo); letter-spacing: -.02em; color: inherit; text-decoration: none; }
+.marca-icone { width: 34px; height: 34px; border-radius: 10px; background: var(--marca); color: var(--sobre-marca); display: grid; place-items: center; flex: none; }
+.marca-icone svg { width: 20px; height: 20px; }
+.barra { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; background: var(--trilho); color: var(--trilho-ativo); border-bottom: 1px solid var(--trilho-linha); }
+.barra-dentro { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px clamp(16px, 4.2vw, 56px); }
+.barra .marca:hover { color: var(--trilho-ativo); }
+.botao-indice { cursor: pointer; font: 600 .86rem/1 var(--f-corpo); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--trilho-linha); background: var(--trilho-2); color: var(--trilho-ativo); display: flex; align-items: center; gap: 8px; }
+.botao-indice svg { width: 16px; height: 16px; }
+.indice h4 { font: 600 .66rem/1 var(--f-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--trilho-texto); opacity: .75; padding: 14px 12px 6px; }
+.indice a { display: flex; align-items: center; gap: 10px; padding: 7px 12px; border-radius: 9px; color: var(--trilho-texto); text-decoration: none; font-size: .9rem; font-weight: 500; line-height: 1.3; }
+.indice a svg { width: 16px; height: 16px; flex: none; opacity: .85; }
+.indice a:hover { background: var(--trilho-2); color: var(--trilho-ativo); }
+.indice a.atual { background: var(--trilho-2); color: var(--trilho-ativo); box-shadow: inset 3px 0 0 var(--marca); }
+@media (min-width: 1120px) {
+  html { scroll-padding-top: 24px; }
+  .pagina { grid-template-columns: 264px minmax(0, 1fr); }
+  .barra, .fundo-indice, .trilho .fecha-indice { display: none; }
+  .trilho { position: sticky; top: 0; right: auto; bottom: auto; height: 100vh; width: auto; padding: 22px 12px 18px; border-left: 0; border-right: 1px solid var(--trilho-linha); transform: none; visibility: visible; transition: none; }
+}
+
+/* ------------------------------------------------------------ botões */
+.botoes { display: flex; flex-wrap: wrap; gap: 12px; }
+.botao { display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 13px 20px; border-radius: 12px; font: 650 .98rem/1.1 var(--f-corpo); text-decoration: none; border: 1.5px solid var(--linha-forte); background: var(--superficie); color: var(--tinta); cursor: pointer; transition: transform .15s ease, background .15s ease, border-color .15s ease; }
+.botao svg { width: 18px; height: 18px; flex: none; }
+.botao:hover { border-color: var(--tinta-3); color: var(--tinta); transform: translateY(-1px); }
+.botao.primario { background: var(--marca); border-color: var(--marca); color: var(--sobre-marca); }
+.botao.primario:hover { background: var(--marca-forte); border-color: var(--marca-forte); color: var(--sobre-marca); }
+.botao.no-trilho { width: 100%; background: var(--marca); border-color: var(--marca); color: var(--sobre-marca); padding: 11px 14px; font-size: .9rem; }
+.botao.tema { width: 100%; background: transparent; border-color: var(--trilho-linha); color: var(--trilho-texto); padding: 9px 14px; font-size: .84rem; font-weight: 500; }
+.botao.tema:hover { color: var(--trilho-ativo); border-color: var(--trilho-texto); }
+
+/* ------------------------------------------------------------ início */
+.inicio { padding-block: clamp(40px, 6vw, 84px) clamp(48px, 6vw, 80px); overflow: hidden; }
+.inicio-texto { display: grid; gap: 22px; max-width: 54rem; }
+.inicio h1 em { font-style: normal; color: var(--marca); }
+.inicio .lide { font-size: clamp(1.1rem, 1rem + .5vw, 1.32rem); max-width: 44rem; }
+.fatos { display: flex; flex-wrap: wrap; gap: 10px 28px; padding-top: 8px; color: var(--tinta-2); font-size: .95rem; }
+.fatos li { display: flex; align-items: baseline; gap: 8px; }
+.fatos b { font: 700 1.35rem/1 var(--f-titulo); color: var(--tinta); font-variant-numeric: tabular-nums; }
+.linha-viva { margin-top: clamp(30px, 4vw, 48px); display: grid; gap: 8px; }
+.linha-digitos { font: 500 clamp(.74rem, .35rem + 1.75vw, 1.5rem)/1.2 var(--f-mono); letter-spacing: .02em; color: var(--tinta-3); display: flex; flex-wrap: wrap; gap: 0 .6em; font-variant-numeric: tabular-nums; }
+.linha-digitos .venc { color: var(--ambar); font-weight: 700; }
+.linha-digitos .valor { color: var(--marca); font-weight: 700; }
+.linha-legenda { font-size: .88rem; color: var(--tinta-2); display: flex; flex-wrap: wrap; gap: 4px 22px; }
+.linha-legenda .venc::before, .linha-legenda .valor::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 7px; background: var(--ambar); }
+.linha-legenda .valor::before { background: var(--marca); }
+.inicio-tela { margin-top: clamp(26px, 3.4vw, 40px); }
+
+/* ------------------------------------------------------------ telas (capturas) */
+.janela { border-radius: var(--raio); overflow: hidden; background: var(--superficie); border: 1px solid var(--linha-forte); box-shadow: var(--sombra); }
+.janela-barra { display: flex; align-items: center; gap: 7px; padding: 9px 12px; background: var(--trilho); color: var(--trilho-texto); font: 500 .72rem/1 var(--f-mono); letter-spacing: .04em; }
+.janela-barra i { width: 9px; height: 9px; border-radius: 50%; background: var(--trilho-linha); flex: none; }
+.janela-barra span { margin-left: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.janela button.ampliar { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
+.janela img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: top left; filter: var(--tela-filtro); }
+.tela { display: grid; gap: 12px; }
+.tela figcaption { font-size: .88rem; color: var(--tinta-3); max-width: 48rem; }
+.abas { display: flex; flex-wrap: wrap; gap: 6px; }
+.abas button { font: 600 .84rem/1 var(--f-corpo); padding: 9px 13px; border-radius: 99px; border: 1px solid var(--linha-forte); background: transparent; color: var(--tinta-2); cursor: pointer; }
+.abas button[aria-selected="true"] { background: var(--tinta); border-color: var(--tinta); color: var(--papel); }
+dialog.ampliada { width: min(1500px, 96vw); max-width: none; padding: 0; border: 1px solid var(--linha-forte); border-radius: var(--raio); background: var(--superficie); color: var(--tinta); }
+dialog.ampliada::backdrop { background: rgba(4, 12, 14, .78); }
+dialog.ampliada img { width: 100%; filter: var(--tela-filtro); }
+dialog.ampliada form { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; font-size: .88rem; color: var(--tinta-2); }
+
+/* ------------------------------------------------------------ módulos */
+.modulo { display: grid; gap: clamp(26px, 3.4vw, 42px); }
+.modulo .secao-cab { margin-bottom: 0; }
+.blocos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 30px clamp(24px, 3vw, 44px); }
+.bloco { display: grid; gap: 10px; align-content: start; min-width: 0; padding-top: 14px; border-top: 2px solid var(--tinta); }
+.bloco h3 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.bloco p, .bloco li { font-size: .95rem; line-height: 1.55; color: var(--tinta-2); }
+.bloco ul { display: grid; gap: 7px; }
+.bloco ul:not(.atalhos) > li { padding-left: 16px; position: relative; }
+.bloco ul:not(.atalhos) > li::before { content: ""; position: absolute; left: 0; top: .62em; width: 7px; height: 2px; background: var(--marca); }
+.bloco li strong, .bloco p strong { color: var(--tinta); }
+.bloco.largo { grid-column: 1 / -1; }
+.destaque { background: var(--marca-suave); border-radius: var(--raio); padding: clamp(18px, 2.4vw, 28px); display: grid; gap: 10px; }
+.destaque p { color: var(--tinta); max-width: 52rem; }
+.destaque .formula { font: 600 clamp(.9rem, .7rem + .7vw, 1.12rem)/1.5 var(--f-mono); color: var(--marca-forte); overflow-wrap: anywhere; }
+.duas { display: grid; gap: clamp(24px, 3vw, 44px); grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr)); align-items: start; }
+
+/* ------------------------------------------------------------ tabelas */
+.rolagem { overflow-x: auto; border: 1px solid var(--linha); border-radius: var(--raio); background: var(--superficie); }
+table { width: 100%; border-collapse: collapse; font-size: .93rem; }
+caption { text-align: left; padding: 14px 16px 4px; font: 700 1rem/1.3 var(--f-titulo); }
+th, td { text-align: left; vertical-align: top; padding: 11px 16px; border-bottom: 1px solid var(--linha); }
+thead th { font: 600 .7rem/1.3 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-3); background: var(--superficie-2); white-space: nowrap; }
+tbody tr:last-child > * { border-bottom: 0; }
+tbody th { font-weight: 650; white-space: nowrap; }
+td { color: var(--tinta-2); min-width: 9rem; }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; min-width: 0; }
+/* ------------------------------------------------------------ leitor de linha digitável (ficha) */
+.ficha { background: var(--superficie); border: 1.5px solid var(--tinta); border-radius: var(--raio); box-shadow: var(--sombra); overflow: hidden; }
+.ficha-entrada { padding: clamp(16px, 2.4vw, 26px); display: grid; gap: 12px; }
+.ficha label { font: 600 .72rem/1.3 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-3); }
+.ficha textarea { width: 100%; resize: vertical; min-height: 64px; padding: 14px 16px; border-radius: 10px; border: 1.5px solid var(--linha-forte); background: var(--papel); color: var(--tinta); font: 500 clamp(.92rem, .7rem + .9vw, 1.2rem)/1.45 var(--f-mono); letter-spacing: .02em; }
+.ficha textarea:focus { outline: 3px solid var(--marca); outline-offset: 1px; border-color: var(--marca); }
+.exemplos { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: .88rem; color: var(--tinta-3); }
+.exemplos button { font: 600 .82rem/1 var(--f-corpo); padding: 8px 12px; border-radius: 99px; border: 1px solid var(--linha-forte); background: var(--superficie); color: var(--tinta-2); cursor: pointer; }
+.exemplos button:hover { border-color: var(--marca); color: var(--marca-forte); }
+.picote { border-top: 2px dashed var(--tinta); position: relative; }
+.picote::before { content: "confere aqui"; position: absolute; right: 18px; top: -9px; background: var(--superficie); padding: 0 8px; font: 500 .66rem/1.4 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-3); }
+.campos { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); }
+.campo { grid-column: span 3; padding: 12px 16px 14px; border-right: 1px solid var(--linha); border-bottom: 1px solid var(--linha); min-width: 0; display: grid; gap: 4px; align-content: start; }
+.campo.c6 { grid-column: span 6; }
+.campo.c12 { grid-column: span 12; border-right: 0; }
+.campo dt { font: 600 .66rem/1.3 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-3); }
+.campo dd { font: 650 1.08rem/1.3 var(--f-corpo); overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.campo dd.mono { font: 500 .92rem/1.45 var(--f-mono); }
+.campo dd.bom { color: var(--marca-forte); }
+.campo dd.ruim { color: var(--erro); }
+.campo dd small { display: block; font: 400 .82rem/1.4 var(--f-corpo); color: var(--tinta-3); }
+.conferencia { display: flex; flex-wrap: wrap; gap: 8px; }
+.conferencia span { font: 600 .78rem/1 var(--f-mono); padding: 7px 10px; border-radius: 8px; background: var(--marca-suave); color: var(--marca-forte); }
+.conferencia span.ruim { background: var(--erro-suave); color: var(--erro); }
+.barras { padding: 16px; display: grid; gap: 8px; }
+.barras svg { width: 100%; height: 62px; color: var(--tinta); display: block; }
+.barras p { font-size: .82rem; color: var(--tinta-3); }
+.vazio { padding: 22px 18px; color: var(--tinta-3); font-size: .95rem; }
+@media (max-width: 760px) { .campo { grid-column: span 6; } .campo.c6 { grid-column: span 12; border-right: 0; } }
+.anatomia { margin-top: 26px; display: grid; gap: 12px; }
+.anatomia-linha { display: flex; flex-wrap: wrap; gap: 6px; }
+.anatomia-linha span { display: grid; gap: 5px; padding: 9px 11px; border-radius: 10px; background: var(--superficie); border: 1px solid var(--linha); min-width: 0; }
+.anatomia-linha b { font: 600 clamp(.8rem, .6rem + .7vw, 1.02rem)/1.2 var(--f-mono); color: var(--tinta); overflow-wrap: anywhere; }
+.anatomia-linha small { font: 500 .7rem/1.3 var(--f-corpo); color: var(--tinta-3); }
+.anatomia-linha .venc b { color: var(--ambar); }
+.anatomia-linha .valor b { color: var(--marca-forte); }
+
+/* ------------------------------------------------------------ como funciona */
+.passos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 228px), 1fr)); gap: 22px; counter-reset: passo; }
+.passos li { counter-increment: passo; display: grid; gap: 9px; align-content: start; padding: 18px 18px 20px; background: var(--superficie); border: 1px solid var(--linha); border-radius: var(--raio); }
+.passos li::before { content: counter(passo, decimal-leading-zero); font: 700 .8rem/1 var(--f-mono); letter-spacing: .08em; color: var(--marca-forte); }
+.passos p { font-size: .95rem; color: var(--tinta-2); }
+.entradas { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+.entradas li { font: 500 .86rem/1 var(--f-corpo); padding: 9px 13px; border-radius: 99px; border: 1px dashed var(--linha-forte); color: var(--tinta-2); }
+
+/* ------------------------------------------------------------ mapa dos módulos */
+.mapa { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 232px), 1fr)); gap: 0; border-top: 1px solid var(--linha-forte); border-left: 1px solid var(--linha-forte); }
+.mapa a { display: grid; gap: 6px; align-content: start; padding: 18px; border-right: 1px solid var(--linha-forte); border-bottom: 1px solid var(--linha-forte); text-decoration: none; color: var(--tinta); background: var(--superficie); transition: background .15s ease; }
+.mapa a:hover { background: var(--marca-suave); color: var(--tinta); }
+.mapa svg { width: 22px; height: 22px; color: var(--marca); }
+.mapa b { font: 700 1.04rem/1.25 var(--f-titulo); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.mapa span.desc { font-size: .88rem; line-height: 1.45; color: var(--tinta-2); }
+
+/* ------------------------------------------------------------ conversas (bots) */
+.conversas { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 22px; align-items: start; }
+.conversa { background: var(--superficie-2); border-radius: var(--raio); padding: 14px; display: grid; gap: 9px; border: 1px solid var(--linha); }
+.conversa h3 { font: 600 .72rem/1.3 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-3); padding: 2px 4px 4px; }
+.balao { max-width: 88%; padding: 9px 12px; border-radius: 14px; font-size: .9rem; line-height: 1.45; background: var(--superficie); color: var(--tinta); border: 1px solid var(--linha); justify-self: start; border-bottom-left-radius: 4px; overflow-wrap: anywhere; }
+.balao.eu { justify-self: end; background: var(--marca); border-color: var(--marca); color: var(--sobre-marca); border-radius: 14px; border-bottom-right-radius: 4px; }
+.balao .anexo { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+.balao .anexo svg { width: 16px; height: 16px; flex: none; }
+.balao .teclas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.balao .teclas span { font: 600 .78rem/1 var(--f-corpo); padding: 7px 10px; border-radius: 8px; background: var(--marca-suave); color: var(--marca-forte); }
+.balao code { background: transparent; padding: 0; font-size: .86em; }
+
+/* ------------------------------------------------------------ comprovante com carimbo */
+.recibo { position: relative; background: var(--superficie); border: 1px solid var(--linha-forte); border-radius: 6px; padding: 20px 20px 24px; font: 500 .84rem/1.6 var(--f-mono); color: var(--tinta-2); display: grid; gap: 2px; box-shadow: var(--sombra); }
+.recibo b { color: var(--tinta); font-weight: 700; }
+.recibo hr { border: 0; border-top: 1px dashed var(--linha-forte); margin: 8px 0; }
+.recibo .par { display: flex; justify-content: space-between; gap: 14px; }
+.carimbo { position: absolute; right: 16px; bottom: 18px; transform: rotate(-9deg); border: 3px solid var(--marca); color: var(--marca); border-radius: 8px; padding: 6px 12px 5px; font: 800 1.15rem/1 var(--f-titulo); letter-spacing: .08em; text-transform: uppercase; opacity: .9; text-align: center; }
+.carimbo small { display: block; font: 600 .56rem/1.5 var(--f-mono); letter-spacing: .06em; }
+
+/* ------------------------------------------------------------ celulares */
+.celulares { display: grid; grid-template-columns: repeat(3, minmax(0, 236px)); gap: clamp(10px, 2.4vw, 24px); justify-content: start; }
+.celular { border-radius: clamp(16px, 4vw, 28px); border: clamp(4px, 1.1vw, 8px) solid var(--trilho); background: var(--trilho); overflow: hidden; box-shadow: var(--sombra); }
+.celular img { width: 100%; aspect-ratio: 9 / 19; object-fit: cover; object-position: top; border-radius: clamp(11px, 3vw, 20px); filter: var(--tela-filtro); }
+
+/* ------------------------------------------------------------ linha do tempo, perguntas, final */
+.versoes { display: grid; gap: 0; border-left: 2px solid var(--tinta); margin-left: 6px; }
+.versoes li { position: relative; padding: 0 0 22px 24px; display: grid; gap: 4px; }
+.versoes li::before { content: ""; position: absolute; left: -7px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--papel); border: 2px solid var(--tinta); }
+.versoes li.atual::before { background: var(--marca); border-color: var(--marca); }
+.versoes .v { font: 600 .76rem/1.4 var(--f-mono); letter-spacing: .06em; color: var(--marca-forte); }
+.versoes b { font: 700 1.04rem/1.3 var(--f-titulo); }
+.versoes p { font-size: .93rem; color: var(--tinta-2); max-width: 46rem; }
+.perguntas { display: grid; gap: 0; border-top: 1px solid var(--linha-forte); }
+.perguntas details { border-bottom: 1px solid var(--linha-forte); }
+.perguntas summary { cursor: pointer; list-style: none; padding: 18px 40px 18px 0; position: relative; font: 700 1.08rem/1.35 var(--f-titulo); }
+.perguntas summary::-webkit-details-marker { display: none; }
+.perguntas summary::after { content: "+"; position: absolute; right: 6px; top: 14px; font: 500 1.5rem/1 var(--f-mono); color: var(--marca); }
+.perguntas details[open] summary::after { content: "–"; }
+.perguntas details > div { padding: 0 0 20px; display: grid; gap: 10px; color: var(--tinta-2); max-width: 46rem; }
+.final { background: var(--trilho); color: var(--trilho-ativo); border-top: 0; }
+.final h2 { max-width: 40rem; }
+.final .lide { color: var(--trilho-texto); }
+.final .passos li { background: var(--trilho-2); border-color: var(--trilho-linha); }
+.final .passos h3 { color: var(--trilho-ativo); }
+.final .passos p { color: var(--trilho-texto); }
+.final .passos li::before { color: var(--marca-suave); }
+.final code { background: var(--trilho-linha); color: var(--trilho-ativo); }
+.final .rotulo { color: var(--trilho-texto); }
+.rodape { background: var(--trilho); color: var(--trilho-texto); border-top: 1px solid var(--trilho-linha); padding-block: 26px 34px; font-size: .86rem; }
+.rodape .miolo { display: flex; flex-wrap: wrap; gap: 10px 28px; justify-content: space-between; }
+.bloco ul.atalhos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 10px 26px; }
+.bloco ul.atalhos li { display: flex; gap: 12px; align-items: baseline; font-size: .95rem; color: var(--tinta-2); padding-bottom: 10px; border-bottom: 1px solid var(--linha); }
+.bloco ul.atalhos li span:first-child { flex: none; min-width: 7.4rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .botao, .mapa a { transition: none; }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-boleto" viewBox="0 0 24 24"><path d="M4 6v12M7.5 6v12M11 6v8M14.5 6v12M17.5 6v8M20 6v12"/></symbol>
+  <symbol id="i-painel" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></symbol>
+  <symbol id="i-ler" viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2M8 12h8"/></symbol>
+  <symbol id="i-lista" viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></symbol>
+  <symbol id="i-pix" viewBox="0 0 24 24"><path d="M12 3l9 9-9 9-9-9z"/><path d="M12 8l4 4-4 4-4-4z"/></symbol>
+  <symbol id="i-clipe" viewBox="0 0 24 24"><path d="M21 11.5l-8.6 8.6a5 5 0 0 1-7.1-7.1l8.6-8.6a3.3 3.3 0 0 1 4.7 4.7l-8.5 8.5a1.7 1.7 0 0 1-2.4-2.4l7.8-7.8"/></symbol>
+  <symbol id="i-caixa" viewBox="0 0 24 24"><path d="M3 13l2.5-7.5A2 2 0 0 1 7.4 4h9.2a2 2 0 0 1 1.9 1.5L21 13v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 13h5l1.5 3h5L16 13h5"/></symbol>
+  <symbol id="i-diesel" viewBox="0 0 24 24"><path d="M4 20V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v14M3 20h12M6.5 9h5M14 11h2a2 2 0 0 1 2 2v3a1.5 1.5 0 0 0 3 0V9l-3-3"/></symbol>
+  <symbol id="i-gastos" viewBox="0 0 24 24"><path d="M4 20V4M4 20h16M8.5 16v-5M12.5 16V8M16.5 16v-3"/></symbol>
+  <symbol id="i-relatorio" viewBox="0 0 24 24"><path d="M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></symbol>
+  <symbol id="i-empresas" viewBox="0 0 24 24"><path d="M4 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16M16 9h2a2 2 0 0 1 2 2v10M3 21h18M8 7h4M8 11h4M8 15h4"/></symbol>
+  <symbol id="i-sino" viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4zM10 20a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="i-ajustes" viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M14 4v4M8 10v4M16 16v4"/></symbol>
+  <symbol id="i-telegram" viewBox="0 0 24 24"><path d="M21 4L3 11l6 2 2 6 3-4 4 3z"/><path d="M9 13l8-6"/></symbol>
+  <symbol id="i-celular" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18h2"/></symbol>
+  <symbol id="i-usuarios" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.5a6.5 6.5 0 0 1 3.5 5.5"/></symbol>
+  <symbol id="i-escudo" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.800-1.200-8-4.500-8-9V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+  <symbol id="i-nuvem" viewBox="0 0 24 24"><path d="M7 18a4.500 4.500 0 0 1-.5-9A6 6 0 0 1 18 10.500a3.800 3.800 0 0 1-.5 7.500z"/></symbol>
+  <symbol id="i-planilha" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.500v15l12-7.500z"/></symbol>
+  <symbol id="i-relogio" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-raio" viewBox="0 0 24 24"><path d="M13 2L5 14h6l-1 8 8-12h-6z"/></symbol>
+  <symbol id="i-pergunta" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.500 9.500a2.500 2.500 0 1 1 3.500 2.300c-.7.400-1 1-1 1.700M12 17h.01"/></symbol>
+  <symbol id="i-seta" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-foto" viewBox="0 0 24 24"><path d="M4 8h3l1.500-2.500h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.500"/></symbol>
+  <symbol id="i-lua" viewBox="0 0 24 24"><path d="M20 14.500A8 8 0 0 1 9.500 4 8 8 0 1 0 20 14.500z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.500l4.500 4.500L19 7.500"/></symbol>
+  <symbol id="i-ficha" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></symbol>
+  <symbol id="i-versao" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5zM3 13l9 5 9-5"/></symbol>
+</svg>
+
+<div class="pagina">
+  <aside class="trilho" id="trilho" aria-label="Índice da página">
+    <a class="marca" href="#inicio"><span class="marca-icone"><svg class="ic" aria-hidden="true"><use href="#i-boleto"/></svg></span>Fin Pro</a>
+    <nav class="indice" id="indice">
+      <h4>Visão geral</h4>
+      <a href="#inicio"><svg class="ic" aria-hidden="true"><use href="#i-painel"/></svg>Início</a>
+      <a href="#leitor"><svg class="ic" aria-hidden="true"><use href="#i-ler"/></svg>Teste a leitura</a>
+      <a href="#como-funciona"><svg class="ic" aria-hidden="true"><use href="#i-seta"/></svg>Como funciona</a>
+      <a href="#modulos"><svg class="ic" aria-hidden="true"><use href="#i-lista"/></svg>Todos os módulos</a>
+      <h4>Módulos</h4>
+      <a href="#painel"><svg class="ic" aria-hidden="true"><use href="#i-painel"/></svg>Painel</a>
+      <a href="#ler"><svg class="ic" aria-hidden="true"><use href="#i-ler"/></svg>Ler boletos</a>
+      <a href="#boletos"><svg class="ic" aria-hidden="true"><use href="#i-boleto"/></svg>Boletos lançados</a>
+      <a href="#pix"><svg class="ic" aria-hidden="true"><use href="#i-pix"/></svg>Pagamentos Pix</a>
+      <a href="#comprovantes"><svg class="ic" aria-hidden="true"><use href="#i-clipe"/></svg>Comprovantes</a>
+      <a href="#caixa"><svg class="ic" aria-hidden="true"><use href="#i-caixa"/></svg>Caixa</a>
+      <a href="#diesel"><svg class="ic" aria-hidden="true"><use href="#i-diesel"/></svg>Diesel</a>
+      <a href="#gastos"><svg class="ic" aria-hidden="true"><use href="#i-gastos"/></svg>Gastos</a>
+      <a href="#relatorios"><svg class="ic" aria-hidden="true"><use href="#i-relatorio"/></svg>Relatórios</a>
+      <a href="#empresas"><svg class="ic" aria-hidden="true"><use href="#i-empresas"/></svg>Empresas</a>
+      <a href="#notificacoes"><svg class="ic" aria-hidden="true"><use href="#i-sino"/></svg>Notificações</a>
+      <h4>O sistema por dentro</h4>
+      <a href="#bots"><svg class="ic" aria-hidden="true"><use href="#i-telegram"/></svg>Bots do Telegram</a>
+      <a href="#acesso"><svg class="ic" aria-hidden="true"><use href="#i-celular"/></svg>Celular e aplicativo</a>
+      <a href="#usuarios"><svg class="ic" aria-hidden="true"><use href="#i-usuarios"/></svg>Usuários e permissões</a>
+      <a href="#seguranca"><svg class="ic" aria-hidden="true"><use href="#i-escudo"/></svg>Segurança</a>
+      <a href="#backup"><svg class="ic" aria-hidden="true"><use href="#i-nuvem"/></svg>Backup e versões</a>
+      <a href="#dados"><svg class="ic" aria-hidden="true"><use href="#i-planilha"/></svg>Dados e planilha</a>
+      <a href="#demonstracao"><svg class="ic" aria-hidden="true"><use href="#i-play"/></svg>Demonstração</a>
+      <h4>Para decidir</h4>
+      <a href="#rotina"><svg class="ic" aria-hidden="true"><use href="#i-raio"/></svg>Um dia com o Fin Pro</a>
+      <a href="#ficha-tecnica"><svg class="ic" aria-hidden="true"><use href="#i-ficha"/></svg>Ficha técnica</a>
+      <a href="#evolucao"><svg class="ic" aria-hidden="true"><use href="#i-versao"/></svg>Evolução</a>
+      <a href="#perguntas"><svg class="ic" aria-hidden="true"><use href="#i-pergunta"/></svg>Perguntas frequentes</a>
+      <a href="#comecar"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Como começar</a>
+    </nav>
+    <div class="trilho-pe">
+      <a class="botao no-trilho" href="#leitor"><svg class="ic" aria-hidden="true"><use href="#i-ler"/></svg>Testar a leitura</a>
+      <button class="botao tema" type="button" id="troca-tema"><svg class="ic" aria-hidden="true"><use href="#i-lua"/></svg><span>Tema escuro</span></button>
+      <button class="botao tema fecha-indice" type="button" id="fecha-indice">Fechar o índice</button>
+      <p>Telas mostradas com dados de exemplo da versão de demonstração.</p>
+    </div>
+  </aside>
+  <button class="fundo-indice" id="fundo-indice" type="button" aria-label="Fechar o índice" hidden></button>
+
+  <div class="conteudo">
+    <header class="barra">
+      <div class="barra-dentro">
+        <a class="marca" href="#inicio"><span class="marca-icone"><svg class="ic" aria-hidden="true"><use href="#i-boleto"/></svg></span>Fin Pro</a>
+        <button class="botao-indice" type="button" id="abre-indice" aria-controls="trilho" aria-expanded="false"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg>Índice</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="inicio" id="inicio">
+        <div class="miolo">
+          <div class="inicio-texto">
+            <p class="rotulo">Sistema financeiro do escritório · Windows, celular e Telegram</p>
+            <h1>O financeiro do escritório, <em>sem digitação</em>.</h1>
+            <p class="lide">O Fin Pro lê boletos, Pix, comprovantes, cupons, notas fiscais, cheques e canhotos de diesel a partir de PDF, foto, e-mail ou Telegram. Você confere e lança. Ele avisa o vencimento, dá baixa pelo comprovante, calcula os juros e guarda tudo no seu computador.</p>
+            <div class="botoes">
+              <a class="botao primario" href="#leitor"><svg class="ic" aria-hidden="true"><use href="#i-ler"/></svg>Testar a leitura agora</a>
+              <a class="botao" href="#modulos">Ver todos os módulos<svg class="ic" aria-hidden="true"><use href="#i-seta"/></svg></a>
+            </div>
+            <ul class="fatos">
+              <li><b>11</b> telas num sistema só</li>
+              <li><b>4</b> bots do Telegram</li>
+              <li><b>3</b> canais de aviso</li>
+              <li><b>273</b> testes automáticos</li>
+            </ul>
+          </div>
+
+          <div class="linha-viva" aria-label="Exemplo de linha digitável: os quatro dígitos 1595 são o vencimento e os dez últimos são o valor">
+            <p class="linha-digitos" aria-hidden="true"><span>34191.09123</span><span>34567.812341</span><span>56789.012301</span><span>9</span><span><span class="venc">1595</span><span class="valor">0000150075</span></span></p>
+            <p class="linha-legenda"><span class="venc">1595 é o vencimento: 10/10/2026</span><span class="valor">0000150075 é o valor: R$ 1.500,75</span><span>O Fin Pro tira os dois do próprio código e confere com o que está impresso.</span></p>
+          </div>
+
+          <figure class="tela inicio-tela">
+            <div class="janela">
+              <div class="janela-barra"><i></i><i></i><i></i><span>Fin Pro · Painel</span></div>
+              <button class="ampliar" type="button" data-ampliar="img/painel.webp" data-legenda="Painel: o que pagar, o que venceu e a previsão de saídas das próximas 8 semanas."><img src="img/painel.webp" width="1600" height="1000" alt="Tela Painel do Fin Pro com os cartões A pagar, Vencidos, Vencem em 7 dias e Pagos no mês, e a previsão de saídas por semana"></button>
+            </div>
+            <figcaption>O Painel soma boletos e Pix: quanto falta pagar, o que venceu, o que vence em 7 dias, quanto foi pago no mês e quanto disso foi juros.</figcaption>
+          </figure>
+        </div>
+      </section>
+      <section class="secao" id="leitor">
+        <div class="miolo">
+          <div class="secao-cab">
+            <p class="rotulo">Experimente agora</p>
+            <h2>Cole uma linha digitável e veja a conferência acontecer</h2>
+            <p class="lide">É a mesma regra que o Fin Pro aplica a cada boleto. Os dígitos verificadores dizem se a linha está certa, e o vencimento e o valor saem do próprio código. A conta é feita aqui, no seu navegador: nada é enviado.</p>
+          </div>
+
+          <div class="ficha">
+            <div class="ficha-entrada">
+              <label for="linha">Linha digitável (47 ou 48 dígitos) ou código de barras (44 dígitos)</label>
+              <textarea id="linha" rows="2" spellcheck="false" autocomplete="off" inputmode="numeric">34191.09123 34567.812341 56789.012301 9 15950000150075</textarea>
+              <div class="exemplos">
+                <span>Exemplos:</span>
+                <button type="button" data-exemplo="34191.09123 34567.812341 56789.012301 9 15950000150075">Boleto bancário</button>
+                <button type="button" data-exemplo="00190.00009 02817.640002 00123.456170 2 16050000243190">Outro banco</button>
+                <button type="button" data-exemplo="83600000002-3 87430048700-4 18020012026-9 10000000000-8">Conta de luz</button>
+                <button type="button" data-exemplo="82840000001-7 53880211555-0 01234090000-1 00000000000-0">Conta de água</button>
+                <button type="button" data-exemplo="34191.09123 34567.812341 56789.012301 9 15950000150076">Linha com um dígito errado</button>
+              </div>
+            </div>
+            <div class="picote"></div>
+            <div id="resultado" aria-live="polite">
+              <dl class="campos">
+                <div class="campo"><dt>Situação</dt><dd class="bom">Linha válida</dd></div>
+                <div class="campo"><dt>Tipo</dt><dd>Boleto bancário</dd></div>
+                <div class="campo"><dt>Banco</dt><dd>341 · Itaú Unibanco</dd></div>
+                <div class="campo"><dt>Vencimento</dt><dd>10/10/2026</dd></div>
+                <div class="campo"><dt>Valor</dt><dd>R$ 1.500,75</dd></div>
+                <div class="campo"><dt>Dígitos lidos</dt><dd>47</dd></div>
+                <div class="campo c6"><dt>Código de barras</dt><dd class="mono">34199159500001500751091234567812345678901230</dd></div>
+                <div class="campo c12"><dt>Conferência dos dígitos verificadores</dt><dd class="conferencia"><span>Campo 1 confere</span><span>Campo 2 confere</span><span>Campo 3 confere</span><span>Dígito geral confere</span></dd></div>
+              </dl>
+            </div>
+          </div>
+
+          <div class="anatomia">
+            <h3>O que cada pedaço da linha diz</h3>
+            <div class="anatomia-linha">
+              <span><b>34191.09123</b><small>banco 341, moeda 9, começo do campo livre e 1 dígito verificador</small></span>
+              <span><b>34567.812341</b><small>campo livre e dígito verificador</small></span>
+              <span><b>56789.012301</b><small>campo livre e dígito verificador</small></span>
+              <span><b>9</b><small>dígito geral: confere a linha inteira</small></span>
+              <span class="venc"><b>1595</b><small>fator de vencimento: 10/10/2026</small></span>
+              <span class="valor"><b>0000150075</b><small>valor: R$ 1.500,75</small></span>
+            </div>
+            <p class="lide" style="font-size:.98rem">Por isso o vencimento e o valor de um boleto lido pelo código de barras são exatos. Quando a foto está ruim e o OCR troca um dígito, o Fin Pro testa as trocas mais comuns (8 por 3, 5 por 6) e confirma a correção pelo valor e pelo vencimento impressos. Ele também conhece o novo ciclo do fator de vencimento, que recomeçou em 22/02/2025.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="secao" id="como-funciona">
+        <div class="miolo">
+          <div class="secao-cab">
+            <p class="rotulo">Como funciona</p>
+            <h2>O documento chega, o sistema preenche, alguém confere</h2>
+            <p class="lide">O Fin Pro foi construído em torno de uma ideia: digitar o mínimo. Quase tudo entra por foto, PDF, e-mail ou Telegram, e nada é lançado sem que uma pessoa olhe antes.</p>
+          </div>
+          <ol class="passos">
+            <li><h3>Chega do jeito que der</h3><p>Arraste o PDF para qualquer tela, cole com <kbd>Ctrl</kbd> + <kbd>V</kbd>, tire a foto pelo celular, encaminhe o e-mail do fornecedor ou mande para o bot do Telegram.</p></li>
+            <li><h3>O sistema lê e confere</h3><p>Código de barras, texto do PDF e OCR local trabalham juntos. A linha passa pelos dígitos verificadores, e valor e vencimento do código são comparados com o que está impresso.</p></li>
+            <li><h3>Você confere e lança</h3><p>Cada documento vira um cartão já preenchido. Campo com baixa confiança fica amarelo, boleto repetido é bloqueado, e o lançamento sai com um clique.</p></li>
+            <li><h3>Ele acompanha até o fim</h3><p>Avisa antes, no dia e depois do vencimento. Quando o comprovante chega, acha o lançamento certo, marca como pago e registra juros, multa e desconto.</p></li>
+          </ol>
+          <ul class="entradas" aria-label="Documentos que o Fin Pro lê">
+            <li>Boleto bancário</li><li>Conta de luz, água e telefone</li><li>Guias DAS, DARF, GPS, FGTS, IPVA e IPTU</li><li>Carnê com vários boletos</li><li>Pix Copia e Cola e QR code</li><li>Comprovante de pagamento</li><li>Cupom e nota de compra</li><li>Nota fiscal em XML ou DANFE</li><li>Cheque pré-datado</li><li>Comprovante de depósito</li><li>Canhoto de abastecimento</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="secao" id="modulos">
+        <div class="miolo">
+          <div class="secao-cab">
+            <p class="rotulo">Todos os módulos</p>
+            <h2>Contas a pagar, dinheiro, combustível e contas a receber no mesmo lugar</h2>
+            <p class="lide">Cada módulo tem a sua tela, as suas regras e, quando faz sentido, o seu bot. Todos compartilham os centros de custo, os comprovantes, os usuários e os avisos.</p>
+          </div>
+          <nav class="mapa" aria-label="Módulos do Fin Pro">
+            <a href="#painel"><svg class="ic" aria-hidden="true"><use href="#i-painel"/></svg><b>Painel</b><span class="desc">O que pagar, o que venceu e a previsão de saídas das próximas 8 semanas.</span></a>
+            <a href="#ler"><svg class="ic" aria-hidden="true"><use href="#i-ler"/></svg><b>Ler boletos</b><span class="desc">Leitura de PDF e foto com conferência campo a campo antes de lançar.</span></a>
+            <a href="#boletos"><svg class="ic" aria-hidden="true"><use href="#i-boleto"/></svg><b>Boletos lançados</b><span class="desc">Lista, calendário, baixa pelo comprovante, juros e importação de outro sistema.</span></a>
+            <a href="#pix"><svg class="ic" aria-hidden="true"><use href="#i-pix"/></svg><b>Pagamentos Pix</b><span class="desc">Pix a pagar por chave, Copia e Cola ou QR code, com os mesmos avisos dos boletos.</span></a>
+            <a href="#comprovantes"><svg class="ic" aria-hidden="true"><use href="#i-clipe"/></svg><b>Comprovantes</b><span class="desc">Todos os comprovantes do sistema numa busca só, com download em ZIP.</span></a>
+            <a href="#caixa"><svg class="ic" aria-hidden="true"><use href="#i-caixa"/></svg><b>Caixa</b><span class="desc">Entradas e saídas em dinheiro, com foto do cupom e relatórios.</span></a>
+            <a href="#diesel"><svg class="ic" aria-hidden="true"><use href="#i-diesel"/></svg><b>Diesel</b><span class="desc">Compras no posto, abastecimento de cada máquina, saldo em reais e consumo.</span></a>
+            <a href="#gastos"><svg class="ic" aria-hidden="true"><use href="#i-gastos"/></svg><b>Gastos</b><span class="desc">Análise por centro de custo e fechamento do mês pronto para o contador.</span></a>
+            <a href="#relatorios"><svg class="ic" aria-hidden="true"><use href="#i-relatorio"/></svg><b>Relatórios <span class="selo">Em liberação</span></b><span class="desc">Relatório geral do mês e atalhos para todos os relatórios do sistema.</span></a>
+            <a href="#empresas"><svg class="ic" aria-hidden="true"><use href="#i-empresas"/></svg><b>Empresas</b><span class="desc">Vendas a prazo: notas fiscais, cheques pré-datados, recebimentos e fechamento.</span></a>
+            <a href="#notificacoes"><svg class="ic" aria-hidden="true"><use href="#i-sino"/></svg><b>Notificações</b><span class="desc">Lembretes no Windows, Telegram e e-mail, e resumos de segunda e sexta.</span></a>
+            <a href="#backup"><svg class="ic" aria-hidden="true"><use href="#i-ajustes"/></svg><b>Configurações</b><span class="desc">Aplicativo, usuários, backup total, versões, integrações e saúde do sistema.</span></a>
+          </nav>
+        </div>
+      </section>
+      <section class="secao" id="painel">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Módulo · Painel</p>
+            <h2>Abra o sistema e saiba o que precisa de atenção hoje</h2>
+            <p class="lide">A primeira tela soma boletos e Pix em tudo. Em poucos segundos dá para ver quanto falta pagar, o que já venceu, o que vence na semana e quanto dinheiro vai sair nas próximas oito semanas.</p>
+          </div>
+          <figure class="tela" data-galeria>
+            <div class="abas" role="tablist" aria-label="Telas do Painel">
+              <button type="button" role="tab" aria-selected="true" data-img="img/painel.webp" data-alt="Painel no tema claro com indicadores e previsão de saídas" data-legenda="Indicadores do topo e previsão de saídas, com o que está em atraso separado do que ainda vai vencer.">Tema claro</button>
+              <button type="button" role="tab" aria-selected="false" data-img="img/painel-escuro.webp" data-alt="Painel no tema escuro" data-legenda="O mesmo Painel no tema escuro. A troca é feita por um botão no menu e vale para o sistema inteiro.">Tema escuro</button>
+            </div>
+            <div class="janela">
+              <div class="janela-barra"><i></i><i></i><i></i><span>Fin Pro · Painel</span></div>
+              <button class="ampliar" type="button" data-ampliar="img/painel.webp" data-legenda="Indicadores do topo e previsão de saídas, com o que está em atraso separado do que ainda vai vencer."><img src="img/painel.webp" width="1600" height="1000" loading="lazy" alt="Painel no tema claro com indicadores e previsão de saídas"></button>
+            </div>
+            <figcaption>Indicadores do topo e previsão de saídas, com o que está em atraso separado do que ainda vai vencer.</figcaption>
+          </figure>
+          <div class="blocos">
+            <article class="bloco">
+              <h3>Quatro indicadores que abrem a lista certa</h3>
+              <ul>
+                <li><strong>A pagar:</strong> valor e quantidade de pendentes, boletos e Pix juntos.</li>
+                <li><strong>Vencidos:</strong> valor em atraso, dizendo quantos são boletos e quantos são Pix.</li>
+                <li><strong>Vencem em 7 dias:</strong> o que cai na próxima semana.</li>
+                <li><strong>Pagos no mês:</strong> quanto já foi pago e quanto disso foi juros, por exemplo "R$ 23,77 de juros (1)".</li>
+                <li>Clicar em qualquer cartão abre a lista já filtrada.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Previsão de saídas</h3>
+              <ul>
+                <li>Quanto sai em cada uma das <strong>próximas 8 semanas</strong>, começando hoje.</li>
+                <li>O que <strong>já está em atraso</strong> aparece separado.</li>
+                <li>Totais de <strong>7 dias</strong> e de <strong>30 dias</strong>.</li>
+                <li>Barras com a parte de boletos e a parte de Pix.</li>
+                <li>Clicar numa semana mostra os lançamentos dela.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Outros quadros</h3>
+              <ul>
+                <li><strong>Vencimentos por mês:</strong> gráfico com pago, vencido e a vencer.</li>
+                <li><strong>Próximos vencimentos</strong> e <strong>Vencidos</strong>, com atalhos.</li>
+                <li><strong>Maiores beneficiários.</strong></li>
+                <li><strong>Lançados neste mês:</strong> quantidade e valor.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Sininho</h3>
+              <ul>
+                <li>Mostra o que vence hoje, os próximos e os vencidos, de boletos e de Pix.</li>
+                <li>Cada aviso pode ser marcado como <strong>visto</strong> ou <strong>dispensado</strong> e sai da contagem.</li>
+                <li>Se a situação muda, por exemplo de "vence amanhã" para "vence hoje", o aviso volta, porque é informação nova.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>O menu também informa</h3>
+              <ul>
+                <li><strong>Contadores</strong> ao lado de Ler boletos, Caixa, Diesel e Empresas: arquivos recebidos esperando conferência.</li>
+                <li>Rodapé com o estado da <strong>planilha</strong>, do <strong>OCR</strong>, da <strong>IA</strong> e do <strong>backup</strong>.</li>
+                <li>Usuário conectado e troca de senha.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="secao" id="ler">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Módulo · Ler boletos</p>
+            <h2>PDF, foto torta ou carnê inteiro: o boleto chega preenchido para conferir</h2>
+            <p class="lide">A leitura combina código de barras, texto do PDF e OCR que roda no próprio computador. Cada campo mostra de onde veio e com que confiança, e a linha só é aceita se os dígitos verificadores fecharem.</p>
+          </div>
+          <figure class="tela">
+            <div class="janela">
+              <div class="janela-barra"><i></i><i></i><i></i><span>Fin Pro · Ler boletos · Revisão</span></div>
+              <button class="ampliar" type="button" data-ampliar="img/ler.webp" data-legenda="Cartão de revisão: linha validada, origem de cada campo, confiança de 97% e alertas antes de lançar."><img src="img/ler.webp" width="1600" height="1000" loading="lazy" alt="Cartão de revisão de um boleto lido, com a linha digitável marcada como válida, beneficiário, CNPJ, documento, vencimento, valor e alertas"></button>
+            </div>
+            <figcaption>Cartão de revisão de um boleto de exemplo: linha validada, selo de origem em cada campo (código, PDF, histórico), confiança da leitura e os alertas antes de lançar.</figcaption>
+          </figure>
+          <div class="blocos">
+            <article class="bloco">
+              <h3>Sete jeitos de enviar</h3>
+              <ul>
+                <li><strong>Arrastar</strong> arquivos para a tela, de qualquer lugar do sistema.</li>
+                <li><strong>Escolher arquivos</strong>, vários de uma vez.</li>
+                <li><strong>Colar</strong> com <kbd>Ctrl</kbd> + <kbd>V</kbd>: imagem ou linha digitável.</li>
+                <li><strong>Tirar foto</strong> pelo celular, com o botão em destaque.</li>
+                <li><strong>Digitar ou colar a linha</strong> (47 ou 48 dígitos) ou o código de barras (44).</li>
+                <li><strong>Preencher manualmente</strong>, quando não há arquivo.</li>
+                <li>Por <strong>e-mail</strong> e pelo <strong>Telegram</strong>, sem abrir o sistema.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>O que é lido e de onde vem</h3>
+              <ul>
+                <li><strong>Linha digitável e código de barras:</strong> do código de barras da imagem, do texto do PDF, do OCR e, se você quiser, da IA. Sempre conferidos pelos dígitos verificadores.</li>
+                <li><strong>Beneficiário e CPF/CNPJ:</strong> pela posição do rótulo na página.</li>
+                <li><strong>Nº do documento.</strong></li>
+                <li><strong>Vencimento:</strong> do fator de vencimento do código (exato), conferido com a data impressa.</li>
+                <li><strong>Valor:</strong> do código (exato), conferido com o valor impresso.</li>
+                <li><strong>Data de lançamento:</strong> gravada automaticamente.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Documentos aceitos</h3>
+              <ul>
+                <li>PDF digital, PDF escaneado e fotos em JPG, PNG, WEBP e HEIC do iPhone.</li>
+                <li>Carnês e PDFs com vários boletos, um por página ou vários na mesma página.</li>
+                <li>Boletos <strong>bancários</strong> (47 dígitos) e de <strong>arrecadação</strong> (48): luz, água, telefone e tributos.</li>
+                <li><strong>Guias de tributos:</strong> DAS, DARF, GPS, FGTS, IPVA, IPTU e DETRAN, com o órgão arrecadador como beneficiário.</li>
+                <li>Contas de consumo sem o rótulo "Beneficiário": o nome vem do cabeçalho.</li>
+                <li>Novo ciclo do fator de vencimento, iniciado em 22/02/2025.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Fotos difíceis</h3>
+              <ul>
+                <li><strong>Modo scanner:</strong> recorta o papel, corrige a perspectiva e uniformiza a luz.</li>
+                <li>Foto de lado é endireitada pela orientação do código de barras.</li>
+                <li>Várias tentativas para códigos de barras borrados.</li>
+                <li><strong>Correção automática</strong> de um dígito lido errado por campo, priorizando as confusões típicas do OCR e desempatando pelo valor e vencimento impressos.</li>
+                <li>PDF escaneado com texto ruim recebe OCR complementar.</li>
+                <li>Datas por extenso, como "10 de outubro de 2026" e "10/OUT/2026".</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Revisão antes de lançar</h3>
+              <ul>
+                <li>Leitura em <strong>segundo plano</strong>, com fila, progresso por página e até 2 leituras ao mesmo tempo.</li>
+                <li>Campos com <strong>baixa confiança em amarelo</strong>.</li>
+                <li>Selos: linha <strong>Válida</strong> ou <strong>Inválida</strong> e a origem de cada campo (Código de barras, Texto de PDF, OCR).</li>
+                <li><strong>Alertas:</strong> linha inválida, valor ou vencimento divergentes, boleto vencido, campo faltando e boleto já lançado.</li>
+                <li>Escolha do <strong>centro de custo</strong> em cada boleto.</li>
+                <li><strong>Lançar</strong> um a um ou <strong>Lançar todos</strong> numa única gravação.</li>
+                <li>Arquivo lido de novo sai do cache, sem refazer o OCR.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Quando o arquivo não é um boleto</h3>
+              <ul>
+                <li>Tem <strong>QR code Pix</strong>: aparece o botão <strong>Lançar como Pix</strong>.</li>
+                <li>É um <strong>comprovante de pagamento</strong>: o sistema acha o boleto ou o Pix correspondente e oferece <strong>Registrar pagamento</strong>.</li>
+                <li>Boleto repetido é <strong>bloqueado</strong> com aviso.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Recebidos por e-mail e Telegram</h3>
+              <ul>
+                <li>Uma caixa de e-mail (IMAP, com senha de app) é verificada a cada 5 minutos, sem apagar nem marcar como lido. Dá para aceitar só alguns remetentes.</li>
+                <li>O bot do Telegram aceita PDF e foto das pessoas cadastradas.</li>
+                <li>Tudo cai no quadro <strong>Recebidos por e-mail e Telegram</strong>, com contador no menu.</li>
+                <li><strong>Revisar</strong> abre o boleto lido; dá para lançar ou <strong>Descartar</strong>.</li>
+                <li>Arquivo repetido é ignorado, e boleto que já foi lançado sai sozinho da caixa.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>IA opcional <span class="selo azul">Opcional</span></h3>
+              <ul>
+                <li>Botão <strong>Analisar com IA</strong> para fotos muito difíceis, usando o Claude, da Anthropic.</li>
+                <li>Vem desligada. Para ligar é preciso uma chave própria.</li>
+                <li>A linha sugerida pela IA passa pela mesma validação das outras.</li>
+                <li>É o único recurso que envia um arquivo para fora do computador, e só quando alguém aciona.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+      <section class="secao" id="boletos">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Módulo · Boletos lançados</p>
+            <h2>Do vencimento ao comprovante, com os juros à vista</h2>
+            <p class="lide">Lista com busca e filtros, calendário de vencimentos, ações em lote e a baixa automática: você manda o comprovante e o sistema descobre de qual boleto ele é, marca como pago e registra quanto foi de juros, multa ou desconto.</p>
+          </div>
+          <figure class="tela" data-galeria>
+            <div class="abas" role="tablist" aria-label="Telas de Boletos lançados">
+              <button type="button" role="tab" aria-selected="true" data-img="img/boletos.webp" data-alt="Lista de boletos lançados com filtros, resumo e ações" data-legenda="Lista com filtros de situação, período e centro de custo. Nos pagos com atraso aparece o valor pago e os juros logo abaixo do valor.">Lista</button>
+              <button type="button" role="tab" aria-selected="false" data-img="img/calendario.webp" data-alt="Calendário de vencimentos do mês com o total de cada dia" data-legenda="Calendário do mês com o total por dia e cores para vencido, vence hoje, a vencer e pago.">Calendário</button>
+            </div>
+            <div class="janela">
+              <div class="janela-barra"><i></i><i></i><i></i><span>Fin Pro · Boletos lançados</span></div>
+              <button class="ampliar" type="button" data-ampliar="img/boletos.webp" data-legenda="Lista com filtros de situação, período e centro de custo. Nos pagos com atraso aparece o valor pago e os juros logo abaixo do valor."><img src="img/boletos.webp" width="1600" height="1000" loading="lazy" alt="Lista de boletos lançados com filtros, resumo e ações"></button>
+            </div>
+            <figcaption>Lista com filtros de situação, período e centro de custo. Nos pagos com atraso aparece o valor pago e os juros logo abaixo do valor.</figcaption>
+          </figure>
+
+          <div class="duas">
+            <div class="recibo" aria-label="Exemplo de comprovante de pagamento com carimbo de pago">
+              <b>COMPROVANTE DE PAGAMENTO</b>
+              <span>Pagamento de boleto</span>
+              <hr>
+              <span class="par"><span>Beneficiário</span><b>AUTO PEÇAS CENTRAL LTDA</b></span>
+              <span class="par"><span>Vencimento</span><b>10/10/2026</b></span>
+              <span class="par"><span>Valor do documento</span><b>R$ 270,35</b></span>
+              <span class="par"><span>Juros e multa</span><b>R$ 5,40</b></span>
+              <span class="par"><span>Valor pago</span><b>R$ 275,75</b></span>
+              <span class="par"><span>Pago em</span><b>15/10/2026</b></span>
+              <hr>
+              <span>Exemplo com dados fictícios</span>
+              <span>&nbsp;</span>
+              <span class="carimbo">Pago<small>baixa automática</small></span>
+            </div>
+            <article class="bloco">
+              <h3>Baixa automática pelo comprovante</h3>
+              <ul>
+                <li>O sistema <strong>percebe que é um comprovante</strong>, e não um boleto, e lê valor pago, valor do documento, juros e multa, desconto, data do pagamento, vencimento, beneficiário, CNPJ, chave Pix e a linha digitável, quando o banco imprime.</li>
+                <li><strong>Descobre de qual lançamento é:</strong> linha igual resolve na hora; sem ela, compara valor, CNPJ, nome e datas.</li>
+                <li><strong>Marca como pago</strong> com a data do comprovante e grava Valor Pago, Juros/Multa e Desconto. Se o comprovante não detalha, a diferença vira juros (a mais) ou desconto (a menos).</li>
+                <li><strong>Na dúvida, não chuta.</strong> Parcelas iguais sem linha digitável aparecem para alguém escolher e clicar em Registrar pagamento.</li>
+                <li>Comprovante de <strong>agendamento</strong> não dá baixa, porque o pagamento ainda não aconteceu.</li>
+                <li>Depois da baixa pela tela aparece o botão <strong>Desfazer</strong>.</li>
+                <li>O comprovante pode chegar pela tela Ler boletos, pelo bot, por e-mail ou pelo botão de histórico da lista.</li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="blocos">
+            <article class="bloco">
+              <h3>Lista</h3>
+              <ul>
+                <li><strong>Busca</strong> por beneficiário, documento, CPF/CNPJ ou linha, com o atalho <kbd>/</kbd>.</li>
+                <li><strong>Situação:</strong> Todos, Pendentes, A vencer, Vencidos, Pagos e Cancelados.</li>
+                <li><strong>Período</strong> por vencimento ou por data de lançamento.</li>
+                <li><strong>Centro de custo.</strong></li>
+                <li>Ordenação por coluna e paginação.</li>
+                <li><strong>Resumo:</strong> valor total, pendente, vencido, pago e "Juros e multas pagos" do que está filtrado.</li>
+                <li>Selos Pendente, Vence hoje, Atrasado, Pago e Cancelado. Nos pagos com juros aparece "+ R$ x juros".</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Ações em cada boleto</h3>
+              <ul>
+                <li><strong>Copiar a linha digitável</strong> só com os números, sem pontos nem espaços, pronta para colar no banco.</li>
+                <li><strong>Marcar como pago</strong>, com data e, se quiser, valor pago, juros e comprovante.</li>
+                <li><strong>Editar</strong> beneficiário, documento, vencimento, valor, situação, centro de custo, observações, valor pago, juros/multa e desconto.</li>
+                <li><strong>Ver o arquivo original</strong> do boleto.</li>
+                <li><strong>Histórico e comprovante:</strong> quem lançou, quem pagou, todas as alterações, e o comprovante para ver, anexar, trocar ou remover.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Ações em lote</h3>
+              <ul>
+                <li>Selecione vários e use <strong>Marcar pagos</strong>, <strong>Marcar pendentes</strong>, <strong>Cancelar</strong>, <strong>Centro de custo</strong> ou <strong>Excluir</strong>.</li>
+                <li>O centro de custo é atribuído a todos de uma vez.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Calendário de vencimentos</h3>
+              <ul>
+                <li>Visão do mês com o <strong>total por dia</strong>.</li>
+                <li>Cores para vencido, vence hoje, a vencer e pago.</li>
+                <li>Resumo do mês, incluindo os juros pagos.</li>
+                <li>Clicar num dia permite marcar como pago, copiar a linha ou editar.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Exportar e abrir no Excel</h3>
+              <ul>
+                <li><strong>Exportar</strong> para Excel ou CSV com os filtros atuais.</li>
+                <li><strong>Abrir no Excel</strong> a planilha que o sistema mantém atualizada.</li>
+                <li>Atalho <strong>Comprovantes</strong> para a busca já filtrada nos boletos.</li>
+                <li>Aviso "Aguardando gravação" quando a planilha está aberta em outro programa: o sistema grava quando ela for fechada.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Importar de outro sistema</h3>
+              <ul>
+                <li>Área restrita, com <strong>senha de administrador</strong>.</li>
+                <li>Aceita <strong>Excel (.xlsx e .xls), CSV e TXT</strong>.</li>
+                <li>As colunas são reconhecidas pelo nome, inclusive sinônimos como "Fornecedor", "Cedente", "Vencto", "Valor Título", "Cód. Barras", "Situação" e "C. Custo". Dá para ajustar, escolher a aba e a linha dos títulos.</li>
+                <li>A <strong>prévia</strong> confere cada linha: dígitos verificadores, valor e vencimento contra o código, boletos já lançados e repetidos no próprio arquivo. Linhas de total são ignoradas.</li>
+                <li>"Pago", "Liquidado" e "Baixado" entram como pagos.</li>
+                <li>As colunas escolhidas ficam salvas, e há uma planilha modelo para baixar.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="secao" id="pix">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Módulo · Pagamentos Pix</p>
+            <h2>Os Pix a pagar entram na mesma fila dos boletos</h2>
+            <p class="lide">Cole o Pix Copia e Cola, envie o print do QR code ou digite a chave. O Pix ganha data prevista, centro de custo, lembretes, comprovante e baixa automática, igual a um boleto.</p>
+          </div>
+          <figure class="tela">
+            <div class="janela">
+              <div class="janela-barra"><i></i><i></i><i></i><span>Fin Pro · Pagamentos Pix</span></div>
+              <button class="ampliar" type="button" data-ampliar="img/pix.webp" data-legenda="Novo Pix por chave, por Copia e Cola ou por imagem do QR code, com a lista e o resumo logo abaixo."><img src="img/pix.webp" width="1600" height="1000" loading="lazy" alt="Tela de Pagamentos Pix com o formulário de novo Pix, o campo de Pix Copia e Cola e a lista de pagamentos"></button>
+            </div>
+            <figcaption>Novo Pix por chave, por Copia e Cola ou por imagem do QR code, com a lista e o resumo logo abaixo.</figcaption>
+          </figure>
+          <div class="blocos">
+            <article class="bloco">
+              <h3>Campos do Pix</h3>
+              <ul>
+                <li><strong>Tipo da chave:</strong> CNPJ/CPF, celular, e-mail ou aleatória.</li>
+                <li><strong>Chave</strong> com máscara e validação: dígitos do CPF/CNPJ, DDD do celular e formato do e-mail.</li>
+                <li><strong>Valor</strong>, <strong>recebedor</strong> e <strong>data prevista</strong>, que funciona como vencimento nos lembretes.</li>
+                <li><strong>Centro de custo</strong> e <strong>descrição</strong>.</li>
+                <li>O <strong>Pix Copia e Cola</strong> fica guardado para pagar depois.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Três formas de lançar</h3>
+              <ul>
+                <li><strong>Formulário</strong> de novo pagamento.</li>
+                <li><strong>Colar o Copia e Cola</strong> em qualquer tela com <kbd>Ctrl</kbd> + <kbd>V</kbd>: abre o Pix já preenchido com chave, valor, recebedor e identificador.</li>
+                <li><strong>QR code:</strong> print, foto ou PDF da cobrança.</li>
+                <li>Pix repetido, com o mesmo Copia e Cola, é bloqueado.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Lista e ações</h3>
+              <ul>
+                <li>Filtros Todos, Pendentes, Atrasados, Pagos e Cancelados, por centro de custo e busca.</li>
+                <li>Resumo com valor total, pendente, atrasado, pago e juros e multas pagos.</li>
+                <li><strong>Copiar a chave</strong>, mostrar o <strong>QR code e o Copia e Cola</strong> para pagar no aplicativo do banco, marcar como pago, editar, histórico e comprovante.</li>
+                <li>Exportação e atalho para os comprovantes dos Pix.</li>
+                <li>Pix vencido entra no Painel, no sininho e nos lembretes.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="secao" id="comprovantes">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Módulo · Comprovantes</p>
+            <h2>Aquele comprovante de três meses atrás aparece em segundos</h2>
+            <p class="lide">Um menu só para buscar os comprovantes de tudo: boletos, Pix, cheques, recebimentos, caixa, notas fiscais e diesel. Com filtros de verdade e download de todos num arquivo ZIP organizado.</p>
+          </div>
+          <figure class="tela">
+            <div class="janela">
+              <div class="janela-barra"><i></i><i></i><i></i><span>Fin Pro · Comprovantes</span></div>
+              <button class="ampliar" type="button" data-ampliar="img/comprovantes.webp" data-legenda="Busca de comprovantes com tipos, período, valor e número, e o total encontrado por tipo."><img src="img/comprovantes.webp" width="1600" height="1000" loading="lazy" alt="Tela Comprovantes com busca, filtros por tipo, período, valor e número, cartões de totais e a lista"></button>
+            </div>
+            <figcaption>Busca de comprovantes com tipos, período, valor e número, e o total encontrado por tipo.</figcaption>
+          </figure>
+          <div class="blocos">
+            <article class="bloco">
+              <h3>Sete tipos num lugar só</h3>
+              <ul>
+                <li><strong>Boleto:</strong> comprovante de pagamento anexado.</li>
+                <li><strong>Pix:</strong> comprovante do Pix pago.</li>
+                <li><strong>Cheque:</strong> foto do cheque.</li>
+                <li><strong>Recebimento:</strong> Pix, TED ou depósito recebido das empresas.</li>
+                <li><strong>Caixa:</strong> cupom ou nota das saídas em dinheiro.</li>
+                <li><strong>Nota fiscal</strong> das empresas.</li>
+                <li><strong>Diesel:</strong> canhotos e comprovantes de compra no posto.</li>
+                <li>Cada pessoa só vê os tipos das telas que tem permissão.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Filtros</h3>
+              <ul>
+                <li><strong>Busca</strong> por beneficiário, empresa, recebedor, pedido ou material.</li>
+                <li><strong>Período</strong> com atalhos: hoje, esta semana, este mês, mês passado, últimos 30 e 90 dias, este ano.</li>
+                <li><strong>Valor exato</strong>: o do documento ou o pago com juros.</li>
+                <li><strong>Mais filtros:</strong> faixa de valor, centro de custo, quem pagou ou lançou e ordenação.</li>
+                <li><strong>Número:</strong> cheque, nota, pedido, documento, ID da transação ou um trecho da linha digitável.</li>
+                <li><strong>Situação:</strong> com comprovante, pagos sem comprovante ou todos.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Ver, baixar e completar</h3>
+              <ul>
+                <li><strong>Ver</strong> abre o comprovante com os dados ao lado. As setas do teclado passam para o próximo.</li>
+                <li><strong>Baixar comprovantes (.zip):</strong> todos os filtrados, em pastas por tipo, com nomes como <code>2026-09-21 - Boleto - FORNECEDOR - R$ 956,70.pdf</code>.</li>
+                <li><strong>Pagos sem comprovante:</strong> lista o que foi pago e ainda não tem comprovante, com o botão Anexar.</li>
+                <li>Atalhos nas telas de Boletos, Pix, Caixa, Empresas e Diesel abrem a busca já filtrada.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+      <section class="secao" id="caixa">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Módulo · Caixa</p>
+            <h2>O dinheiro em espécie deixa de ser um caderno à parte</h2>
+            <p class="lide">Entradas e saídas em dinheiro por dia, semana, mês ou ano, cada saída com a foto do cupom, o centro de custo e quem gastou. O bot do caixa lê o cupom e deixa o gasto pronto para lançar.</p>
+          </div>
+          <figure class="tela" data-galeria>
+            <div class="abas" role="tablist" aria-label="Telas do Caixa">
+              <button type="button" role="tab" aria-selected="true" data-img="img/caixa.webp" data-alt="Movimento do caixa no mês, com entradas, saídas, saldo do período e saldo em caixa" data-legenda="Movimento do mês: entradas, saídas, saldo do período e quanto deveria ter no caixa.">Movimento</button>
+              <button type="button" role="tab" aria-selected="false" data-img="img/caixa-relatorios.webp" data-alt="Relatórios do caixa com gráficos de saídas e entradas por dia e onde mais se gastou" data-legenda="Relatórios do caixa: gasto médio, maior saída, comparação com o período anterior, gráficos e onde mais se gastou.">Relatórios</button>
+            </div>
+            <div class="janela">
+              <div class="janela-barra"><i></i><i></i><i></i><span>Fin Pro · Caixa</span></div>
+              <button class="ampliar" type="button" data-ampliar="img/caixa.webp" data-legenda="Movimento do mês: entradas, saídas, saldo do período e quanto deveria ter no caixa."><img src="img/caixa.webp" width="1600" height="1000" loading="lazy" alt="Movimento do caixa no mês, com entradas, saídas, saldo do período e saldo em caixa"></button>
+            </div>
+            <figcaption>Movimento do mês: entradas, saídas, saldo do período e quanto deveria ter no caixa.</figcaption>
+          </figure>
+          <div class="blocos">
+            <article class="bloco">
+              <h3>Movimento</h3>
+              <ul>
+                <li><strong>Entrada:</strong> valor, data e o que foi pedido.</li>
+                <li><strong>Saída:</strong> valor, data, o que foi comprado, onde foi gasto, centro de custo e quem gastou, com a foto do cupom.</li>
+                <li>Períodos <strong>Dia, Semana, Mês e Ano</strong>, com setas e o botão Hoje.</li>
+                <li>Cartões de <strong>Entradas</strong>, <strong>Saídas</strong>, <strong>Saldo do período</strong> e <strong>Saldo em caixa</strong>: o que deveria ter na gaveta no fim do período.</li>
+                <li>Editar, cancelar e ver o histórico de cada lançamento.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Relatórios do caixa</h3>
+              <ul>
+                <li>Onde mais se gastou, por loja ou fornecedor.</li>
+                <li>Por <strong>centro de custo</strong>, <strong>quem mais gastou</strong> e <strong>entradas por pedido</strong>.</li>
+                <li>Gasto médio por saída, maior saída, entrada média e comparação com o período anterior.</li>
+                <li>Gráficos de entradas e saídas por dia, ou por mês na visão do ano.</li>
+                <li><strong>Excel</strong> do período com o resumo e todos os lançamentos.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Bot do caixa</h3>
+              <ul>
+                <li>A pessoa manda a <strong>foto do cupom ou da nota</strong>.</li>
+                <li>O bot lê o <strong>valor a pagar</strong>, nunca o dinheiro entregue nem o troco, a data e a loja. Sem valor legível, ele pergunta.</li>
+                <li>Pergunta <strong>onde foi gasto</strong>, com um botão para usar o nome da loja.</li>
+                <li>Mostra os <strong>centros de custo como botões</strong>, com a opção de cadastrar um novo na hora.</li>
+                <li>O gasto aparece em <strong>Conferência</strong> já preenchido: Lançar com um clique ou Revisar.</li>
+                <li>Comandos <code>/resumo</code>, <code>/cancelar</code> e <code>/ajuda</code>.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Ligado ao resto do sistema</h3>
+              <ul>
+                <li>As saídas entram na <strong>Análise de gastos</strong>, com o cartão Dinheiro (caixa) e o filtro Só dinheiro.</li>
+                <li>Entram no <strong>Fechamento do mês</strong> para o contador, com a foto do cupom no ZIP.</li>
+                <li>Aparecem no <strong>resumo de sexta-feira</strong>.</li>
+                <li>Os cupons ficam na busca de <strong>Comprovantes</strong>.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="secao" id="diesel">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Módulo · Diesel</p>
+            <h2>Quanto de diesel ainda há no posto, e qual máquina está bebendo mais</h2>
+            <p class="lide">Para quem compra combustível adiantado no posto e abastece caminhões e máquinas ao longo da semana. O Fin Pro controla as compras, cada abastecimento, o saldo em reais, o consumo por máquina e manda o relatório sozinho.</p>
+          </div>
+
+          <div class="destaque">
+            <h3>O saldo é em dinheiro, e a conta é esta</h3>
+            <p class="formula">saldo = total pago nas compras − (litros × preço do combustível) de cada abastecimento</p>
+            <p>A compra funciona como um crédito no posto que serve para Diesel S10 e para Diesel comum, e cada um tem o seu preço. Exemplo: R$ 7.450,00 pagos; saem 200 L de comum a R$ 6,75 (R$ 1.350,00) e 200 L de S10 a R$ 7,45 (R$ 1.490,00). O saldo fica em <strong>R$ 4.610,00</strong>, e a tela mostra quantos litros de cada combustível ele ainda compra.</p>
+          </div>
+
+          <figure class="tela" data-galeria>
+            <div class="abas" role="tablist" aria-label="Telas do Diesel">
+              <button type="button" role="tab" aria-selected="true" data-img="img/diesel-mes.webp" data-alt="Painel do diesel no mês com saldo, comprado, abastecido, preço do litro e consumo por máquina" data-legenda="Painel do mês: saldo em reais com os litros equivalentes, comprado, abastecido, preço do litro e o consumo de cada máquina.">Painel do mês</button>
+              <button type="button" role="tab" aria-selected="false" data-img="img/diesel-relatorios-mes.webp" data-alt="Relatório simples do diesel em frases, com quatro números e o gasto por máquina" data-legenda="Relatório Simples: o mês em frases, quatro números e quanto cada máquina gastou.">Relatório simples</button>
+              <button type="button" role="tab" aria-selected="false" data-img="img/diesel-detalhado-mes-2.webp" data-alt="Relatório detalhado do diesel com comparação com o mês anterior, gráfico por dia e tabela por máquina" data-legenda="Relatório Detalhado: comparação com o mês anterior, valor por dia separado por combustível e a tabela por máquina com consumo e variação.">Relatório detalhado</button>
+            </div>
+            <div class="janela">
+              <div class="janela-barra"><i></i><i></i><i></i><span>Fin Pro · Diesel</span></div>
+              <button class="ampliar" type="button" data-ampliar="img/diesel-mes.webp" data-legenda="Painel do mês: saldo em reais com os litros equivalentes, comprado, abastecido, preço do litro e o consumo de cada máquina."><img src="img/diesel-mes.webp" width="1600" height="1000" loading="lazy" alt="Painel do diesel no mês com saldo, comprado, abastecido, preço do litro e consumo por máquina"></button>
+            </div>
+            <figcaption>Painel do mês: saldo em reais com os litros equivalentes, comprado, abastecido, preço do litro e o consumo de cada máquina.</figcaption>
+          </figure>
+
+          <div class="blocos">
+            <article class="bloco">
+              <h3>Saldo e última compra</h3>
+              <ul>
+                <li>Saldo em <strong>R$</strong>, com quantos litros ele ainda compra de cada combustível pelo preço atual.</li>
+                <li><strong>Última compra:</strong> valor pago e quanto já foi abastecido desde então, com barra de progresso.</li>
+                <li>Compras de S10 e de comum no mesmo dia contam como uma só.</li>
+                <li>Abastecimento sem valor no canhoto usa o preço da tabela; sem tabela, o preço médio das compras.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Combustíveis e preços</h3>
+              <ul>
+                <li>Reconhece <strong>Diesel S10</strong>, <strong>Diesel comum (S500)</strong>, <strong>Gasolina</strong>, <strong>Etanol</strong> e <strong>Arla 32</strong>, mesmo escrito grudado.</li>
+                <li>Cartão <strong>Preço do litro</strong> para informar o preço de cada combustível.</li>
+                <li>Se o canhoto traz o preço, vale o dele. Em todo formulário, litros × preço preenche o total.</li>
+                <li>Cada máquina tem o <strong>combustível que usa</strong>, que completa o canhoto que não diz qual é.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Painel do diesel</h3>
+              <ul>
+                <li>Períodos <strong>Semana, Quinzena, Mês e Ano</strong>.</li>
+                <li><strong>Comprado</strong> e <strong>Abastecido</strong> no período, em R$ e litros, com litros por dia e a divisão entre S10 e comum.</li>
+                <li><strong>Consumo por máquina:</strong> litros, R$, % do total, número de abastecimentos e consumo em L/h ou km/L.</li>
+                <li><strong>Lançamentos</strong> com data, hora, máquina ou posto, pedido, combustível, litros, horímetro ou km, valor, preço por litro, quem abasteceu e quem lançou.</li>
+                <li>Ver canhoto, histórico, editar e cancelar.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Lançar pela tela</h3>
+              <ul>
+                <li><strong>Enviar canhoto ou comprovante</strong>, ou arrastar o arquivo para a tela.</li>
+                <li>O formulário abre <strong>já preenchido</strong> para conferir.</li>
+                <li><strong>Canhoto com várias linhas:</strong> cada linha vira um abastecimento e pode ir para uma máquina diferente.</li>
+                <li>O leitor confere <strong>litros × preço = total</strong> em cada linha e acerta números tortos da foto pelos totais do rodapé.</li>
+                <li>Na compra, o posto vem do <strong>favorecido do comprovante</strong> do banco.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Máquinas</h3>
+              <ul>
+                <li>Cadastro com nome, tipo (caminhão, máquina, veículo, gerador ou outro), placa ou prefixo e observações.</li>
+                <li><strong>Medidor:</strong> horímetro, hodômetro ou nenhum.</li>
+                <li>Combustível que usa e situação.</li>
+                <li><strong>Média dos últimos 30 dias</strong> de cada uma.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Bot do diesel</h3>
+              <ul>
+                <li>Lê o <strong>canhoto</strong>: combustíveis, litros e, quando aparecem, data, posto, placa e horímetro ou km.</li>
+                <li>Manda a foto para o <strong>responsável</strong>, que escolhe a máquina em botões. As que usam aquele combustível vêm primeiro, e o caminhão da placa já vem marcado.</li>
+                <li>Pede o horímetro ou km, com a opção Pular.</li>
+                <li>Botões para cadastrar máquina nova, corrigir os litros e escolher o combustível.</li>
+                <li>Responde com o lançamento, o <strong>saldo em R$</strong> e a <strong>média da máquina</strong>. Quem mandou o canhoto também é avisado.</li>
+                <li><strong>Comprovante de compra:</strong> lê valor, litros e combustível e soma ao saldo.</li>
+                <li><strong>Aviso de diesel acabando</strong> quando o saldo fica abaixo do limite, que vem em R$ 1.000 e pode ser mudado.</li>
+              </ul>
+            </article>
+            <article class="bloco largo">
+              <h3>Relatórios em três níveis</h3>
+              <div class="rolagem">
+                <table>
+                  <thead><tr><th>Nível</th><th>Para quem</th><th>O que mostra</th></tr></thead>
+                  <tbody>
+                    <tr><th>Simples</th><td>Quem quer a resposta em um minuto</td><td>O período em frases ("Foram abastecidos R$ 17.093,27 em 15 abastecimentos", "−33% em relação ao mês anterior", "o saldo dá para uns 7 dias", "quem mais gastou"), quatro números e quanto cada máquina gastou. Um botão avisa quando há pontos de atenção.</td></tr>
+                    <tr><th>Detalhado</th><td>Quem acompanha a frota</td><td>Tudo do simples, mais os pontos de atenção, a comparação com o período anterior (valor, litros, abastecimentos e R$ médio por litro), o gráfico por dia separado por combustível, a tabela por máquina (litros, R$, R$/L, %, litros por dia, média por abastecimento, consumo, variação e último), por combustível e as compras.</td></tr>
+                    <tr><th>Completo</th><td>Quem precisa auditar</td><td>Tudo do detalhado, mais cada abastecimento agrupado por máquina com o consumo do trecho desde o abastecimento anterior, o dia a dia, por posto e quem abasteceu, com o link do canhoto.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+            <article class="bloco">
+              <h3>Pontos de atenção que ele aponta sozinho</h3>
+              <ul>
+                <li>Saldo <strong>negativo</strong> (falta lançar uma compra?) ou <strong>abaixo do limite</strong>.</li>
+                <li>Máquina que consumiu <strong>bem acima do costume</strong> dela, pela média dos 90 dias anteriores, só depois de 14 dias de histórico.</li>
+                <li>Abastecimentos <strong>sem horímetro ou km</strong> em máquinas que usam medidor.</li>
+                <li>Abastecimentos <strong>sem preço</strong>, com valor estimado pela tabela.</li>
+                <li>Máquinas <strong>sem abastecimento</strong> no período.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Previsão e filtros</h3>
+              <ul>
+                <li><strong>Quantos dias o saldo dura</strong> no ritmo dos últimos 30 dias, e em que data acaba.</li>
+                <li>Filtros por máquina e por combustível nos níveis Detalhado e Completo.</li>
+                <li>O sistema lembra o último nível escolhido.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>No Telegram e no Excel</h3>
+              <ul>
+                <li><strong>Enviar no Telegram</strong> manda o relatório no nível que está na tela.</li>
+                <li><code>/relatorio</code>, <code>/relatorio mes</code>, <code>/relatorio quinzena detalhado</code>, <code>/relatorio ano completo</code>.</li>
+                <li><strong>Automáticos:</strong> semanal toda segunda, quinzenal nos dias 1 e 16 e mensal no dia 1, no horário e no nível que você escolher.</li>
+                <li><strong>Excel do período</strong>, sempre completo: Resumo, Máquinas, Por dia, Combustíveis, Por posto, Por pessoa, Abastecimentos, Compras e Pontos de atenção.</li>
+                <li>Outros comandos: <code>/saldo</code>, <code>/medias</code>, <code>/maquinas</code>.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+      <section class="secao" id="gastos">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Módulo · Gastos</p>
+            <h2>Para onde o dinheiro foi, e o pacote do contador com um clique</h2>
+            <p class="lide">Boletos, Pix e dinheiro do caixa somados por centro de custo, com os juros e multas em destaque. No fim do mês, um arquivo ZIP leva o PDF, a planilha e os comprovantes para a contabilidade.</p>
+          </div>
+          <figure class="tela" data-galeria>
+            <div class="abas" role="tablist" aria-label="Telas de Gastos">
+              <button type="button" role="tab" aria-selected="true" data-img="img/gastos.webp" data-alt="Análise de gastos com seis cartões, ranking por centro de custo e gráfico por mês" data-legenda="Análise de gastos: total, boletos, Pix, dinheiro, juros e multas, e o que ainda está sem centro de custo.">Análise de gastos</button>
+              <button type="button" role="tab" aria-selected="false" data-img="img/gastos-fechamento.webp" data-alt="Fechamento do mês com totais, tabela por centro de custo e lista de pagos" data-legenda="Fechamento do mês: total, pago, juros, em aberto, em atraso, quantos têm comprovante e os botões Excel, PDF e Pacote para o contador.">Fechamento do mês</button>
+            </div>
+            <div class="janela">
+              <div class="janela-barra"><i></i><i></i><i></i><span>Fin Pro · Gastos</span></div>
+              <button class="ampliar" type="button" data-ampliar="img/gastos.webp" data-legenda="Análise de gastos: total, boletos, Pix, dinheiro, juros e multas, e o que ainda está sem centro de custo."><img src="img/gastos.webp" width="1600" height="1000" loading="lazy" alt="Análise de gastos com seis cartões, ranking por centro de custo e gráfico por mês"></button>
+            </div>
+            <figcaption>Análise de gastos: total, boletos, Pix, dinheiro, juros e multas, e o que ainda está sem centro de custo.</figcaption>
+          </figure>
+          <div class="blocos">
+            <article class="bloco">
+              <h3>Análise de gastos</h3>
+              <ul>
+                <li><strong>Período:</strong> este mês, mês passado, 3 meses, 12 meses, este ano, ano passado, todo o período ou datas escolhidas.</li>
+                <li><strong>Qual data:</strong> vencimento, pagamento ou lançamento.</li>
+                <li><strong>Tipo:</strong> tudo, só boletos, só Pix ou só dinheiro.</li>
+                <li><strong>Situação:</strong> pagos e pendentes, só pagos ou só pendentes.</li>
+                <li>Cartões de <strong>Total gasto</strong>, <strong>Boletos</strong>, <strong>Pix</strong>, <strong>Dinheiro (caixa)</strong>, <strong>Juros e multas</strong> e <strong>Sem centro de custo</strong>.</li>
+                <li><strong>Por centro de custo:</strong> total, %, quantidade e quanto foi boleto, Pix e dinheiro.</li>
+                <li><strong>Gráfico por mês</strong>, empilhado por centro de custo.</li>
+                <li>Maiores beneficiários, detalhamento e <strong>exportação para Excel</strong>.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Fechamento do mês para o contador</h3>
+              <ul>
+                <li>Duas bases: <strong>tudo que vence no mês</strong> ou <strong>só o que foi pago no mês</strong>.</li>
+                <li>Cartões de Total, Pago, Juros e multas, Descontos, Em aberto, Em atraso e Comprovantes.</li>
+                <li><strong>Pagos:</strong> vencimento, beneficiário, centro, valor, juros/multa, desconto, valor pago, data com os dias de atraso, quem pagou e o comprovante.</li>
+                <li><strong>Em aberto</strong>, com a situação de cada um.</li>
+                <li>Inclui boletos, Pix e saídas do caixa.</li>
+                <li>Downloads em <strong>Excel</strong>, <strong>PDF</strong> e <strong>Pacote para o contador (.zip)</strong> com o PDF, a planilha e os comprovantes.</li>
+                <li>Os pagos sem comprovante vão listados num arquivo <code>SEM-COMPROVANTE.txt</code>.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Centros de custo</h3>
+              <ul>
+                <li>Criar, <strong>renomear</strong> e desativar. Ao renomear, os lançamentos antigos acompanham.</li>
+                <li>Escolhidos na leitura, na edição, em lote, no caixa e pelo bot do caixa.</li>
+                <li>Totais de uso de cada centro.</li>
+                <li>Alerta do que ainda está <strong>sem centro de custo</strong>, com o caminho para classificar.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="secao" id="relatorios">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Módulo · Relatórios <span class="selo">Em liberação</span></p>
+            <h2>Um relatório geral do mês e a porta de entrada para todos os outros</h2>
+            <p class="lide">A central de Relatórios já está construída e testada, e entra no menu na próxima atualização. Ela junta num lugar só os números do mês e os atalhos para cada relatório do sistema.</p>
+          </div>
+          <div class="blocos">
+            <article class="bloco">
+              <h3>Pagamentos do mês</h3>
+              <ul>
+                <li>Total pago, separado em <strong>boletos, Pix e dinheiro</strong>.</li>
+                <li><strong>Juros e multas</strong>, descontos e quantos foram pagos com atraso.</li>
+                <li>O que está em aberto, em atraso e a previsão de 7 e 30 dias.</li>
+                <li>Tabela dos juros pagos: beneficiário, vencimento, data, dias de atraso, valor, juros, centro e quem pagou.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Últimos 12 meses lado a lado</h3>
+              <ul>
+                <li>Boletos, Pix, dinheiro, total pago, juros e pagos com atraso, mês a mês.</li>
+                <li>Barra comparativa entre os meses.</li>
+                <li>Onde mais se pagou, por centro de custo.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Caixa, Diesel e Empresas no mesmo quadro</h3>
+              <ul>
+                <li><strong>Caixa:</strong> entradas, saídas e saldos.</li>
+                <li><strong>Diesel:</strong> comprado, abastecido, custo e saldo no posto.</li>
+                <li><strong>Empresas:</strong> faturado, falta receber, recebido no mês e cheques em carteira.</li>
+                <li>Cada pessoa só vê as partes que tem permissão.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Todos os relatórios</h3>
+              <ul>
+                <li>Atalhos com download para Fechamento do mês, Análise de gastos, Previsão de saídas, Caixa, Diesel, Fechamento das empresas e Comprovantes.</li>
+                <li>Prévia dos <strong>resumos de segunda e sexta</strong>.</li>
+                <li><strong>Excel do relatório geral:</strong> Resumo, Juros e multas e Últimos 12 meses.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="secao" id="empresas">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Módulo · Empresas</p>
+            <h2>O que os clientes a prazo devem, nota por nota, até o dia do fechamento</h2>
+            <p class="lide">Enquanto o resto do sistema cuida do que a empresa paga, este módulo cuida do que ela recebe de quem compra a prazo, por Pix, TED ou cheque pré-datado. O bot de notas lança, baixa e avisa.</p>
+          </div>
+          <figure class="tela" data-galeria>
+            <div class="abas" role="tablist" aria-label="Telas de Empresas">
+              <button type="button" role="tab" aria-selected="true" data-img="img/empresas.webp" data-alt="Fechamentos do mês por empresa, com total, já recebido, falta receber e cheques em carteira" data-legenda="Fechamentos: um cartão por empresa com o total do fechamento, o que falta receber, atrasados de fechamentos anteriores e cheques em carteira.">Fechamentos</button>
+              <button type="button" role="tab" aria-selected="false" data-img="img/empresas-notas.webp" data-alt="Lista de notas fiscais com material, quantidade, valores, número da nota, pedido e fechamento" data-legenda="Notas fiscais: uma linha por material, com unidade, quantidade, valor unitário, total, nota, pedido e o fechamento a que pertence.">Notas fiscais</button>
+              <button type="button" role="tab" aria-selected="false" data-img="img/empresas-cheques.webp" data-alt="Lista de cheques pré-datados em carteira com data, empresa, número, banco e valor" data-legenda="Cheques em carteira com a data do depósito, o banco, a cooperativa e o botão Depositei.">Cheques</button>
+            </div>
+            <div class="janela">
+              <div class="janela-barra"><i></i><i></i><i></i><span>Fin Pro · Empresas</span></div>
+              <button class="ampliar" type="button" data-ampliar="img/empresas.webp" data-legenda="Fechamentos: um cartão por empresa com o total do fechamento, o que falta receber, atrasados de fechamentos anteriores e cheques em carteira."><img src="img/empresas.webp" width="1600" height="1000" loading="lazy" alt="Fechamentos do mês por empresa, com total, já recebido, falta receber e cheques em carteira"></button>
+            </div>
+            <figcaption>Fechamentos: um cartão por empresa com o total do fechamento, o que falta receber, atrasados de fechamentos anteriores e cheques em carteira.</figcaption>
+          </figure>
+          <div class="blocos">
+            <article class="bloco largo">
+              <h3>O bot de notas reconhece sozinho o que é cada arquivo</h3>
+              <div class="rolagem">
+                <table>
+                  <thead><tr><th>O que chega</th><th>O que o sistema faz</th></tr></thead>
+                  <tbody>
+                    <tr><th>Nota fiscal</th><td>XML da NF-e, DANFE em PDF ou foto. Identifica a empresa pelo CNPJ, nome ou apelido, lança uma linha por material (data, material, unidade, quantidade, valor unitário, total, nota e pedido) e responde com o total e quanto falta.</td></tr>
+                    <tr><th>Cheque escaneado</th><td>Lê a foto nas quatro orientações, entende o "Bom para" escrito à mão, lê valor, banco, agência, cooperativa, conta e número pela linha CMC-7, descobre a empresa pelo CNPJ e pega a lista de pedidos escrita no verso.</td></tr>
+                    <tr><th>Comprovante de Pix, TED ou depósito</th><td>Dá baixa automática nas notas citadas e responde quanto ainda falta.</td></tr>
+                    <tr><th>Depósito de cheque</th><td>Reconhece que é o depósito de um cheque, acha o cheque pelo número e pelo valor e compensa o cheque certo.</td></tr>
+                    <tr><th>Print do fechamento</th><td>Lê a tabela linha por linha para conferir e importar um fechamento que já estava em andamento.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+            <article class="bloco">
+              <h3>Fechamentos</h3>
+              <ul>
+                <li>Cada empresa fecha no <strong>dia 20</strong>, ou no dia escolhido para ela. O fechamento de agosto vai de 21/07 a 20/08.</li>
+                <li>Escolher o mês mostra <strong>só aquele fechamento</strong>.</li>
+                <li>Cartão por empresa com total, recebido, <strong>o que falta</strong>, em cheque e atrasados de fechamentos anteriores.</li>
+                <li>Relatório em <strong>Excel e PDF</strong> com o cabeçalho da sua empresa e as colunas Data, Material, Unidade, Quantidade, Valor unitário, Valor total, Nota fiscal e Nº do pedido.</li>
+                <li><strong>No dia do fechamento</strong>, o bot envia sozinho o resumo de cada empresa.</li>
+                <li>Dá para <strong>mudar o fechamento de uma nota</strong>, movendo todas as linhas dela de uma vez.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Baixa automática</h3>
+              <ul>
+                <li>O valor recebido é dividido entre as notas citadas, <strong>da mais antiga para a mais nova</strong>.</li>
+                <li>Sem número de nota, baixa as mais antigas em aberto.</li>
+                <li>Valor que não cobre tudo deixa a nota <strong>Parcial</strong>, e o fechamento mostra a diferença.</li>
+                <li>Dinheiro que chega antes da nota vira <strong>crédito da empresa</strong> e baixa sozinho quando a nota chega.</li>
+                <li>Qualquer recebimento pode ser <strong>desfeito</strong>.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Cheques pré-datados</h3>
+              <ul>
+                <li>Guardados com número, data do depósito, banco, agência, cooperativa, conta, emitente, valor e CMC-7.</li>
+                <li>As notas dos pedidos do cheque ficam <strong>Em cheque</strong>.</li>
+                <li>Entram nos mesmos avisos dos boletos: <strong>"Cheque para depositar hoje"</strong>.</li>
+                <li>Botão <strong>Depositei:</strong> pede a data e, se quiser, o comprovante. O cheque é compensado e as notas viram Recebido.</li>
+                <li>Num recebimento lançado à mão, a opção "Cheque depositado" sugere o cheque certo.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Notas, recebimentos e conferência</h3>
+              <ul>
+                <li><strong>Notas fiscais:</strong> filtros por empresa, fechamento e situação; editar, mover de fechamento e excluir.</li>
+                <li><strong>Recebimentos:</strong> Pix, TED ou depósito com nota, pedidos, pagador, data e hora, valor e ID da transação.</li>
+                <li><strong>Conferência:</strong> o que o robô não teve certeza espera você confirmar ou descartar.</li>
+                <li><strong>Bot de notas:</strong> token próprio, quem pode enviar, o nome e o CNPJ da sua empresa e o dia do fechamento.</li>
+                <li>Comandos <code>/fechamento</code>, <code>/empresas</code>, <code>/cheques</code> e <code>/notas</code>.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+      <section class="secao" id="notificacoes">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Módulo · Notificações</p>
+            <h2>Boleto vencido por esquecimento deixa de acontecer</h2>
+            <p class="lide">Lembretes antes, no dia e depois do vencimento, nos horários que você escolher, pelo Windows, pelo Telegram e por e-mail. Valem para boletos, Pix e cheques a depositar, e param sozinhos quando o lançamento é pago.</p>
+          </div>
+          <figure class="tela">
+            <div class="janela">
+              <div class="janela-barra"><i></i><i></i><i></i><span>Fin Pro · Notificações</span></div>
+              <button class="ampliar" type="button" data-ampliar="img/notificacoes.webp" data-legenda="Avisos de vencimento: dias da semana, agenda dos próximos lembretes e cada lembrete com os seus horários e canais."><img src="img/notificacoes.webp" width="1600" height="1000" loading="lazy" alt="Tela Notificações com os dias da semana dos avisos, a agenda dos próximos lembretes e a configuração de horários e canais"></button>
+            </div>
+            <figcaption>Avisos de vencimento: dias da semana, agenda dos próximos lembretes e cada lembrete com os seus horários e canais.</figcaption>
+          </figure>
+          <div class="blocos">
+            <article class="bloco largo">
+              <h3>Três tipos de lembrete</h3>
+              <div class="rolagem">
+                <table>
+                  <thead><tr><th>Lembrete</th><th>Como vem</th><th>O que dá para mudar</th></tr></thead>
+                  <tbody>
+                    <tr><th>No dia do vencimento</th><td>3 vezes: 08:00, 12:00 e 16:00</td><td>Atalhos para 1, 3 ou 5 vezes, ou horários livres</td></tr>
+                    <tr><th>Antes do vencimento</th><td>1 dia e 3 dias antes, às 09:00</td><td>Crie quantos quiser, com quantos dias de antecedência precisar</td></tr>
+                    <tr><th>Depois de vencido</th><td>Todo dia às 09:00, por até 30 dias</td><td>Quantidade de dias, ou até pagar</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+            <article class="bloco">
+              <h3>Regras que evitam ruído</h3>
+              <ul>
+                <li>Cada lembrete tem os seus <strong>canais</strong> e os <strong>dias da semana</strong> em que avisa.</li>
+                <li>Param quando o lançamento é pago, inclusive pelo botão <strong>Já paguei</strong> da notificação do Windows.</li>
+                <li>O sistema confere a cada minuto. Se o computador estava desligado, manda só o lembrete mais recente.</li>
+                <li>Vencimento no fim de semana avisa que pode ser pago no próximo dia útil.</li>
+                <li><strong>Próximos lembretes:</strong> agenda dos próximos 7 dias.</li>
+                <li><strong>Histórico de avisos</strong> com cada envio, e <strong>Enviar agora</strong> para testar.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Três canais</h3>
+              <ul>
+                <li><strong>Windows:</strong> já vem ligado. Clicar na notificação abre a tela certa.</li>
+                <li><strong>Telegram:</strong> várias pessoas e grupos do escritório. Cada pessoa manda <code>/start</code>, e você marca quem recebe.</li>
+                <li><strong>E-mail:</strong> Gmail, Outlook ou Yahoo, com senha de app e vários destinatários.</li>
+                <li>As mensagens trazem a <strong>linha digitável só com números</strong> e o <strong>Pix Copia e Cola</strong>, prontos para pagar pelo celular.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Resumo de segunda-feira</h3>
+              <ul>
+                <li>Sai às 08:00, no horário e nos canais que você escolher.</li>
+                <li>Boletos e Pix que <strong>vencem na semana</strong>.</li>
+                <li>Vencidos em aberto e cheques a depositar.</li>
+                <li>Fechamentos das empresas que caem na semana e quanto elas devem.</li>
+                <li>Saldo do caixa.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Resumo de sexta-feira</h3>
+              <ul>
+                <li>Sai às 17:00.</li>
+                <li>Quanto foi <strong>pago na semana</strong> em boletos, Pix e saídas do caixa.</li>
+                <li>Os maiores pagamentos e os <strong>juros e multas</strong>: quais e com quantos dias de atraso.</li>
+                <li>Descontos e onde mais se gastou.</li>
+                <li>O que entrou pelo caixa e pelas empresas, e o que ficou pendente.</li>
+                <li>Botões <strong>Ver como fica</strong> e <strong>Enviar agora</strong>.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="secao" id="bots">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Telegram</p>
+            <h2>Quatro bots para lançar sem abrir o computador</h2>
+            <p class="lide">Quem está na rua fotografa e manda. Cada bot tem o seu token, só aceita arquivos das pessoas cadastradas e nunca lança às cegas: o que ele não tem certeza espera na Conferência da tela.</p>
+          </div>
+
+          <div class="conversas">
+            <div class="conversa">
+              <h3>Bot dos boletos</h3>
+              <p class="balao eu"><span class="anexo"><svg class="ic" aria-hidden="true"><use href="#i-clipe"/></svg>comprovante.pdf</span></p>
+              <p class="balao">✅ Pagamento registrado: AUTO PEÇAS CENTRAL LTDA<br>Valor do boleto: R$ 270,35 · Valor pago: R$ 275,75 em 15/10/2026<br>Juros/multa: R$ 5,40 (5 dias de atraso)</p>
+              <p class="balao eu"><code>/semana</code></p>
+              <p class="balao">Vencem nesta semana: 4 lançamentos, R$ 5.814,30. O primeiro é amanhã.</p>
+            </div>
+            <div class="conversa">
+              <h3>Bot do diesel</h3>
+              <p class="balao eu"><span class="anexo"><svg class="ic" aria-hidden="true"><use href="#i-foto"/></svg>canhoto.jpg</span></p>
+              <p class="balao">Diesel S10 · 180 L: de qual máquina?<span class="teclas"><span>Escavadeira PC200</span><span>Caminhão Volvo FMX</span><span>Cadastrar máquina</span></span></p>
+              <p class="balao eu">Escavadeira PC200</p>
+              <p class="balao">✅ 180 L de Diesel S10 em Escavadeira PC200 · horímetro 4.520<br>Saldo do diesel: R$ 4.911,80<br>Média da máquina: 385 L/semana · 55 L/dia</p>
+            </div>
+            <div class="conversa">
+              <h3>Bot do caixa</h3>
+              <p class="balao eu"><span class="anexo"><svg class="ic" aria-hidden="true"><use href="#i-foto"/></svg>cupom.jpg</span></p>
+              <p class="balao">Li R$ 172,63 em 07/10. Onde foi gasto?<span class="teclas"><span>Usar "Borracharia do Tião"</span></span></p>
+              <p class="balao">Qual é o centro de custo?<span class="teclas"><span>Combustível e Veículos</span><span>Manutenção</span><span>Escritório</span><span>Cadastrar novo</span></span></p>
+              <p class="balao">Pronto. O gasto está em Caixa → Conferência, já preenchido.</p>
+            </div>
+            <div class="conversa">
+              <h3>Bot de notas</h3>
+              <p class="balao eu"><span class="anexo"><svg class="ic" aria-hidden="true"><use href="#i-relatorio"/></svg>nota-7228.xml</span></p>
+              <p class="balao">NF 7228 lançada para Terraplanagem Souza: 26 m³ de Rachão · R$ 2.506,40.<br>Fechamento de outubro: total R$ 9.061,60, falta R$ 9.061,60.</p>
+              <p class="balao eu"><span class="anexo"><svg class="ic" aria-hidden="true"><use href="#i-foto"/></svg>comprovante-pix.jpg</span></p>
+              <p class="balao">✅ Recebimento de R$ 2.506,40 registrado. NF 7228 baixada.<br>Ainda falta R$ 6.555,20 neste fechamento.</p>
+            </div>
+          </div>
+          <p class="lide" style="font-size:.9rem">Conversas de exemplo, com nomes e valores fictícios.</p>
+
+          <div class="rolagem">
+            <table>
+              <caption>O que cada bot recebe e responde</caption>
+              <thead><tr><th>Bot</th><th>Quem usa</th><th>Recebe</th><th>Comandos</th></tr></thead>
+              <tbody>
+                <tr><th>Boletos</th><td>Pessoas e grupos cadastrados em Notificações</td><td>Boletos em PDF ou foto e comprovantes de pagamento. Também envia os lembretes e os resumos de segunda e sexta.</td><td><code>/vencidos</code> <code>/hoje</code> <code>/semana</code> <code>/previsao</code> <code>/resumo</code> <code>/buscar nome</code> <code>/ajuda</code></td></tr>
+                <tr><th>Notas</th><td>Quem está cadastrado em Empresas</td><td>Notas fiscais, cheques, comprovantes de recebimento, depósitos de cheque e prints de fechamento</td><td><code>/fechamento empresa</code> <code>/empresas</code> <code>/cheques</code> <code>/notas empresa</code> <code>/ajuda</code></td></tr>
+                <tr><th>Caixa</th><td>As pessoas dos bots de boletos e de notas</td><td>Cupons e notas de compras em dinheiro</td><td><code>/resumo</code> <code>/cancelar</code> <code>/ajuda</code></td></tr>
+                <tr><th>Diesel</th><td>As pessoas dos bots de boletos e de notas</td><td>Canhotos de abastecimento e comprovantes de compra no posto</td><td><code>/saldo</code> <code>/medias</code> <code>/relatorio</code> <code>/maquinas</code> <code>/cancelar</code> <code>/ajuda</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="blocos">
+            <article class="bloco">
+              <h3>Regras que valem para todos</h3>
+              <ul>
+                <li>Arquivo de quem <strong>não está cadastrado</strong> é recusado.</li>
+                <li>Arquivo <strong>repetido</strong> é reconhecido.</li>
+                <li>O que o robô não tem certeza vai para a <strong>Conferência</strong>.</li>
+                <li>Cada bot tem o seu token, criado no @BotFather, e aparece mascarado nas telas.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Relatórios que chegam sozinhos</h3>
+              <ul>
+                <li>Lembretes de vencimento com a linha pronta para pagar.</li>
+                <li>Resumo de segunda e de sexta.</li>
+                <li>Relatório do diesel semanal, quinzenal e mensal.</li>
+                <li>Aviso de diesel acabando.</li>
+                <li>Fechamento de cada empresa no dia do fechamento.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+      <section class="secao" id="acesso">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Celular e aplicativo</p>
+            <h2>Um aplicativo de Windows que também abre no celular</h2>
+            <p class="lide">No computador, o Fin Pro tem janela própria e fica na bandeja avisando. No celular, ele abre pela rede Wi-Fi do escritório, com senha, e a câmera vira o scanner de boletos.</p>
+          </div>
+          <div class="celulares">
+              <div class="celular"><img src="img/celular-painel.webp" width="640" height="1385" loading="lazy" alt="Painel do Fin Pro na tela de um celular"></div>
+              <div class="celular"><img src="img/celular-ler.webp" width="640" height="1385" loading="lazy" alt="Tela Ler boletos no celular, com o botão Tirar foto do boleto em destaque"></div>
+              <div class="celular"><img src="img/celular-diesel.webp" width="640" height="1385" loading="lazy" alt="Módulo Diesel no celular, com saldo e botão de enviar canhoto"></div>
+          </div>
+          <div class="blocos">
+              <article class="bloco">
+                <h3>Pelo celular, na rede Wi-Fi</h3>
+                <ul>
+                  <li><strong>Liga e desliga por uma chave</strong>, sem reiniciar o sistema.</li>
+                  <li><strong>Senha de acesso</strong> obrigatória, pedida uma vez em cada aparelho e válida por 30 dias.</li>
+                  <li><strong>QR code</strong> na tela para abrir o endereço no celular.</li>
+                  <li>Lista dos <strong>aparelhos conectados</strong> com sistema, navegador e horário, e o botão Sair deste aparelho.</li>
+                  <li>Se o endereço do computador mudar, o acesso reabre sozinho no endereço novo.</li>
+                  <li>No celular, a leitura, a revisão e os lançamentos funcionam igual, com <strong>Tirar foto do boleto</strong> em destaque.</li>
+                  <li>Pode ser adicionado à tela inicial do celular, como um aplicativo.</li>
+                </ul>
+              </article>
+              <article class="bloco">
+                <h3>No computador</h3>
+                <ul>
+                  <li><strong>Janela própria</strong>, com atalhos na Área de Trabalho e no Menu Iniciar.</li>
+                  <li><strong>Inicia junto com o Windows</strong>, se quiser já minimizado na bandeja, para os lembretes nunca deixarem de chegar.</li>
+                  <li>Fechar no X <strong>esconde na bandeja</strong> e o sistema continua avisando.</li>
+                  <li>Clicar numa notificação traz o aplicativo na tela certa.</li>
+                  <li><strong>Tema claro e tema escuro</strong>.</li>
+                  <li>Arrastar um arquivo para qualquer tela já começa a leitura.</li>
+                </ul>
+              </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="secao" id="usuarios">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Usuários e permissões</p>
+            <h2>Cada pessoa entra com o seu usuário e só vê o que foi liberado</h2>
+            <p class="lide">O administrador cadastra as pessoas e marca o que cada uma pode fazer. O sistema registra quem lançou, quem pagou e quem alterou cada coisa.</p>
+          </div>
+          <div class="rolagem">
+            <table>
+              <caption>As nove permissões</caption>
+              <thead><tr><th>Permissão</th><th>O que libera</th></tr></thead>
+              <tbody>
+                <tr><th>Lançar</th><td>Ler arquivos e lançar boletos e Pix</td></tr>
+                <tr><th>Dar baixa</th><td>Marcar como pago e anexar comprovante</td></tr>
+                <tr><th>Editar e excluir</th><td>Editar e excluir lançamentos</td></tr>
+                <tr><th>Gastos</th><td>Análise de gastos e fechamento do mês</td></tr>
+                <tr><th>Empresas</th><td>Notas fiscais, cheques, recebimentos e fechamentos</td></tr>
+                <tr><th>Caixa</th><td>Entradas e saídas em dinheiro</td></tr>
+                <tr><th>Diesel</th><td>Compras, abastecimentos, máquinas e relatórios do diesel</td></tr>
+                <tr><th>Avisos</th><td>Configurar os lembretes</td></tr>
+                <tr><th>Configurações</th><td>Backup, bots, importação e acesso pela rede</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="blocos">
+            <article class="bloco">
+              <h3>Dois perfis</h3>
+              <ul>
+                <li><strong>Administrador:</strong> pode tudo, inclusive cadastrar usuários e mudar permissões.</li>
+                <li><strong>Comum:</strong> só o que estiver marcado. Painel, boletos e Pix podem ser vistos por todos.</li>
+                <li>O sistema nunca fica <strong>sem administrador</strong>: o último não pode ser excluído, desativado nem rebaixado.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Permissão de verdade</h3>
+              <ul>
+                <li>Quem não tem a permissão <strong>nem vê</strong> a opção no menu.</li>
+                <li>O servidor <strong>recusa</strong> o pedido, mesmo que alguém tente pelo endereço.</li>
+                <li>Na busca de Comprovantes, cada pessoa só encontra os tipos das telas que pode usar.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Quem fez o quê</h3>
+              <ul>
+                <li>A planilha registra <strong>Lançado por</strong> e <strong>Pago por</strong>.</li>
+                <li>O <strong>Histórico</strong> de cada lançamento mostra todas as alterações e o usuário.</li>
+                <li>Cada pessoa troca a própria senha.</li>
+                <li>Opção de <strong>pedir usuário e senha toda vez</strong> que o aplicativo abrir.</li>
+                <li>Desativar alguém ou trocar a senha desconecta os aparelhos dessa pessoa.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="secao" id="seguranca">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Segurança</p>
+            <h2>Os dados do seu financeiro ficam no seu computador</h2>
+            <p class="lide">O Fin Pro não depende de um serviço na nuvem para funcionar. Bancos de dados, planilhas, boletos e comprovantes ficam numa pasta do computador do escritório, e você decide para onde vai a cópia de segurança.</p>
+          </div>
+          <div class="blocos">
+            <article class="bloco">
+              <h3>Senhas</h3>
+              <ul>
+                <li>Senhas de usuários, de administrador e de acesso pela rede guardadas <strong>somente em hash</strong> (PBKDF2-SHA256).</li>
+                <li><strong>5 senhas erradas</strong> bloqueiam o aparelho por 5 minutos.</li>
+                <li>A área de administrador fecha sozinha depois de <strong>20 minutos</strong> sem uso.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Acesso</h3>
+              <ul>
+                <li>Por padrão o sistema atende só o <strong>próprio computador</strong>.</li>
+                <li>O acesso pela rede só abre quando você liga, e exige senha.</li>
+                <li>Permissões conferidas <strong>no servidor</strong>, não apenas na tela.</li>
+                <li>Ligar o acesso pela rede, trocar a senha, configurar o backup e abrir a planilha só podem ser feitos no próprio computador.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>O que sai do computador</h3>
+              <ul>
+                <li>As mensagens que você mesmo configurou: <strong>Telegram</strong> e <strong>e-mail</strong>.</li>
+                <li>A cópia de segurança, para a <strong>pasta que você escolher</strong>.</li>
+                <li>A análise com <strong>IA</strong>, só quando está ligada e alguém aciona.</li>
+                <li>Tokens dos bots aparecem <strong>mascarados</strong> nas telas.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Nada se perde em silêncio</h3>
+              <ul>
+                <li>Boleto e Pix <strong>duplicados</strong> são bloqueados.</li>
+                <li>Cada alteração entra no <strong>histórico</strong>, com usuário e horário.</li>
+                <li>Toda baixa automática pode ser <strong>desfeita</strong>.</li>
+                <li>A <strong>Saúde do sistema</strong> avisa quando algo para de funcionar.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+      <section class="secao" id="backup">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Backup total e controle de versão</p>
+            <h2>Se o computador quebrar amanhã, o sistema inteiro volta com dois cliques</h2>
+            <p class="lide">O backup leva tudo o que é preciso para reerguer o Fin Pro em outro computador: dados, comprovantes, configurações, o próprio programa e o histórico de versões. E ele se confere sozinho depois de cada cópia.</p>
+          </div>
+          <figure class="tela" data-galeria>
+            <div class="abas" role="tablist" aria-label="Telas de Configurações">
+              <button type="button" role="tab" aria-selected="true" data-img="img/config.webp" data-alt="Configurações com o aplicativo no computador e o cartão Versão do sistema com o histórico" data-legenda="Configurações, aba Geral: opções do aplicativo e o cartão Versão do sistema, com a versão em uso e o que mudou em cada uma.">Versão do sistema</button>
+              <button type="button" role="tab" aria-selected="false" data-img="img/config-saude.webp" data-alt="Saúde do sistema com cada parte marcada como funcionando ou desligada" data-legenda="Saúde do sistema: banco de dados e planilha, empresas, bots, lembretes, gravações, leitura, espaço em disco e backup, cada um com a sua situação.">Saúde do sistema</button>
+            </div>
+            <div class="janela">
+              <div class="janela-barra"><i></i><i></i><i></i><span>Fin Pro · Configurações</span></div>
+              <button class="ampliar" type="button" data-ampliar="img/config.webp" data-legenda="Configurações, aba Geral: opções do aplicativo e o cartão Versão do sistema, com a versão em uso e o que mudou em cada uma."><img src="img/config.webp" width="1600" height="1000" loading="lazy" alt="Configurações com o aplicativo no computador e o cartão Versão do sistema com o histórico"></button>
+            </div>
+            <figcaption>Configurações, aba Geral: opções do aplicativo e o cartão Versão do sistema, com a versão em uso e o que mudou em cada uma.</figcaption>
+          </figure>
+          <div class="blocos">
+            <article class="bloco largo">
+              <h3>O que vai no backup</h3>
+              <div class="rolagem">
+                <table>
+                  <thead><tr><th>Parte</th><th>O que guarda</th><th>Como é copiada</th></tr></thead>
+                  <tbody>
+                    <tr><th>Bancos e planilhas</th><td>Os três bancos de dados (boletos, empresas e diesel) e as planilhas Excel</td><td>Uma cópia por dia, guardando os últimos 30 dias (ajustável)</td></tr>
+                    <tr><th>Arquivos</th><td>Boletos, comprovantes, cupons do caixa, canhotos, cheques e notas</td><td>Só o que é novo ou mudou</td></tr>
+                    <tr><th>Configurações</th><td>Lembretes, usuários, bots, preços e modelos de importação</td><td>Sempre</td></tr>
+                    <tr><th>Código-fonte</th><td>O programa inteiro</td><td>Só o que mudou. O que saiu do sistema sai do backup.</td></tr>
+                    <tr><th>Versões</th><td>Todo o histórico de versões num arquivo, e a versão em uso</td><td>A cada backup</td></tr>
+                    <tr><th>Pacote completo</th><td>Tudo isso num único arquivo .zip, bom para um pen drive</td><td>Toda semana ou todo mês, ou pelo botão. Guarda os últimos 4.</td></tr>
+                    <tr><th>Manifesto</th><td>A lista de todos os arquivos, com a impressão digital (SHA-256) de cada um</td><td>A cada backup</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+            <article class="bloco">
+              <h3>Onde e quando</h3>
+              <ul>
+                <li>Numa pasta do <strong>OneDrive</strong>, <strong>Google Drive</strong> ou <strong>Dropbox</strong>, num <strong>pen drive</strong> ou num <strong>HD externo</strong>. O sistema sugere as pastas de nuvem que encontra no computador.</li>
+                <li><strong>Todo dia</strong>, no horário escolhido. Se o computador estava desligado, faz assim que abrir.</li>
+                <li>Botões <strong>Fazer backup agora</strong>, <strong>Gerar pacote completo (.zip)</strong> e <strong>Verificar backup</strong>.</li>
+                <li>O menu mostra <strong>Backup em dia</strong>, <strong>atrasado</strong> (mais de 2 dias) ou <strong>desligado</strong>.</li>
+                <li>Além disso, uma cópia diária interna é mantida por 30 dias.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Conferência automática</h3>
+              <ul>
+                <li>Depois de cada backup, o sistema abre os bancos copiados e confere se estão <strong>íntegros</strong>.</li>
+                <li>Confere se <strong>nenhum comprovante ficou de fora</strong> e se o código e as versões estão lá.</li>
+                <li><strong>Verificar backup</strong> faz a conferência completa, arquivo por arquivo, comparando a impressão digital.</li>
+                <li>Se algo não bater, o cartão mostra o que foi e a Saúde do sistema fica em <strong>Problema</strong>.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Restauração</h3>
+              <ul>
+                <li>Num computador novo, instale o Python, abra a pasta do backup e dê dois cliques em <code>RESTAURAR.bat</code>.</li>
+                <li>Funciona a partir da pasta do backup ou de um <strong>pacote .zip</strong>.</li>
+                <li>Volta o sistema inteiro: programa, dados, comprovantes, configurações e versões.</li>
+                <li>Se a pasta de destino já tiver dados, ele <strong>para</strong> em vez de sobrescrever.</li>
+                <li>O restaurador usa só o que já vem com o Python, para rodar antes de instalar qualquer coisa.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Controle de versão</h3>
+              <ul>
+                <li>Cada versão do programa é guardada com <strong>número</strong>, <strong>data</strong> e a <strong>lista do que mudou</strong>.</li>
+                <li>O cartão <strong>Versão do sistema</strong> mostra a versão em uso, o histórico e se há alteração ainda não guardada.</li>
+                <li>Dá para <strong>comparar</strong> duas versões e <strong>voltar</strong> a qualquer uma.</li>
+                <li>Voltar não apaga nada: o código antigo vira uma versão nova, e <strong>os dados não são tocados</strong>.</li>
+                <li>As versões guardam só o programa, sem dados, senhas ou tokens.</li>
+                <li>Os testes automáticos rodam antes de cada versão ser guardada.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Saúde do sistema</h3>
+              <ul>
+                <li>Diagnóstico de banco de dados e planilha, empresas, caixa, diesel, lembretes, backup, recebimento por e-mail e Telegram, gravações pendentes, leitura, espaço em disco e acesso pela rede.</li>
+                <li>Cada item fica <strong>Funcionando</strong>, <strong>Atenção</strong>, <strong>Problema</strong> ou <strong>Desligado</strong>, com o botão que resolve ao lado.</li>
+                <li>Ações <strong>Atualizar a planilha agora</strong> e <strong>Limpar os logs</strong>.</li>
+                <li>O registro de funcionamento tem limite de tamanho e gira sozinho.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="secao" id="dados">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Dados e planilha</p>
+            <h2>Banco de dados por baixo, planilha Excel sempre pronta por cima</h2>
+            <p class="lide">Você não precisa abandonar o Excel. Os dados ficam em bancos SQLite, com gravação instantânea e segura, e as planilhas são geradas sozinhas poucos segundos depois de cada alteração.</p>
+          </div>
+          <div class="blocos">
+            <article class="bloco">
+              <h3>A planilha continua existindo</h3>
+              <ul>
+                <li><code>boletos.xlsx</code> com as abas Boletos, Pix, Caixa, Centros de Custo, Resumo e Histórico.</li>
+                <li><code>fechamentos.xlsx</code> com Empresas, Notas Fiscais, Cheques, Recebimentos e Histórico.</li>
+                <li><code>diesel.xlsx</code> com máquinas, compras e abastecimentos.</li>
+                <li>Cada lançamento tem o <strong>link clicável</strong> para o arquivo original.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Aberta no Excel não trava nada</h3>
+              <ul>
+                <li>Pode deixar a planilha aberta: o sistema continua gravando no banco e atualiza o arquivo quando ele for fechado.</li>
+                <li><strong>Edições feitas no Excel</strong> em lançamentos existentes voltam para o sistema.</li>
+                <li>O que foi gravado no sistema nesse meio-tempo não é desfeito.</li>
+                <li>Botões <strong>Abrir planilha</strong>, <strong>Abrir pasta de dados</strong> e <strong>Baixar cópia</strong>.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Onde fica cada coisa</h3>
+              <ul>
+                <li>Uma pasta <code>dados</code> no computador, com os três bancos, as planilhas e a pasta <code>arquivos</code> com os PDFs e fotos originais.</li>
+                <li>Configurações em arquivos separados: lembretes, usuários, bots, backup, rede e preferências.</li>
+                <li>Cópia diária interna dos bancos e da planilha por 30 dias.</li>
+                <li>Gravação em lote: vários boletos entram numa única gravação.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="secao" id="demonstracao">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Versão de demonstração</p>
+            <h2>Veja tudo funcionando com dados de exemplo, sem risco</h2>
+            <p class="lide">Dois cliques abrem um Fin Pro completo, cheio de lançamentos fictícios, ao lado do sistema de verdade. Todas as telas desta página foram tiradas dele.</p>
+          </div>
+          <div class="blocos">
+            <article class="bloco">
+              <h3>O que vem dentro</h3>
+              <ul>
+                <li>Boletos pagos, pendentes e atrasados, com juros.</li>
+                <li>Pix, caixa com cupons e sete centros de custo.</li>
+                <li>Três empresas com notas, cheques e recebimentos.</li>
+                <li>Diesel com 5 máquinas, 9 semanas de compras de S10 e comum e os canhotos.</li>
+                <li>Usuários com permissões diferentes, lembretes e resumos ligados.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Seguro para mostrar</h3>
+              <ul>
+                <li><strong>Nada é enviado para fora:</strong> Telegram e e-mail aparecem configurados, mas o envio é bloqueado.</li>
+                <li>Roda em outra porta, ao mesmo tempo que o sistema real.</li>
+                <li>Os dados reais <strong>nunca são tocados</strong>.</li>
+                <li>A janela mostra o selo <strong>Versão de demonstração</strong>.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Como abrir</h3>
+              <ul>
+                <li>Dois cliques em <code>demonstracao.bat</code>.</li>
+                <li>Abre sem senha. Para mostrar as permissões, há três usuários de exemplo: um administrador e dois comuns.</li>
+                <li><code>demonstracao.bat --refazer</code> monta os dados do zero, com as datas de hoje.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+      <section class="secao" id="rotina">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Na prática</p>
+            <h2>Um dia e um fim de mês com o Fin Pro</h2>
+            <p class="lide">A rotina cabe em poucos passos, porque o sistema já deixou quase tudo pronto antes de alguém sentar na frente do computador.</p>
+          </div>
+          <div class="duas">
+            <div class="blocos" style="grid-template-columns:minmax(0,1fr)">
+              <article class="bloco">
+                <h3>Para começar o dia</h3>
+                <ol class="passos" style="grid-template-columns:minmax(0,1fr);gap:10px">
+                  <li><p>Abra o <strong>Painel</strong>: vencidos, o que vence em 7 dias e a previsão de saídas.</p></li>
+                  <li><p>Olhe o <strong>sininho</strong> e os contadores do menu: são os arquivos que chegaram e esperam conferência.</p></li>
+                  <li><p>Pague pelo celular com a <strong>linha digitável</strong> que chegou no Telegram e mande o <strong>comprovante</strong> para o bot. A baixa é automática, com os juros.</p></li>
+                </ol>
+              </article>
+            </div>
+            <div class="blocos" style="grid-template-columns:minmax(0,1fr)">
+              <article class="bloco">
+                <h3>Para fechar o mês</h3>
+                <ol class="passos" style="grid-template-columns:minmax(0,1fr);gap:10px">
+                  <li><p><strong>Gastos → Fechamento do mês → Pacote para o contador (.zip).</strong></p></li>
+                  <li><p><strong>Comprovantes → Pagos sem comprovante</strong>, para completar o que faltar.</p></li>
+                  <li><p><strong>Diesel → Relatórios → Mês:</strong> Simples para ver rápido, Completo ou Excel para guardar.</p></li>
+                  <li><p><strong>Empresas → Fechamentos:</strong> o bot já enviou o resumo no dia do fechamento.</p></li>
+                </ol>
+              </article>
+            </div>
+          </div>
+          <article class="bloco">
+            <h3>Atalhos de teclado</h3>
+            <ul class="atalhos">
+              <li><span><kbd>Ctrl</kbd> + <kbd>V</kbd></span><span>Colar imagem, linha digitável ou Pix Copia e Cola</span></li>
+              <li><span>Arrastar arquivo</span><span>Ler boletos e comprovantes; no Diesel, canhotos</span></li>
+              <li><span><kbd>/</kbd></span><span>Buscar em boletos e comprovantes</span></li>
+              <li><span><kbd>Alt</kbd> + <kbd>1</kbd> a <kbd>7</kbd></span><span>Ir direto para as telas principais</span></li>
+              <li><span><kbd>Esc</kbd></span><span>Fechar janelas</span></li>
+              <li><span><kbd>←</kbd> <kbd>→</kbd></span><span>Passar os comprovantes no visualizador</span></li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="secao" id="ficha-tecnica">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Ficha técnica</p>
+            <h2>O que há por baixo</h2>
+            <p class="lide">Para quem cuida da informática do escritório ou quer saber exatamente o que está instalando.</p>
+          </div>
+          <div class="rolagem">
+            <table>
+              <tbody>
+                <tr><th>Onde roda</th><td>Windows 10 ou 11, como aplicativo com janela própria e ícone na bandeja. Pelo navegador, no celular ou em outro computador da mesma rede.</td></tr>
+                <tr><th>Instalação</th><td>Python 3.10 ou superior. O arquivo <code>iniciar.bat</code> instala o que falta na primeira vez e abre o sistema.</td></tr>
+                <tr><th>Servidor</th><td>FastAPI com Uvicorn. Por padrão atende só o próprio computador, na porta 8000.</td></tr>
+                <tr><th>Telas</th><td>HTML, CSS e JavaScript, sem etapa de compilação. Pode ser instalado como aplicativo pelo navegador.</td></tr>
+                <tr><th>Dados</th><td>Três bancos SQLite (boletos, empresas e diesel) e planilhas Excel geradas automaticamente.</td></tr>
+                <tr><th>Leitura</th><td>Código de barras com zxing-cpp, PDF com pypdfium2, OCR local com RapidOCR (modelo latino), modo scanner com OpenCV e fotos HEIC.</td></tr>
+                <tr><th>Validação</th><td>Regras da FEBRABAN: módulo 10, módulo 11, fator de vencimento com o ciclo iniciado em 2025, boletos bancários (47 dígitos) e de arrecadação (48).</td></tr>
+                <tr><th>Entradas</th><td>PDF, JPG, PNG, WEBP e HEIC. XML de NF-e. Excel, CSV e TXT na importação. Pix Copia e Cola e QR code.</td></tr>
+                <tr><th>Saídas</th><td>Excel, CSV, PDF e ZIP, além das planilhas sempre atualizadas.</td></tr>
+                <tr><th>Avisos</th><td>Notificações do Windows, Telegram e e-mail.</td></tr>
+                <tr><th>Segurança</th><td>Senhas em hash PBKDF2-SHA256, bloqueio após 5 tentativas, permissões conferidas no servidor e histórico de alterações.</td></tr>
+                <tr><th>Backup</th><td>Pasta à sua escolha, com dados, arquivos, configurações, código e versões. Manifesto com SHA-256, pacote .zip e restaurador sem dependências.</td></tr>
+                <tr><th>Qualidade</th><td>273 testes automáticos, incluindo testes das telas no navegador e textos reais de OCR.</td></tr>
+                <tr><th>IA</th><td>Opcional e desligada por padrão. Usa o Claude, da Anthropic, com chave própria.</td></tr>
+                <tr><th>Versão online</th><td>Hoje o sistema roda no computador do escritório e na rede local. A versão hospedada em servidor, com login obrigatório e HTTPS, está em preparação.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="secao" id="evolucao">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Evolução</p>
+            <h2>Dez versões em quatro semanas, cada uma a partir de um pedido real</h2>
+            <p class="lide">O Fin Pro nasceu como um leitor de boletos e cresceu módulo por módulo, sempre a partir do que um escritório de verdade precisava naquela semana.</p>
+          </div>
+          <ol class="versoes" reversed>
+            <li class="atual"><span class="v">v1.9 · 10 e 12/10/2026</span><b>Controle de versão e backup total</b><p>Versões guardadas com número e histórico, backup com código e comprovantes, pacote .zip, conferência e restauração com dois cliques.</p></li>
+            <li><span class="v">v1.8 · 07/10/2026</span><b>Documentação e especificação técnica</b><p>Manual de uso completo e especificação em 27 documentos, com anexos gerados do próprio código.</p></li>
+            <li><span class="v">v1.7 · 06/10/2026</span><b>Diesel em reais e relatório em três níveis</b><p>Saldo em dinheiro, relatórios Simples, Detalhado e Completo, pontos de atenção e relatório geral do mês.</p></li>
+            <li><span class="v">v1.6 · 29/09/2026</span><b>Controle de diesel</b><p>Compras no posto, abastecimentos por máquina, consumo em L/h e km/L, bot do diesel e relatórios automáticos.</p></li>
+            <li><span class="v">v1.5 · 24/09/2026</span><b>Juros à vista, central de comprovantes e depósito de cheque</b><p>Juros e multas visíveis em todas as telas, busca de comprovantes com download em ZIP.</p></li>
+            <li><span class="v">v1.4 · 22/09/2026</span><b>Caixa, resumos da semana e demonstração</b><p>Dinheiro em espécie com bot, resumos de segunda e sexta, o nome Fin Pro e a versão de demonstração.</p></li>
+            <li><span class="v">v1.3 · 18/09/2026</span><b>Empresas, cheques e permissões</b><p>Notas fiscais, cheques pré-datados, recebimentos, fechamento no dia 20, bot de notas e permissões por pessoa.</p></li>
+            <li><span class="v">v1.2 · 17/09/2026</span><b>Backup, usuários, comprovantes e banco de dados</b><p>Baixa automática pelo comprovante, boletos por e-mail e Telegram, fechamento para o contador, previsão de saídas e banco SQLite.</p></li>
+            <li><span class="v">v1.1 · 16/09/2026</span><b>Importação, administrador e avisos para várias pessoas</b><p>Importar boletos de outro sistema, sininho com vistos e Telegram para pessoas e grupos.</p></li>
+            <li><span class="v">v1.0 · 14/09/2026</span><b>Leitor de boletos</b><p>Leitura de PDF e foto, planilha como banco de dados, lembretes, aplicativo de Windows, acesso pelo celular, centros de custo e Pix.</p></li>
+          </ol>
+        </div>
+      </section>
+      <section class="secao" id="perguntas">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Perguntas frequentes</p>
+            <h2>O que costumam perguntar antes de começar</h2>
+          </div>
+          <div class="perguntas">
+            <details open>
+              <summary>Precisa de internet para funcionar?</summary>
+              <div><p>Não para o principal. O sistema roda no computador do escritório e lê boletos com OCR local, sem enviar nada para fora. A internet é usada para o Telegram, o e-mail, a pasta de nuvem do backup e a IA opcional. Na primeira leitura por OCR, o sistema baixa o modelo de leitura, de cerca de 20 MB.</p></div>
+            </details>
+            <details>
+              <summary>Onde ficam os meus dados?</summary>
+              <div><p>Numa pasta do seu computador: três bancos de dados, as planilhas Excel e os arquivos originais (boletos, comprovantes, cupons, canhotos, cheques e notas). Você escolhe se e para onde vai a cópia de segurança.</p></div>
+            </details>
+            <details>
+              <summary>E se o computador quebrar ou for roubado?</summary>
+              <div><p>Com o backup total ligado para uma pasta de nuvem ou um HD externo, basta instalar o Python em outro computador e dar dois cliques em <code>RESTAURAR.bat</code>. Voltam o programa, os dados, os comprovantes, as configurações e as versões. O menu avisa quando o backup está atrasado.</p></div>
+            </details>
+            <details>
+              <summary>Preciso abandonar a minha planilha?</summary>
+              <div><p>Não. O sistema mantém as planilhas Excel atualizadas sozinho, e as edições feitas no Excel em lançamentos existentes voltam para o sistema. Quem prefere a planilha continua com ela.</p></div>
+            </details>
+            <details>
+              <summary>E se a leitura errar?</summary>
+              <div><p>Nada é lançado sem conferência. A linha digitável só é aceita se os dígitos verificadores fecharem, o valor e o vencimento do código são comparados com os impressos, e os campos com baixa confiança ficam em amarelo. Nos bots, o que o robô não tem certeza espera na Conferência.</p></div>
+            </details>
+            <details>
+              <summary>Que documentos ele lê?</summary>
+              <div><p>Boletos bancários, contas de luz, água e telefone, guias de tributos (DAS, DARF, GPS, FGTS, IPVA, IPTU e DETRAN), carnês, Pix Copia e Cola e QR code, comprovantes de pagamento, cupons e notas de compra, notas fiscais em XML ou DANFE, cheques pré-datados, comprovantes de depósito e canhotos de abastecimento. Em PDF, JPG, PNG, WEBP e HEIC.</p></div>
+            </details>
+            <details>
+              <summary>Funciona no celular?</summary>
+              <div><p>Sim, pela rede Wi-Fi do escritório, com senha e QR code para conectar. A câmera do celular fotografa o boleto e a revisão é feita ali mesmo. Fora do escritório, os bots do Telegram recebem boletos, comprovantes, cupons, notas e canhotos.</p></div>
+            </details>
+            <details>
+              <summary>Dá para usar de fora do escritório, pela internet?</summary>
+              <div><p>Hoje o acesso direto às telas é pelo computador e pela rede local, e o Telegram cobre o que acontece na rua. A versão hospedada em servidor, com login obrigatório para todos e HTTPS, está em preparação.</p></div>
+            </details>
+            <details>
+              <summary>Quantas pessoas podem usar?</summary>
+              <div><p>Quantas você cadastrar. Cada uma tem usuário, senha e as suas permissões, e o sistema registra quem lançou, pagou ou alterou cada coisa. No Telegram, os avisos podem ir para várias pessoas e grupos.</p></div>
+            </details>
+            <details>
+              <summary>Consigo trazer os boletos do sistema que uso hoje?</summary>
+              <div><p>Sim. A importação aceita Excel, CSV e TXT, reconhece as colunas pelo nome, confere cada linha pelos dígitos verificadores e mostra uma prévia antes de gravar. Fica numa área protegida pela senha de administrador.</p></div>
+            </details>
+            <details>
+              <summary>O sistema usa inteligência artificial?</summary>
+              <div><p>A leitura normal não usa: é código de barras, texto do PDF e OCR local. Há um botão opcional de análise com IA para fotos muito difíceis, que vem desligado e precisa de uma chave própria da Anthropic. Mesmo a linha sugerida pela IA passa pela validação.</p></div>
+            </details>
+            <details>
+              <summary>Como sei que o backup está bom?</summary>
+              <div><p>Depois de cada cópia o sistema abre os bancos copiados, confere a integridade e verifica se não falta nenhum comprovante. O botão Verificar backup compara arquivo por arquivo. Qualquer falha aparece no cartão do backup e na Saúde do sistema.</p></div>
+            </details>
+            <details>
+              <summary>E se uma atualização der problema?</summary>
+              <div><p>Cada versão do programa fica guardada. Dá para voltar à anterior sem tocar nos dados: boletos, comprovantes e configurações continuam como estão.</p></div>
+            </details>
+            <details>
+              <summary>O que preciso para instalar?</summary>
+              <div><p>Um computador com Windows 10 ou 11 e o Python 3.10 ou superior. O arquivo <code>iniciar.bat</code> instala o restante na primeira vez. Para os bots, um token do Telegram para cada um, criado no @BotFather.</p></div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section class="secao final" id="comecar">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Como começar</p>
+            <h2>Três passos até o primeiro boleto lançado sem digitar</h2>
+            <p class="lide">Comece pela demonstração, que não mexe em nada seu. Quando quiser, abra o sistema de verdade e ligue os avisos e o backup.</p>
+          </div>
+          <ol class="passos">
+            <li><h3>Abra a demonstração</h3><p>Dois cliques em <code>demonstracao.bat</code>. Navegue pelos módulos com dados de exemplo e arraste um boleto seu para a tela Ler boletos.</p></li>
+            <li><h3>Abra o sistema de verdade</h3><p>Dois cliques em <code>iniciar.bat</code>. Crie a senha de administrador, cadastre as pessoas e, se quiser, importe os boletos do sistema antigo.</p></li>
+            <li><h3>Ligue os avisos e o backup</h3><p>Conecte o Telegram em Notificações, escolha os horários dos lembretes e aponte o backup total para uma pasta de nuvem ou um HD externo.</p></li>
+          </ol>
+          <div class="botoes">
+            <a class="botao primario" href="#leitor"><svg class="ic" aria-hidden="true"><use href="#i-ler"/></svg>Testar a leitura agora</a>
+            <a class="botao" href="#modulos">Rever os módulos</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="rodape">
+      <div class="miolo">
+        <span>Fin Pro · sistema financeiro do escritório</span>
+        <span>Telas, nomes e valores desta página são dados de exemplo da versão de demonstração.</span>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<dialog class="ampliada" id="ampliada" aria-label="Tela ampliada">
+  <img id="ampliada-img" alt="">
+  <form method="dialog"><span id="ampliada-legenda"></span><button class="botao" type="submit">Fechar</button></form>
+</dialog>
+
+<script>
+(function () {
+  "use strict";
+  document.documentElement.lang = "pt-BR";
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+
+  /* ------------------------------------------------------------ leitor de linha digitável (regras da FEBRABAN) */
+  var BANCOS = { "001": "Banco do Brasil", "033": "Santander", "041": "Banrisul", "077": "Banco Inter", "104": "Caixa Econômica Federal", "237": "Bradesco", "260": "Nubank", "341": "Itaú Unibanco", "422": "Safra", "748": "Sicredi", "756": "Sicoob" };
+  var SEGMENTOS = { "1": "Prefeituras", "2": "Saneamento", "3": "Energia elétrica e gás", "4": "Telecomunicações", "5": "Órgãos governamentais", "6": "Carnês e assemelhados", "7": "Multas de trânsito", "9": "Uso exclusivo do banco" };
+  var DIA = 86400000;
+  var BASE_ORIGINAL = Date.UTC(1997, 9, 7);
+  var BASE_NOVO_CICLO = Date.UTC(2025, 1, 22) - 1000 * DIA;
+
+  function mod10(n) {
+    var soma = 0, peso = 2;
+    for (var i = n.length - 1; i >= 0; i--) {
+      var produto = Number(n.charAt(i)) * peso;
+      soma += Math.floor(produto / 10) + (produto % 10);
+      peso = peso === 2 ? 1 : 2;
+    }
+    return (10 - (soma % 10)) % 10;
+  }
+  function soma11(n) {
+    var soma = 0, peso = 2;
+    for (var i = n.length - 1; i >= 0; i--) {
+      soma += Number(n.charAt(i)) * peso;
+      peso = peso === 9 ? 2 : peso + 1;
+    }
+    return soma;
+  }
+  function mod11Bancario(n) { var dv = 11 - (soma11(n) % 11); return dv === 0 || dv === 10 || dv === 11 ? 1 : dv; }
+  function mod11Arrecadacao(n) { var resto = soma11(n) % 11; return resto === 0 || resto === 1 ? 0 : 11 - resto; }
+
+  function dataPorFator(fator, hoje) {
+    if (fator < 1000) return null;
+    var a = BASE_ORIGINAL + fator * DIA, b = BASE_NOVO_CICLO + fator * DIA;
+    return Math.abs(a - hoje) <= Math.abs(b - hoje) ? a : b;
+  }
+  function dataBR(ms) {
+    var d = new Date(ms);
+    return ("0" + d.getUTCDate()).slice(-2) + "/" + ("0" + (d.getUTCMonth() + 1)).slice(-2) + "/" + d.getUTCFullYear();
+  }
+  function moeda(v) { return "R$ " + v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
+
+  function analisarBancario(d) {
+    var linha, barras, conf = [];
+    if (d.length === 47) {
+      linha = d;
+      barras = d.slice(0, 4) + d.charAt(32) + d.slice(33, 47) + d.slice(4, 9) + d.slice(10, 20) + d.slice(21, 31);
+      conf.push(["Campo 1", mod10(d.slice(0, 9)) === Number(d.charAt(9))]);
+      conf.push(["Campo 2", mod10(d.slice(10, 20)) === Number(d.charAt(20))]);
+      conf.push(["Campo 3", mod10(d.slice(21, 31)) === Number(d.charAt(31))]);
+    } else {
+      barras = d;
+      var c1 = d.slice(0, 4) + d.slice(19, 24), c2 = d.slice(24, 34), c3 = d.slice(34, 44);
+      linha = c1 + mod10(c1) + c2 + mod10(c2) + c3 + mod10(c3) + d.charAt(4) + d.slice(5, 19);
+    }
+    conf.push(["Dígito geral", mod11Bancario(barras.slice(0, 4) + barras.slice(5)) === Number(barras.charAt(4))]);
+    var hoje = Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+    var vencimento = dataPorFator(Number(barras.slice(5, 9)), hoje);
+    var valor = Number(barras.slice(9, 19)) / 100;
+    var banco = barras.slice(0, 3);
+    return {
+      tipo: "Boleto bancário", rotuloQuem: "Banco", quem: banco + " · " + (BANCOS[banco] || "banco " + banco),
+      vencimento: vencimento ? dataBR(vencimento) : "Sem vencimento no código",
+      situacaoVenc: vencimento && vencimento < hoje ? "vencido" : "",
+      valor: valor ? moeda(valor) : "Sem valor no código", barras: barras, digitos: d.length, conf: conf,
+      linha: linha.slice(0, 5) + "." + linha.slice(5, 10) + " " + linha.slice(10, 15) + "." + linha.slice(15, 21) + " " + linha.slice(21, 26) + "." + linha.slice(26, 32) + " " + linha.charAt(32) + " " + linha.slice(33)
+    };
+  }
+
+  function analisarArrecadacao(d) {
+    var barras = "", conf = [], blocos = [], i;
+    var id = d.charAt(2);
+    var dv = function (n) { return id === "6" || id === "7" ? mod10(n) : mod11Arrecadacao(n); };
+    var problemas = [];
+    if ("6789".indexOf(id) < 0) { problemas.push("O 3º dígito deveria ser 6, 7, 8 ou 9"); id = "6"; }
+    if (d.length === 48) {
+      for (i = 0; i < 4; i++) {
+        var bloco = d.slice(i * 12, i * 12 + 11);
+        blocos.push(bloco + "-" + d.charAt(i * 12 + 11));
+        barras += bloco;
+        conf.push(["Bloco " + (i + 1), dv(bloco) === Number(d.charAt(i * 12 + 11))]);
+      }
+    } else {
+      barras = d;
+      for (i = 0; i < 4; i++) { var parte = d.slice(i * 11, i * 11 + 11); blocos.push(parte + "-" + dv(parte)); }
+    }
+    conf.push(["Dígito geral", dv(barras.slice(0, 3) + barras.slice(4)) === Number(barras.charAt(3))]);
+    var valorReal = id === "6" || id === "8";
+    var valor = Number(barras.slice(4, 15)) / 100;
+    return {
+      tipo: "Conta de consumo ou tributo", rotuloQuem: "Segmento", quem: SEGMENTOS[barras.charAt(1)] || "Segmento " + barras.charAt(1),
+      vencimento: "Não vem no código", notaVenc: "o Fin Pro lê do texto da conta", situacaoVenc: "",
+      valor: valorReal ? moeda(valor) : "Por referência", barras: barras, digitos: d.length, conf: conf,
+      linha: blocos.join(" "), problemas: problemas
+    };
+  }
+
+  function analisar(texto) {
+    var d = String(texto || "").replace(/\D/g, "");
+    if (!d) return { vazio: true };
+    if (d.length === 47 && d.charAt(0) !== "8") return analisarBancario(d);
+    if (d.length === 48 && d.charAt(0) === "8") return analisarArrecadacao(d);
+    if (d.length === 44) return d.charAt(0) === "8" ? analisarArrecadacao(d) : analisarBancario(d);
+    return { erro: "Foram lidos " + d.length + " dígitos. O esperado é 47 (boleto bancário), 48 (conta de consumo ou tributo) ou 44 (código de barras)." };
+  }
+
+  /* Código de barras no padrão intercalado 2 de 5 (o mesmo do boleto impresso). */
+  var ITF = ["nnwwn", "wnnnw", "nwnnw", "wwnnn", "nnwnw", "wnwnn", "nwwnn", "nnnww", "wnnwn", "nwnwn"];
+  function barrasSvg(digitos) {
+    var x = 10, partes = [];
+    var bar = function (largura, preto) { if (preto) partes.push('<rect x="' + x + '" y="0" width="' + largura + '" height="60"/>'); x += largura; };
+    bar(1, true); bar(1, false); bar(1, true); bar(1, false);
+    for (var i = 0; i + 1 < digitos.length; i += 2) {
+      var a = ITF[Number(digitos.charAt(i))], b = ITF[Number(digitos.charAt(i + 1))];
+      for (var j = 0; j < 5; j++) { bar(a.charAt(j) === "w" ? 3 : 1, true); bar(b.charAt(j) === "w" ? 3 : 1, false); }
+    }
+    bar(3, true); bar(1, false); bar(1, true);
+    return '<svg viewBox="0 0 ' + (x + 10) + ' 60" preserveAspectRatio="none" role="img" aria-label="Código de barras gerado a partir da linha" fill="currentColor">' + partes.join("") + "</svg>";
+  }
+
+  function campo(rotulo, valor, classe, extra) {
+    return '<div class="campo ' + (classe || "") + '"><dt>' + rotulo + "</dt><dd" + (extra && extra.dd ? ' class="' + extra.dd + '"' : "") + ">" + valor + (extra && extra.nota ? "<small>" + extra.nota + "</small>" : "") + "</dd></div>";
+  }
+  function mostrar(r) {
+    var alvo = $("#resultado");
+    if (!alvo) return;
+    if (r.vazio) { alvo.innerHTML = '<p class="vazio">Cole uma linha digitável acima ou escolha um dos exemplos.</p>'; return; }
+    if (r.erro) { alvo.innerHTML = '<dl class="campos">' + campo("Situação", "Não é uma linha completa", "c12", { dd: "ruim", nota: r.erro }) + "</dl>"; return; }
+    var falhas = r.conf.filter(function (c) { return !c[1]; }).length + (r.problemas ? r.problemas.length : 0);
+    var conferencia = r.conf.map(function (c) { return '<span class="' + (c[1] ? "" : "ruim") + '">' + c[0] + (c[1] ? " confere" : " não confere") + "</span>"; }).join("");
+    var situacao = falhas
+      ? campo("Situação", "Linha inválida", "", { dd: "ruim", nota: "o Fin Pro não deixaria lançar sem revisar" })
+      : campo("Situação", "Linha válida", "", { dd: "bom" });
+    alvo.innerHTML = '<dl class="campos">' + situacao + campo("Tipo", r.tipo) + campo(r.rotuloQuem, r.quem) +
+      campo("Vencimento", r.vencimento, "", { nota: r.notaVenc || (r.situacaoVenc === "vencido" ? "já venceu: o sistema alertaria" : "") }) +
+      campo("Valor", r.valor) + campo("Dígitos lidos", String(r.digitos)) + campo("Código de barras", r.barras, "c6", { dd: "mono" }) +
+      campo("Linha formatada", r.linha, "c12", { dd: "mono" }) +
+      '<div class="campo c12"><dt>Conferência dos dígitos verificadores</dt><dd class="conferencia">' + conferencia + "</dd></div></dl>" +
+      (falhas ? "" : '<div class="barras">' + barrasSvg(r.barras) + "<p>Código de barras desenhado a partir da linha, no padrão intercalado 2 de 5 usado nos boletos.</p></div>");
+  }
+
+  var entrada = $("#linha");
+  if (entrada) {
+    var atualizar = function () { mostrar(analisar(entrada.value)); };
+    entrada.addEventListener("input", atualizar);
+    $$("[data-exemplo]").forEach(function (b) {
+      b.addEventListener("click", function () { entrada.value = b.getAttribute("data-exemplo"); atualizar(); });
+    });
+    atualizar();
+  }
+  window.finproLeitor = { analisar: analisar };
+
+  /* ------------------------------------------------------------ galerias e tela ampliada */
+  $$("[data-galeria]").forEach(function (galeria) {
+    var abas = $$('[role="tab"]', galeria), img = $("img", galeria), botao = $(".ampliar", galeria), legenda = $("figcaption", galeria);
+    abas.forEach(function (aba) {
+      aba.addEventListener("click", function () {
+        abas.forEach(function (a) { a.setAttribute("aria-selected", a === aba ? "true" : "false"); });
+        img.src = aba.getAttribute("data-img");
+        img.alt = aba.getAttribute("data-alt") || "";
+        if (botao) { botao.setAttribute("data-ampliar", aba.getAttribute("data-img")); botao.setAttribute("data-legenda", aba.getAttribute("data-legenda") || ""); }
+        if (legenda) legenda.textContent = aba.getAttribute("data-legenda") || "";
+      });
+    });
+  });
+  var dialogo = $("#ampliada");
+  if (dialogo && typeof dialogo.showModal === "function") {
+    document.addEventListener("click", function (evento) {
+      var botao = evento.target.closest ? evento.target.closest(".ampliar") : null;
+      if (!botao) return;
+      var imagem = $("img", botao);
+      $("#ampliada-img").src = botao.getAttribute("data-ampliar");
+      $("#ampliada-img").alt = imagem ? imagem.alt : "";
+      $("#ampliada-legenda").textContent = botao.getAttribute("data-legenda") || "";
+      dialogo.showModal();
+    });
+    dialogo.addEventListener("click", function (evento) { if (evento.target === dialogo) dialogo.close(); });
+  }
+
+  /* ------------------------------------------------------------ índice: abrir no celular, rolar e marcar a seção atual */
+  var trilho = $("#trilho"), fundo = $("#fundo-indice"), abre = $("#abre-indice");
+  function indice(aberto) {
+    if (!trilho) return;
+    trilho.classList.toggle("aberto", aberto);
+    if (fundo) fundo.hidden = !aberto;
+    if (abre) abre.setAttribute("aria-expanded", aberto ? "true" : "false");
+  }
+  if (abre) abre.addEventListener("click", function () { indice(!trilho.classList.contains("aberto")); });
+  if (fundo) fundo.addEventListener("click", function () { indice(false); });
+  var fecha = $("#fecha-indice");
+  if (fecha) fecha.addEventListener("click", function () { indice(false); });
+  document.addEventListener("keydown", function (evento) { if (evento.key === "Escape") indice(false); });
+
+  var suave = !(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  document.addEventListener("click", function (evento) {
+    var link = evento.target.closest ? evento.target.closest('a[href^="#"]') : null;
+    if (!link) return;
+    var destino = document.getElementById(link.getAttribute("href").slice(1));
+    if (!destino) return;
+    evento.preventDefault();
+    indice(false);
+    destino.scrollIntoView({ behavior: suave ? "smooth" : "auto", block: "start" });
+    try { history.replaceState(null, "", "#" + destino.id); } catch (erro) { /* dentro de um quadro sem histórico */ }
+  });
+
+  var links = $$("#indice a");
+  var porId = {};
+  links.forEach(function (a) { porId[a.getAttribute("href").slice(1)] = a; });
+  function marcar(id) {
+    links.forEach(function (a) { a.classList.toggle("atual", a === porId[id]); });
+    var atual = porId[id];
+    if (atual && trilho && trilho.scrollHeight > trilho.clientHeight) {
+      var topo = atual.offsetTop - trilho.scrollTop;
+      if (topo < 60 || topo > trilho.clientHeight - 120) trilho.scrollTop = Math.max(0, atual.offsetTop - trilho.clientHeight / 2);
+    }
+  }
+  if ("IntersectionObserver" in window) {
+    var visiveis = {};
+    var observador = new IntersectionObserver(function (itens) {
+      itens.forEach(function (item) { visiveis[item.target.id] = item.isIntersecting; });
+      for (var i = 0; i < links.length; i++) {
+        var id = links[i].getAttribute("href").slice(1);
+        if (visiveis[id]) { marcar(id); break; }
+      }
+    }, { rootMargin: "-12% 0px -72% 0px" });
+    Object.keys(porId).forEach(function (id) { var secao = document.getElementById(id); if (secao) observador.observe(secao); });
+  }
+  marcar("inicio");
+
+  /* ------------------------------------------------------------ tema claro e escuro */
+  var raiz = document.documentElement, trocaTema = $("#troca-tema");
+  function temaAtual() {
+    if (raiz.getAttribute("data-theme")) return raiz.getAttribute("data-theme");
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  function rotuloTema() { if (trocaTema) $("span", trocaTema).textContent = temaAtual() === "dark" ? "Tema claro" : "Tema escuro"; }
+  try {
+    var guardado = localStorage.getItem("finpro-site-tema");
+    if (guardado && !raiz.getAttribute("data-theme")) raiz.setAttribute("data-theme", guardado);
+  } catch (erro) { /* sem armazenamento: segue o tema do aparelho */ }
+  if (trocaTema) {
+    trocaTema.addEventListener("click", function () {
+      var novo = temaAtual() === "dark" ? "light" : "dark";
+      raiz.setAttribute("data-theme", novo);
+      try { localStorage.setItem("finpro-site-tema", novo); } catch (erro) { /* idem */ }
+      rotuloTema();
+    });
+  }
+  rotuloTema();
+})();
+</script>
+</body>
+</html>

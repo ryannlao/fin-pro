@@ -6,6 +6,7 @@ import {
   parseValor, seloSituacao, toast,
 } from "../../ui.js";
 import { abrirDetalhes } from "../../detalhes.js";
+import { pode } from "../../estado.js";
 import { NOVO_CENTRO, carregarCentros, escolherCentro, opcoesCentro, opcoesFiltroCentro, tratarNovoCentro } from "../../centros.js";
 import { CHIPS, filtros, selecionados, tela } from "./estado.js";
 import { aoClicarCalendario } from "./calendario.js";
@@ -38,7 +39,7 @@ export async function montar(el, params) {
           <div class="menu" id="menu-exportar" role="menu" hidden>
             <button data-formato="xlsx">${icone("planilha", 16)}<span>Excel<small>Somente os registros filtrados</small></span></button>
             <button data-formato="csv">${icone("arquivo", 16)}<span>CSV<small>Separado por ponto e vírgula</small></span></button>
-            <button data-formato="planilha">${icone("download", 16)}<span>Planilha completa<small>O arquivo boletos.xlsx original</small></span></button>
+            ${pode("caixa") ? `<button data-formato="planilha">${icone("download", 16)}<span>Planilha completa<small>O arquivo boletos.xlsx original</small></span></button>` : ""}
           </div>
         </div>
         <a class="btn" href="#/comprovantes?tipo=boleto" title="Buscar os comprovantes dos boletos">${icone("clipe", 16)} Comprovantes</a>

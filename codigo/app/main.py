@@ -183,7 +183,8 @@ async def lifespan(_app: FastAPI):
     if config.NOTIFICACOES_AUTOMATICAS:
         contexto.notificacoes.iniciar_agendador()
     if config.HOST in ("0.0.0.0", "::") and not acesso.protegido():
-        log.warning("Acesso pela rede liberado SEM senha. Defina LEITOR_SENHA_ACESSO no .env.")
+        log.warning("Servidor aberto na rede SEM senha: nenhum aparelho de fora consegue entrar. "
+                    "Defina LEITOR_SENHA_ACESSO no .env ou cadastre usuários.")
     rede.iniciar_se_ativo()
     yield
     rede.parar()
@@ -213,6 +214,7 @@ async def _sem_cache_na_interface(request: Request, call_next):
     antigo mesmo com o arquivo mudado no disco. São arquivos pequenos, vindos do próprio computador.
     """
     resposta = await call_next(request)
+    resposta.headers["X-Frame-Options"] = "SAMEORIGIN"  # outro site não embute as telas para enganar cliques
     if not request.url.path.startswith("/api/"):
         resposta.headers["Cache-Control"] = "no-store, must-revalidate"
     return resposta

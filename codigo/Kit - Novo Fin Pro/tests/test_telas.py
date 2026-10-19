@@ -90,7 +90,7 @@ def test_todas_as_telas_abrem_sem_erro(pagina):
     telas = {
         "painel": "Nenhum boleto lançado ainda", "ler": "Arraste os boletos", "boletos": "Exportar", "pix": "Novo pagamento Pix",
         "gastos": "Análise de gastos", "notificacoes": "Avisos de vencimento", "config?aba=geral": "Recursos de leitura",
-        "config?aba=usuarios": "Usuários do escritório", "config?aba=integracoes": "Backup fora do computador",
+        "config?aba=usuarios": "Usuários do escritório", "config?aba=integracoes": "Backup total fora do computador",
         "config?aba=saude": "Banco de dados e planilha", "empresas?aba=fechamentos": "Falta receber",
         "empresas?aba=cheques": "Em carteira", "empresas?aba=bot": "Bot de notas fiscais",
         "comprovantes": "Baixar comprovantes", "comprovantes?tipo=cheque": "Pagos sem comprovante",
@@ -102,6 +102,11 @@ def test_todas_as_telas_abrem_sem_erro(pagina):
     }
     for rota, texto in telas.items():
         _ir(pagina, rota)
+        try:  # algumas telas buscam dados antes de aparecer (ex.: a aba Geral consulta o Git): espera o texto, até 8 s
+            pagina.wait_for_function("t => (document.querySelector('#view')?.innerText || '').replace(/\\u00a0/g, ' ').includes(t)",
+                                     arg=texto, timeout=8000)
+        except Exception:
+            pass
         assert texto in _texto(pagina, "#view"), f"a tela {rota} não mostrou “{texto}”"
     assert not pagina.erros, pagina.erros
 
@@ -136,7 +141,7 @@ def test_ler_boleto_lancar_e_dar_baixa_por_comprovante(pagina, sistema, tmp_path
     linhas = _texto(pagina, "#tabela")
     assert "CLA AUTO PECAS" in linhas and "Pago" in linhas
 
-    _ir(pagina, f"gastos?aba=fechamento")
+    _ir(pagina, "gastos?aba=fechamento")
     pagina.wait_for_selector("text=Juros e multas", timeout=20_000)
     resumo = _texto(pagina, "#f-resultado")
     assert "R$ 278,45" in resumo and "R$ 8,10" in resumo

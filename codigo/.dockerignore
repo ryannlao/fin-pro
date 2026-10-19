@@ -18,3 +18,8 @@ iniciar.sh
 webview
 *.md
 .claude
+node_modules
+graphify-out
+site
+docs
+exemplos

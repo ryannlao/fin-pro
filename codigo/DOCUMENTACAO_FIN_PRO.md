@@ -1,7 +1,7 @@
 # Fin Pro — Documentação completa do sistema
 
 > Tudo o que foi construído e implantado no Fin Pro, módulo por módulo, do primeiro pedido até hoje.
-> Atualizado em 07/10/2026.
+> Atualizado em 19/10/2026 (versão 1.12.1).
 
 > **Para quem vai desenvolver ou reconstruir o sistema:** este é o manual de uso (o que cada tela faz). A especificação
 > técnica completa — regras de cálculo, todas as rotas da API, todos os campos, mapa do código, testes e o roteiro de
@@ -31,7 +31,7 @@
 18. [Versão de demonstração](#18-versão-de-demonstração)
 19. [Banco de dados, planilhas, arquivos e backup](#19-banco-de-dados-planilhas-arquivos-e-backup)
 20. [Segurança](#20-segurança)
-21. [Plano para colocar o sistema online](#21-plano-para-colocar-o-sistema-online)
+21. [Sistema online](#21-sistema-online)
 22. [Pendências e próximos passos](#22-pendências-e-próximos-passos)
 23. [Referência rápida](#23-referência-rápida)
 
@@ -91,6 +91,10 @@ deixa para alguém só conferir.
 | 02–06/10 | Colocar o sistema online | Estudo de opções; escolhida a VPS Hostinger KVM 2 |
 | 06/10 | Saldo do diesel em R$ | Saldo do diesel passou a ser em reais |
 | 06/10 | Relatório do diesel mais simples, sem perder o detalhe | Relatório do diesel em três níveis: Simples, Detalhado e Completo |
+| 07/10 | Documentar tudo | Manual, especificação técnica e kit de reconstrução (v1.8.0) |
+| 10/10 | Não perder nada e saber o que mudou | Controle de versão e backup total fora do computador (v1.9.0) |
+| 12/10 | Sistema no ar e site de apresentação | Versão online em `fin.fabbiol.tech` e site do Fin Pro (v1.10.0) |
+| 19/10 | Organizar o projeto e revisar a segurança | Ferramentas para agentes de IA, versão do computador e online juntas, duas revisões de segurança (v1.11.0 a v1.12.1) |
 
 ---
 
@@ -289,6 +293,8 @@ A primeira tela do sistema. Soma **boletos e Pix juntos** em tudo.
 ### 6.5 Exportar
 
 - **Exportar** para Excel ou CSV (com os filtros atuais).
+- **Planilha completa** (o arquivo `boletos.xlsx` inteiro): só aparece para quem tem a permissão **Caixa**, porque o
+  arquivo leva também a aba do Caixa.
 - Atalho **Comprovantes** que abre a busca já filtrada nos comprovantes de boletos.
 - Ícone "Aguardando gravação" quando a planilha está aberta em outro programa (o sistema grava quando ela for fechada).
 
@@ -687,6 +693,9 @@ Dados em `dados\empresas.db`, com a planilha `fechamentos.xlsx` (abas Empresas, 
 | **Telegram** | Token do bot; cada pessoa manda `/start` (ou adicione o bot ao grupo); **Procurar pessoas e grupos** e marcar quem recebe — várias pessoas do escritório |
 | **E-mail** | Provedor (Gmail, Outlook, Yahoo), usuário, **senha de app** e destinatários |
 
+Ao trocar o **servidor, a porta, a segurança ou o usuário** do e-mail, digite a **senha de novo**: por segurança, a senha
+guardada é apagada quando a conexão muda sem ela.
+
 As mensagens trazem a **linha digitável só com números** e o **Pix Copia e Cola**, prontos para pagar pelo celular.
 
 ### 14.3 Resumos da semana
@@ -876,16 +885,24 @@ O **programa** (código-fonte) fica guardado em versões, como "fotografias" num
 ## 20. Segurança
 
 - Senhas (usuários, administrador, acesso pela rede) guardadas **somente em hash** (PBKDF2-SHA256).
-- **5 senhas erradas = 5 minutos de bloqueio** do aparelho.
+- **5 senhas erradas = 5 minutos de bloqueio** daquele usuário naquele aparelho (os outros usuários continuam entrando).
 - Área de administrador fecha sozinha após 20 minutos sem uso.
 - Permissões conferidas **no servidor**, não só na tela.
+- Sem usuários e sem senha de acesso, **nenhum aparelho de fora entra** (só o próprio computador).
+- Pedidos vindos de outros sites são recusados, e as telas não podem ser abertas dentro de outro site.
+- Arquivos recebidos que não são PDF nem imagem comum (ex.: SVG) só são baixados, nunca abertos na tela.
 - Tokens dos bots aparecem mascarados nas telas.
 - Os arquivos de configuração com tokens e senhas de app ficam na pasta `dados`: o computador precisa estar protegido.
 - Apenas a análise com IA (quando ligada e acionada) envia um arquivo para fora (API da Anthropic).
 
 ---
 
-## 21. Plano para colocar o sistema online
+## 21. Sistema online
+
+**Situação (19/10/2026):** no ar em `https://fin.fabbiol.tech`, numa VPS com EasyPanel, exigindo login de todos. É uma
+instalação **separada** da do computador do escritório, com os próprios dados. O código publicado vem da pasta `codigo/` do
+repositório `ryannlao/fin-pro` no GitHub. Para publicar uma mudança: seção "Versão online" do `README.md`. Abaixo, o plano
+original, mantido como histórico.
 
 ### 21.1 Decisão
 

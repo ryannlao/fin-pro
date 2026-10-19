@@ -4,6 +4,46 @@
 > Este arquivo é atualizado pela ferramenta `ferramentas/versao.py` (não precisa editar à mão).
 > Numeração: **X.Y.Z** — X muda em reformulações grandes, Y em funções novas, Z em correções.
 
+## v1.12.2 — 19/10/2026 — Documentação para quem for mexer no sistema
+- README com a seção "Para quem vai mexer no sistema": tecnologia, comandos, onde fica cada coisa e regras que não podem ser quebradas.
+- README com a seção "Versão online": as duas instalações (computador e VPS) com dados separados, variáveis obrigatórias e o passo a passo para publicar.
+- Arquitetura com o desenho do caminho do código até a VPS.
+- Manual atualizado para a versão 1.12.1: planilha completa, senha do e-mail de avisos, bloqueio por senha errada, segurança e sistema online.
+
+## v1.12.1 — 19/10/2026 — Correções de segurança da revisão de 19/10
+- Sem senha e sem usuários, nenhum aparelho de fora entra mais (antes, uma VPS nova ou um backup sem usuários deixava os dados abertos para a internet).
+- Trocar o servidor do e-mail de avisos sem digitar a senha apaga a senha guardada: ela não pode mais ser enviada para um servidor de outra pessoa.
+- Planilha completa (tem o Caixa), prévia do resumo semanal e cancelar gravação agora respeitam as permissões de cada pessoa.
+- Senha errada bloqueia só aquele usuário naquele endereço: na VPS, um erro não tranca mais o escritório inteiro.
+- As telas não podem mais ser embutidas dentro de outro site (proteção contra cliques enganados).
+- Biblioteca urllib3 atualizada (falhas conhecidas na 2.7.0).
+
+## v1.12.0 — 19/10/2026 — Versão do computador e versão online juntas
+- Trazido da versão online (VPS): Dockerfile, docker-compose.yml para o EasyPanel, requirements.vps.txt e iniciar.sh/iniciar.command para Linux e Mac.
+- Na VPS, o backup passa sozinho para a pasta do servidor e o aviso do Windows é desligado fora do Windows; a Saúde do sistema não acusa mais falha de canal desligado.
+- Corrigido o "Not Found" ao abrir comprovantes no Caixa, no Diesel e nas Empresas.
+- docker-compose.yml com LEITOR_URL=https://fin.fabbiol.tech, exigido pela proteção contra outros sites da v1.11.
+- Mantida a tela de Configurações original (a versão online tinha sido refeita às pressas porque a pasta sumiu do Git).
+- Versões listadas pelo número (antes, duas guardadas no mesmo segundo podiam sair fora de ordem).
+
+## v1.11.0 — 19/10/2026 — Ferramentas para agentes de IA e correções de segurança
+- Instruções para agentes (`AGENTS.md`, `CLAUDE.md`), `PRODUCT.md` e documentos de arquitetura, telas, preparo, qualidade e setup, ligados à especificação existente.
+- Ferramentas integradas: Superpowers, Ponytail, Context7, Chrome DevTools MCP (no projeto), RTK, Graphify e agent-browser (no computador); roteiros de revisão de segurança e de melhoria do harness.
+- Verificação única `verificar.bat`: Ruff (Python) e ESLint (telas) adotados com medição, mais os testes.
+- Segurança: o sistema recusa pedidos vindos de outros sites (DNS rebinding e pedido forjado) e anexos SVG/HTML não abrem mais como página ativa.
+- Correções: o carnê não gera mais um boleto fantasma nem perde uma segunda linha colada a símbolos; o bot volta a funcionar com Python 3.10; a chave "pedir login" de Configurações não dá mais erro depois de salvar.
+- Testes de tela consertados (título antigo e espera fixa); 273 testes.
+
+## v1.10.0 — 12/10/2026 — Site de apresentação do Fin Pro
+- Site de apresentação (`site/index.html`), no estilo de página de venda: todos os módulos, bots do Telegram, celular, usuários, segurança, backup, ficha técnica, evolução e perguntas frequentes.
+- Leitor de linha digitável que funciona na própria página, com as mesmas regras de conferência do sistema.
+- Telas tiradas do sistema com dados de exemplo e nomes inventados; `site/capturar_telas.py` refaz as capturas e `site/montar.py` remonta a página.
+
+## v1.9.1 — 12/10/2026 — Ajustes visuais em Gastos e no histórico de versões
+- Gastos: os valores dos seis cartões do topo não ficam mais cortados em telas menores.
+- Fechamento do mês: o quadro **Por centro de custo** voltou a ocupar a largura toda do cartão.
+- Versão do sistema: o histórico mostra o negrito corretamente.
+
 ## v1.9.0 — 10/10/2026 — Controle de versão e backup total
 - Controle de versão do código: cada versão fica guardada com número, data e a lista do que mudou (`VERSOES.md`); dá para comparar e voltar a qualquer uma sem tocar nos dados (`versoes.bat`).
 - Cartão **Versão do sistema** em Configurações → Geral: versão em uso, histórico e alterações ainda não guardadas.

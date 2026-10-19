@@ -1,125 +1,153 @@
-// Configurações · cliques, alterações e formulários da tela de Configurações.
-// Um ouvinte de cada tipo na raiz da tela: o data-acao do elemento escolhe a função nos mapas exportados pelas seções
-// da aba aberta (acoes / alteracoes / formularios). Enquanto a função roda, o elemento fica desligado.
+// Configurações · Cliques, alterações e formulários da tela de Configurações.
+import { api } from "../../api.js";
+import { estado } from "../../estado.js";
+import { icone } from "../../icons.js";
+import { abrirModal, confirmar, copiar, dataHoraBR, esc, mensagemErro, pedirTexto, toast } from "../../ui.js";
 import { bloquearAdmin, pedirSenhaAdmin } from "../../admin.js";
-import { mensagemErro, toast } from "../../ui.js";
-import { carregarAdmin, recarregar, tela } from "./tela.js";
-
-const CODIGOS_ADMIN = ["admin_necessario", "admin_sem_senha", "sem_permissao"];
-
-/**
- * Faz uma chamada protegida pela senha de administrador. Se a área restrita expirou (admin_necessario), pede a senha
- * e repete uma vez. Se a pessoa cancelar (ou o erro for outro), lança o erro para quem chamou.
- */
-export async function comAdmin(executar, descricao = "Digite a senha de administrador para continuar.") {
-  try {
-    return await executar();
-  } catch (erro) {
-    if (erro?.codigo !== "admin_necessario") throw erro;
-    const liberou = await pedirSenhaAdmin({
-      descricao: `A área restrita foi bloqueada (tempo esgotado ou senha trocada). ${descricao}`,
-    });
-    if (!liberou) throw erro;
-    await carregarAdmin();
-    return executar();
-  }
-}
-
-/** Mostra o erro de uma ação. Área restrita (admin/permissão) vira aviso e a aba é redesenhada para mostrar o cadeado. */
-export function avisarErro(erro) {
-  if (CODIGOS_ADMIN.includes(erro?.codigo)) {
-    toast(mensagemErro(erro), "aviso", { duracao: 7000 });
-    recarregar();
-    return;
-  }
-  toast(mensagemErro(erro), "erro", { duracao: 6000 });
-}
-
-// Ações comuns a todas as abas (botões dos cartões bloqueados pela senha de administrador).
-const NUCLEO = {
-  acoes: {
-    /** <button data-acao="admin-desbloquear" data-descricao="…">: pede a senha e, liberada, redesenha a aba. */
-    "admin-desbloquear": async (alvo) => {
-      const liberou = await pedirSenhaAdmin({ descricao: alvo.dataset.descricao || undefined });
-      if (liberou) recarregar();
-    },
-    /** <button data-acao="admin-bloquear">: fecha a área restrita neste aparelho. */
-    "admin-bloquear": async () => {
-      await bloquearAdmin();
-      toast("Área restrita bloqueada neste aparelho.", "info");
-      recarregar();
-    },
-  },
-};
-
-function acharFuncao(mapa, nome) {
-  if (!nome) return null;
-  for (const secao of [NUCLEO, ...tela.secoes]) {
-    const funcao = secao[mapa]?.[nome];
-    if (funcao) return funcao;
-  }
-  return null;
-}
-
-const emAndamento = new WeakSet();
-
-/** Desliga o elemento (e mostra "data-espera" com um spinner, se houver) e devolve como religar. */
-function ocupar(el, espera) {
-  emAndamento.add(el);
-  const original = el.innerHTML;
-  el.disabled = true;
-  if (espera && el.tagName === "BUTTON") el.innerHTML = `<span class="spinner"></span> ${espera}`;
-  return () => {
-    emAndamento.delete(el);
-    if (!el.isConnected) return; // o cartão foi redesenhado: o elemento novo já nasce ligado
-    el.disabled = false;
-    if (espera && el.tagName === "BUTTON") el.innerHTML = original;
-  };
-}
-
-async function rodar(funcao, elementos, args, aoFalhar) {
-  const religar = elementos.map(([el, espera]) => ocupar(el, espera));
-  try {
-    await funcao(...args);
-  } catch (erro) {
-    aoFalhar?.();
-    avisarErro(erro);
-  } finally {
-    religar.forEach((f) => f());
-  }
-}
+import { tela } from "./tela.js";
+import { alterarAplicativo, atualizarAplicativo } from "./aplicativo.js";
+import { acaoBackup, salvarBackup } from "./backup.js";
+import { acaoEntrada, atualizarEntrada, salvarEmail } from "./entrada.js";
+import { acaoAdmin, criarSenhaAdmin } from "./importacao.js";
+import { atualizarRede } from "./rede.js";
+import { acaoUsuario, atualizarUsuarios, criarUsuario } from "./usuarios.js";
 
 export async function aoClicar(e) {
-  const alvo = e.target.closest("[data-acao]");
-  if (!alvo || !tela.raiz?.contains(alvo) || emAndamento.has(alvo)) return;
-  const funcao = acharFuncao("acoes", alvo.dataset.acao);
-  if (!funcao) return;
-  if (alvo.tagName === "A") e.preventDefault();
-  await rodar(funcao, [[alvo, alvo.dataset.espera]], [alvo, e]);
+  const alvo = e.target.closest("[data-acao], [data-rede='copiar'], button[data-app='atalhos'], button[data-admin], button[data-usuarios], button[data-backup], [data-backup-sugestao], button[data-entrada]");
+  if (!alvo) return;
+  try {
+    if (alvo.dataset.entrada) {
+      await acaoEntrada(alvo);
+    } else if (alvo.dataset.backupSugestao) {
+      tela.raiz.querySelector("[data-backup-form] [name=pasta]").value = alvo.dataset.backupSugestao;
+    } else if (alvo.dataset.backup) {
+      await acaoBackup(alvo);
+    } else if (alvo.dataset.usuarios) {
+      await acaoUsuario(alvo);
+    } else if (alvo.dataset.admin) {
+      await acaoAdmin(alvo.dataset.admin);
+    } else if (alvo.dataset.app === "atalhos") {
+      alvo.disabled = true;
+      try {
+        atualizarAplicativo(await api.post("/api/app/atalhos"));
+        toast('Atalho "Fin Pro" criado na Área de Trabalho e no Menu Iniciar.', "ok", { duracao: 6000 });
+      } finally {
+        alvo.disabled = false;
+      }
+    } else if (alvo.dataset.rede === "copiar") {
+      copiar(alvo.dataset.url, "Endereço copiado");
+    } else if (alvo.dataset.acao === "abrir") {
+      await api.post("/api/planilha/abrir");
+      toast("Abrindo a planilha…", "info");
+    } else if (alvo.dataset.acao === "pasta") {
+      await api.post("/api/planilha/abrir-pasta");
+    } else if (alvo.dataset.acao === "sair") {
+      window.dispatchEvent(new Event("acesso:sair"));
+    }
+  } catch (erro) {
+    toast(mensagemErro(erro), "erro");
+  }
 }
 
 export async function aoAlterar(e) {
-  const campo = e.target;
-  if (!campo.matches?.("input[data-acao], select[data-acao], textarea[data-acao]") || emAndamento.has(campo)) return;
-  const funcao = acharFuncao("alteracoes", campo.dataset.acao);
-  if (!funcao) return;
-  const marcado = campo.checked;
-  // Se a função lançar, a chave volta para onde estava (o servidor não aceitou a mudança).
-  const desfazer = campo.type === "checkbox" ? () => { if (campo.isConnected) campo.checked = !marcado; } : null;
-  await rodar(funcao, [[campo]], [campo, e], desfazer);
+  if (e.target.matches("[data-entrada-form] [name=provedor]")) {
+    const servidor = e.target.closest("form").querySelector("[name=servidor]");
+    if (e.target.value) servidor.value = e.target.value;
+    servidor.focus();
+    return;
+  }
+  if (e.target.matches("[data-entrada-telegram]")) {
+    try {
+      await api.put("/api/entrada/config", { telegram: { ativo: e.target.checked } });
+      toast(e.target.checked ? "Pronto: boletos enviados ao bot do Telegram vão aparecer em Ler boletos." : "O bot não recebe mais boletos.", "info", { duracao: 6000 });
+      await atualizarEntrada();
+    } catch (erro) {
+      e.target.checked = !e.target.checked;
+      toast(mensagemErro(erro), "erro");
+    }
+    return;
+  }
+  if (e.target.matches("[data-usuarios-config]")) {
+    const campo = e.target.dataset.usuariosConfig || "exigir_login_no_computador";
+    const ligado = e.target.checked;
+    const avisos = {
+      exigir_login_no_computador: ["Agora todos precisam entrar com o próprio usuário, inclusive neste computador.",
+                                   "Este computador não pede mais login."],
+      pedir_login_ao_abrir: ["Toda vez que o aplicativo abrir, será preciso entrar com usuário e senha neste computador.",
+                             "O aplicativo não vai mais pedir login ao abrir."],
+    };
+    try {
+      await api.put("/api/usuarios/config", { [campo]: ligado });
+      toast(avisos[campo][ligado ? 0 : 1], "info", { duracao: 6000 });
+      await atualizarUsuarios();  // ligar "ao abrir" liga junto o login neste computador
+    } catch (erro) {
+      e.target.checked = !ligado;
+      toast(mensagemErro(erro), "erro");
+    }
+    return;
+  }
+  if (e.target.matches("[data-app]")) {
+    alterarAplicativo(e.target);
+    return;
+  }
+  if (!e.target.matches("[data-rede='ativo']")) return;
+  const chave = e.target;
+  const ativo = chave.checked;
+  chave.disabled = true;
+  try {
+    const rede = await api.post("/api/rede/ativar", { ativo });
+    await atualizarRede(rede);
+    if (!ativo) toast("Acesso pela rede desligado.", "info");
+    else if (rede.rodando) toast("Acesso pela rede liberado. Leia o QR code com o celular.", "ok", { duracao: 6000 });
+    else toast(rede.erro || "Não foi possível abrir o acesso pela rede.", "erro", { duracao: 8000 });
+  } catch (erro) {
+    chave.checked = !ativo;
+    chave.disabled = false;
+    toast(mensagemErro(erro), "erro", { duracao: 7000 });
+  }
 }
 
 export async function aoEnviar(e) {
-  const form = e.target.closest("form");
-  if (!form || !tela.raiz?.contains(form)) return;
-  e.preventDefault(); // nenhum formulário desta tela recarrega a página
-  const funcao = acharFuncao("formularios", form.dataset.acao);
-  if (!funcao || emAndamento.has(form)) return;
-  const botoes = [...form.querySelectorAll("button[type=submit]")].map((b) => [b, b === e.submitter ? b.dataset.espera : null]);
-  emAndamento.add(form);
+  const formularioEmail = e.target.closest("[data-entrada-form='email']");
+  if (formularioEmail) {
+    e.preventDefault();
+    salvarEmail(formularioEmail);
+    return;
+  }
+  const formularioBackup = e.target.closest("[data-backup-form]");
+  if (formularioBackup) {
+    e.preventDefault();
+    salvarBackup(formularioBackup);
+    return;
+  }
+  const formularioUsuario = e.target.closest("[data-usuarios-form]");
+  if (formularioUsuario) {
+    e.preventDefault();
+    criarUsuario(formularioUsuario);
+    return;
+  }
+  const formularioAdmin = e.target.closest("[data-admin='criar']");
+  if (formularioAdmin) {
+    e.preventDefault();
+    criarSenhaAdmin(formularioAdmin);
+    return;
+  }
+  const formulario = e.target.closest("[data-rede='senha']");
+  if (!formulario) return;
+  e.preventDefault();
+  const dados = Object.fromEntries(new FormData(formulario).entries());
+  if (dados.senha !== dados.confirmacao) {
+    toast("As duas senhas não são iguais.", "erro");
+    return;
+  }
+  const botao = formulario.querySelector("button");
+  botao.disabled = true;
   try {
-    await rodar(funcao, botoes, [form, e]);
-  } finally {
-    emAndamento.delete(form);
+    const rede = await api.post("/api/rede/senha", dados);
+    await atualizarRede(rede);
+    toast("Senha de acesso salva.", "ok");
+  } catch (erro) {
+    botao.disabled = false;
+    toast(mensagemErro(erro), "erro", { duracao: 6000 });
   }
 }

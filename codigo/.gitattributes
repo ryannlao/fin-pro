@@ -1,6 +1,10 @@
 # Textos com fim de linha normalizado; arquivos binários nunca são alterados
 * text=auto
 *.bat text eol=crlf
+*.sh text eol=lf
+*.command text eol=lf
+Dockerfile text eol=lf
+*.yml text eol=lf
 *.py text eol=lf
 *.js text eol=lf
 *.css text eol=lf

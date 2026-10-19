@@ -74,6 +74,24 @@ def test_linha_com_ruido_de_ocr():
     assert len(codigos) == 1 and codigos[0].resultado.valido
 
 
+def test_letras_do_cabecalho_nao_viram_conta_de_consumo_fantasma():
+    """Caso do carnê (19/10/2026): "OOB" de SICOOB e as barras viram dígitos pela tradução de OCR, e uma janela de 48
+    dígitos começando no meio desse lixo formava por acaso uma linha de arrecadação válida, lida como 4º boleto."""
+    texto = "SICOOB | 756-0 | 75691.43212 02123.456804 01000.000008 9 16640000016050"
+    codigos = encontrar_codigos(texto, date(2026, 10, 19))
+    assert [c.resultado.linha_digitavel for c in codigos] == ["75691432120212345680401000000008916640000016050"]
+
+
+def test_duas_linhas_no_mesmo_trecho_mesmo_coladas_a_simbolos():
+    """A busca por início de grupo não pode esconder uma segunda linha colada a "|" ou "l" (revisão de 19/10/2026)."""
+    sicoob = "75691.43212 02123.456804 01000.000008 9 16640000016050"
+    bb = "00190.50095 40144.816069 06809.350314 3 37370000000100"
+    esperado = {"75691432120212345680401000000008916640000016050", "00190500954014481606906809350314337370000000100"}
+    for texto in (f"{sicoob} |{bb}", f"{sicoob}   l{bb}", f"|{sicoob} {bb}"):
+        codigos = encontrar_codigos(texto, date(2026, 10, 19))
+        assert {c.resultado.linha_digitavel for c in codigos if c.resultado.valido} == esperado, texto
+
+
 def test_segmentacao_de_ocr_sem_espacos():
     assert segmentar_palavras("EMPRESAEXEMPLODESERVICOSLTDA") == "EMPRESA EXEMPLO DE SERVICOS LTDA"
     assert segmentar_palavras("BANDEIRANTESCOMERCIOLTDA") == "BANDEIRANTES COMERCIO LTDA"

@@ -18,8 +18,10 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import hmac
+import ipaddress
 import threading
 import time
+from urllib.parse import urlsplit
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
@@ -78,7 +80,11 @@ def permissao_da_rota(metodo: str, caminho: str) -> str | None:
     """Permissão exigida por uma rota da API. ``None`` = liberada para quem já entrou; ``admin`` = só administrador."""
     if caminho in SEM_PERMISSAO:
         return None
-    telas = (("/api/gastos", "gastos"), ("/api/relatorios", "gastos"), ("/api/empresas", "empresas"),
+    if caminho.startswith("/api/notificacoes/resumo"):  # a prévia do resumo mostra caixa e empresas
+        return "notificacoes"
+    if metodo == "DELETE" and caminho.startswith("/api/gravacao"):  # cancelar descarta a alteração de alguém
+        return "editar"
+    telas =(("/api/gastos", "gastos"), ("/api/relatorios", "gastos"), ("/api/empresas", "empresas"),
              ("/api/notas", "empresas"), ("/api/cheques", "empresas"), ("/api/recebimentos", "empresas"),
              ("/api/caixa", "caixa"), ("/api/diesel", "diesel"))
     for prefixo, permissao in telas:  # essas telas são restritas para ver e para mexer
@@ -136,8 +142,27 @@ def autorizado(request: Request) -> bool:
         return True
     token = _token()
     if token is None:
-        return True  # sem senha configurada (só alcançável com LEITOR_HOST=0.0.0.0 no .env, com aviso)
+        return False  # sem senha (LEITOR_HOST=0.0.0.0 no .env ou na VPS): de fora não entra ninguém, nunca aberto
     return hmac.compare_digest(request.cookies.get(COOKIE, ""), token)
+
+
+def host_confiavel(host: str | None) -> bool:
+    """Endereço pelo qual o sistema foi chamado: IP, localhost, nome do computador na rede ou o LEITOR_URL.
+    Recusar nomes de outros sites impede o "DNS rebinding" (um site apontando o próprio nome para este computador)."""
+    nome = urlsplit(f"//{host or ''}").hostname or ""
+    if nome in ("localhost", urlsplit(config.URL_APP).hostname) or "." not in nome or nome.endswith(".local"):
+        return True
+    try:
+        ipaddress.ip_address(nome)
+        return True
+    except ValueError:
+        return False
+
+
+def origem_estranha(request: Request) -> bool:
+    """Pedido de gravação feito por outro site aberto no navegador (o navegador manda o cabeçalho Origin)."""
+    origem = request.headers.get("origin")
+    return origem is not None and urlsplit(origem).netloc != request.headers.get("host", "")
 
 
 def segundos_bloqueado(ip: str) -> int:
@@ -193,6 +218,9 @@ async def middleware(request: Request, call_next):
     caminho = request.url.path
     if not caminho.startswith("/api/"):
         return await call_next(request)
+    if not host_confiavel(request.headers.get("host")) or (request.method in ESCRITA and origem_estranha(request)):
+        return JSONResponse(status_code=403, content={"detail": {
+            "codigo": "origem_recusada", "mensagem": "Pedido recusado: ele não veio das telas do Fin Pro."}})
     local = requisicao_local(request)
     usuario = usuario_do_cookie(request)
     request.state.usuario = usuario
@@ -214,7 +242,9 @@ async def middleware(request: Request, call_next):
                     "codigo": "sem_permissao", "permissao": permissao,
                     "mensagem": f"{detalhe} Peça ao administrador do Fin Pro."}})
         elif not autorizado(request):
-            return JSONResponse(status_code=401, content={"detail": {"codigo": "nao_autorizado", "mensagem": "Informe a senha de acesso."}})
+            mensagem = ("Informe a senha de acesso." if protegido() else "O Fin Pro ainda não tem senha para acesso de "
+                        "fora: crie os usuários no computador principal ou defina LEITOR_SENHA_ACESSO.")
+            return JSONResponse(status_code=401, content={"detail": {"codigo": "nao_autorizado", "mensagem": mensagem}})
         if not requisicao_local(request) and _gerenciador is not None:
             _gerenciador.registrar_acesso(request.client.host, request.headers.get("user-agent"))
     return await call_next(request)

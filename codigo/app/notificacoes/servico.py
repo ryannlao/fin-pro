@@ -289,6 +289,7 @@ class ServicoNotificacoes:
                 dados = novo.get(canal)
                 if not isinstance(dados, dict):
                     continue
+                conexao = [estado[canal].get(c) for c in ("servidor", "porta", "seguranca", "usuario")]
                 for campo, valor in dados.items():
                     if campo not in estado[canal] or valor is None:
                         continue
@@ -304,6 +305,10 @@ class ServicoNotificacoes:
                     elif isinstance(valor, str):
                         valor = valor.strip()
                     estado[canal][campo] = valor
+                # Servidor trocado sem digitar a senha de novo: a senha guardada não vai para o servidor novo
+                if (canal == "email" and dados.get("senha") in (None, MASCARA)
+                        and conexao != [estado[canal].get(c) for c in ("servidor", "porta", "seguranca", "usuario")]):
+                    estado[canal]["senha"] = ""
             telegram_novo = novo.get("telegram") if isinstance(novo.get("telegram"), dict) else {}
             telegram = estado["telegram"]
             if telegram_novo.get("chat_id") and "destinatarios" not in telegram_novo:

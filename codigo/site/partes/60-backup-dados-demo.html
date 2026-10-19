@@ -1,0 +1,167 @@
+
+      <section class="secao" id="backup">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Backup total e controle de versão</p>
+            <h2>Se o computador quebrar amanhã, o sistema inteiro volta com dois cliques</h2>
+            <p class="lide">O backup leva tudo o que é preciso para reerguer o Fin Pro em outro computador: dados, comprovantes, configurações, o próprio programa e o histórico de versões. E ele se confere sozinho depois de cada cópia.</p>
+          </div>
+          <figure class="tela" data-galeria>
+            <div class="abas" role="tablist" aria-label="Telas de Configurações">
+              <button type="button" role="tab" aria-selected="true" data-img="img/config.webp" data-alt="Configurações com o aplicativo no computador e o cartão Versão do sistema com o histórico" data-legenda="Configurações, aba Geral: opções do aplicativo e o cartão Versão do sistema, com a versão em uso e o que mudou em cada uma.">Versão do sistema</button>
+              <button type="button" role="tab" aria-selected="false" data-img="img/config-saude.webp" data-alt="Saúde do sistema com cada parte marcada como funcionando ou desligada" data-legenda="Saúde do sistema: banco de dados e planilha, empresas, bots, lembretes, gravações, leitura, espaço em disco e backup, cada um com a sua situação.">Saúde do sistema</button>
+            </div>
+            <div class="janela">
+              <div class="janela-barra"><i></i><i></i><i></i><span>Fin Pro · Configurações</span></div>
+              <button class="ampliar" type="button" data-ampliar="img/config.webp" data-legenda="Configurações, aba Geral: opções do aplicativo e o cartão Versão do sistema, com a versão em uso e o que mudou em cada uma."><img src="img/config.webp" width="1600" height="1000" loading="lazy" alt="Configurações com o aplicativo no computador e o cartão Versão do sistema com o histórico"></button>
+            </div>
+            <figcaption>Configurações, aba Geral: opções do aplicativo e o cartão Versão do sistema, com a versão em uso e o que mudou em cada uma.</figcaption>
+          </figure>
+          <div class="blocos">
+            <article class="bloco largo">
+              <h3>O que vai no backup</h3>
+              <div class="rolagem">
+                <table>
+                  <thead><tr><th>Parte</th><th>O que guarda</th><th>Como é copiada</th></tr></thead>
+                  <tbody>
+                    <tr><th>Bancos e planilhas</th><td>Os três bancos de dados (boletos, empresas e diesel) e as planilhas Excel</td><td>Uma cópia por dia, guardando os últimos 30 dias (ajustável)</td></tr>
+                    <tr><th>Arquivos</th><td>Boletos, comprovantes, cupons do caixa, canhotos, cheques e notas</td><td>Só o que é novo ou mudou</td></tr>
+                    <tr><th>Configurações</th><td>Lembretes, usuários, bots, preços e modelos de importação</td><td>Sempre</td></tr>
+                    <tr><th>Código-fonte</th><td>O programa inteiro</td><td>Só o que mudou. O que saiu do sistema sai do backup.</td></tr>
+                    <tr><th>Versões</th><td>Todo o histórico de versões num arquivo, e a versão em uso</td><td>A cada backup</td></tr>
+                    <tr><th>Pacote completo</th><td>Tudo isso num único arquivo .zip, bom para um pen drive</td><td>Toda semana ou todo mês, ou pelo botão. Guarda os últimos 4.</td></tr>
+                    <tr><th>Manifesto</th><td>A lista de todos os arquivos, com a impressão digital (SHA-256) de cada um</td><td>A cada backup</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+            <article class="bloco">
+              <h3>Onde e quando</h3>
+              <ul>
+                <li>Numa pasta do <strong>OneDrive</strong>, <strong>Google Drive</strong> ou <strong>Dropbox</strong>, num <strong>pen drive</strong> ou num <strong>HD externo</strong>. O sistema sugere as pastas de nuvem que encontra no computador.</li>
+                <li><strong>Todo dia</strong>, no horário escolhido. Se o computador estava desligado, faz assim que abrir.</li>
+                <li>Botões <strong>Fazer backup agora</strong>, <strong>Gerar pacote completo (.zip)</strong> e <strong>Verificar backup</strong>.</li>
+                <li>O menu mostra <strong>Backup em dia</strong>, <strong>atrasado</strong> (mais de 2 dias) ou <strong>desligado</strong>.</li>
+                <li>Além disso, uma cópia diária interna é mantida por 30 dias.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Conferência automática</h3>
+              <ul>
+                <li>Depois de cada backup, o sistema abre os bancos copiados e confere se estão <strong>íntegros</strong>.</li>
+                <li>Confere se <strong>nenhum comprovante ficou de fora</strong> e se o código e as versões estão lá.</li>
+                <li><strong>Verificar backup</strong> faz a conferência completa, arquivo por arquivo, comparando a impressão digital.</li>
+                <li>Se algo não bater, o cartão mostra o que foi e a Saúde do sistema fica em <strong>Problema</strong>.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Restauração</h3>
+              <ul>
+                <li>Num computador novo, instale o Python, abra a pasta do backup e dê dois cliques em <code>RESTAURAR.bat</code>.</li>
+                <li>Funciona a partir da pasta do backup ou de um <strong>pacote .zip</strong>.</li>
+                <li>Volta o sistema inteiro: programa, dados, comprovantes, configurações e versões.</li>
+                <li>Se a pasta de destino já tiver dados, ele <strong>para</strong> em vez de sobrescrever.</li>
+                <li>O restaurador usa só o que já vem com o Python, para rodar antes de instalar qualquer coisa.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Controle de versão</h3>
+              <ul>
+                <li>Cada versão do programa é guardada com <strong>número</strong>, <strong>data</strong> e a <strong>lista do que mudou</strong>.</li>
+                <li>O cartão <strong>Versão do sistema</strong> mostra a versão em uso, o histórico e se há alteração ainda não guardada.</li>
+                <li>Dá para <strong>comparar</strong> duas versões e <strong>voltar</strong> a qualquer uma.</li>
+                <li>Voltar não apaga nada: o código antigo vira uma versão nova, e <strong>os dados não são tocados</strong>.</li>
+                <li>As versões guardam só o programa, sem dados, senhas ou tokens.</li>
+                <li>Os testes automáticos rodam antes de cada versão ser guardada.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Saúde do sistema</h3>
+              <ul>
+                <li>Diagnóstico de banco de dados e planilha, empresas, caixa, diesel, lembretes, backup, recebimento por e-mail e Telegram, gravações pendentes, leitura, espaço em disco e acesso pela rede.</li>
+                <li>Cada item fica <strong>Funcionando</strong>, <strong>Atenção</strong>, <strong>Problema</strong> ou <strong>Desligado</strong>, com o botão que resolve ao lado.</li>
+                <li>Ações <strong>Atualizar a planilha agora</strong> e <strong>Limpar os logs</strong>.</li>
+                <li>O registro de funcionamento tem limite de tamanho e gira sozinho.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="secao" id="dados">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Dados e planilha</p>
+            <h2>Banco de dados por baixo, planilha Excel sempre pronta por cima</h2>
+            <p class="lide">Você não precisa abandonar o Excel. Os dados ficam em bancos SQLite, com gravação instantânea e segura, e as planilhas são geradas sozinhas poucos segundos depois de cada alteração.</p>
+          </div>
+          <div class="blocos">
+            <article class="bloco">
+              <h3>A planilha continua existindo</h3>
+              <ul>
+                <li><code>boletos.xlsx</code> com as abas Boletos, Pix, Caixa, Centros de Custo, Resumo e Histórico.</li>
+                <li><code>fechamentos.xlsx</code> com Empresas, Notas Fiscais, Cheques, Recebimentos e Histórico.</li>
+                <li><code>diesel.xlsx</code> com máquinas, compras e abastecimentos.</li>
+                <li>Cada lançamento tem o <strong>link clicável</strong> para o arquivo original.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Aberta no Excel não trava nada</h3>
+              <ul>
+                <li>Pode deixar a planilha aberta: o sistema continua gravando no banco e atualiza o arquivo quando ele for fechado.</li>
+                <li><strong>Edições feitas no Excel</strong> em lançamentos existentes voltam para o sistema.</li>
+                <li>O que foi gravado no sistema nesse meio-tempo não é desfeito.</li>
+                <li>Botões <strong>Abrir planilha</strong>, <strong>Abrir pasta de dados</strong> e <strong>Baixar cópia</strong>.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Onde fica cada coisa</h3>
+              <ul>
+                <li>Uma pasta <code>dados</code> no computador, com os três bancos, as planilhas e a pasta <code>arquivos</code> com os PDFs e fotos originais.</li>
+                <li>Configurações em arquivos separados: lembretes, usuários, bots, backup, rede e preferências.</li>
+                <li>Cópia diária interna dos bancos e da planilha por 30 dias.</li>
+                <li>Gravação em lote: vários boletos entram numa única gravação.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="secao" id="demonstracao">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Versão de demonstração</p>
+            <h2>Veja tudo funcionando com dados de exemplo, sem risco</h2>
+            <p class="lide">Dois cliques abrem um Fin Pro completo, cheio de lançamentos fictícios, ao lado do sistema de verdade. Todas as telas desta página foram tiradas dele.</p>
+          </div>
+          <div class="blocos">
+            <article class="bloco">
+              <h3>O que vem dentro</h3>
+              <ul>
+                <li>Boletos pagos, pendentes e atrasados, com juros.</li>
+                <li>Pix, caixa com cupons e sete centros de custo.</li>
+                <li>Três empresas com notas, cheques e recebimentos.</li>
+                <li>Diesel com 5 máquinas, 9 semanas de compras de S10 e comum e os canhotos.</li>
+                <li>Usuários com permissões diferentes, lembretes e resumos ligados.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Seguro para mostrar</h3>
+              <ul>
+                <li><strong>Nada é enviado para fora:</strong> Telegram e e-mail aparecem configurados, mas o envio é bloqueado.</li>
+                <li>Roda em outra porta, ao mesmo tempo que o sistema real.</li>
+                <li>Os dados reais <strong>nunca são tocados</strong>.</li>
+                <li>A janela mostra o selo <strong>Versão de demonstração</strong>.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Como abrir</h3>
+              <ul>
+                <li>Dois cliques em <code>demonstracao.bat</code>.</li>
+                <li>Abre sem senha. Para mostrar as permissões, há três usuários de exemplo: um administrador e dois comuns.</li>
+                <li><code>demonstracao.bat --refazer</code> monta os dados do zero, com as datas de hoje.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>

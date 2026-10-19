@@ -70,7 +70,8 @@ def _item(r: dict, hoje: date) -> str:
         linhas[-1] += f" · {html.escape(r['centro_custo'])}"
     if r["_tipo"] == "boleto" and r.get("linha_digitavel"):
         # só os números: tocar no <code> do Telegram copia o texto exato, pronto para colar no banco
-        linhas.append(f"<code>{html.escape(re.sub(r'\D', '', r['linha_digitavel']))}</code>")
+        so_numeros = re.sub(r"\D", "", r["linha_digitavel"])  # fora da f-string: barra invertida nela exige Python 3.12
+        linhas.append(f"<code>{html.escape(so_numeros)}</code>")
     elif r["_tipo"] == "pix":
         if r.get("chave"):
             linhas.append(f"Chave: <code>{html.escape(formatar_chave(r.get('tipo_chave'), r.get('chave')))}</code>")
@@ -143,7 +144,7 @@ def responder(texto: str, nome: str = "", hoje: date | None = None) -> list[str]
     if comando in ("previsao", "resumo"):
         p = servicos.previsao_saidas(ctx.repositorio.listar(), ctx.repositorio_pix.listar(), hoje, semanas=4)
         if comando == "previsao":
-            linhas = [f"<b>Previsão de saídas</b>", f"🔴 Em atraso: {_moeda(p['em_atraso']['total'])} ({p['em_atraso']['quantidade']})"]
+            linhas = ["<b>Previsão de saídas</b>", f"🔴 Em atraso: {_moeda(p['em_atraso']['total'])} ({p['em_atraso']['quantidade']})"]
             for i, s in enumerate(p["semanas"]):
                 inicio, fim = date.fromisoformat(s["inicio"]), date.fromisoformat(s["fim"])
                 rotulo = "Próximos 7 dias" if i == 0 else f"{inicio:%d/%m} a {fim:%d/%m}"

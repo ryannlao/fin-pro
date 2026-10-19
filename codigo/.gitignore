@@ -7,7 +7,12 @@ venv/
 __pycache__/
 *.pyc
 .pytest_cache/
+.ruff_cache/
 *.tmp
+
+# Ferramentas de desenvolvimento em Node.js (ESLint) e o grafo gerado pelo Graphify
+node_modules/
+graphify-out/
 
 # Senhas e chaves
 .env

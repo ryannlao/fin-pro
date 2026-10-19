@@ -18,6 +18,12 @@
       "runtimeExecutable": ".venv/Scripts/python.exe",
       "runtimeArgs": ["-c", "import os; os.environ['LEITOR_DEMO'] = '1'; os.environ['LEITOR_DADOS_DIR'] = 'dados_demo'; os.environ['LEITOR_NOME_APP'] = 'Fin Pro (demonstracao)'; os.environ['LEITOR_NOTIFICACOES_AUTOMATICAS'] = '0'; os.environ['LEITOR_BACKUP_AUTOMATICO'] = '0'; os.environ['LEITOR_PORT'] = '8010'; import uvicorn; uvicorn.run('app.main:app', host='127.0.0.1', port=8010)"],
       "port": 8010
+    },
+    {
+      "name": "fin-pro-site",
+      "runtimeExecutable": ".venv/Scripts/python.exe",
+      "runtimeArgs": ["-m", "http.server", "8030", "--directory", "site", "--bind", "127.0.0.1"],
+      "port": 8030
     }
   ]
 }

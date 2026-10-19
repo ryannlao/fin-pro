@@ -1,0 +1,195 @@
+
+      <section class="secao" id="caixa">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Módulo · Caixa</p>
+            <h2>O dinheiro em espécie deixa de ser um caderno à parte</h2>
+            <p class="lide">Entradas e saídas em dinheiro por dia, semana, mês ou ano, cada saída com a foto do cupom, o centro de custo e quem gastou. O bot do caixa lê o cupom e deixa o gasto pronto para lançar.</p>
+          </div>
+          <figure class="tela" data-galeria>
+            <div class="abas" role="tablist" aria-label="Telas do Caixa">
+              <button type="button" role="tab" aria-selected="true" data-img="img/caixa.webp" data-alt="Movimento do caixa no mês, com entradas, saídas, saldo do período e saldo em caixa" data-legenda="Movimento do mês: entradas, saídas, saldo do período e quanto deveria ter no caixa.">Movimento</button>
+              <button type="button" role="tab" aria-selected="false" data-img="img/caixa-relatorios.webp" data-alt="Relatórios do caixa com gráficos de saídas e entradas por dia e onde mais se gastou" data-legenda="Relatórios do caixa: gasto médio, maior saída, comparação com o período anterior, gráficos e onde mais se gastou.">Relatórios</button>
+            </div>
+            <div class="janela">
+              <div class="janela-barra"><i></i><i></i><i></i><span>Fin Pro · Caixa</span></div>
+              <button class="ampliar" type="button" data-ampliar="img/caixa.webp" data-legenda="Movimento do mês: entradas, saídas, saldo do período e quanto deveria ter no caixa."><img src="img/caixa.webp" width="1600" height="1000" loading="lazy" alt="Movimento do caixa no mês, com entradas, saídas, saldo do período e saldo em caixa"></button>
+            </div>
+            <figcaption>Movimento do mês: entradas, saídas, saldo do período e quanto deveria ter no caixa.</figcaption>
+          </figure>
+          <div class="blocos">
+            <article class="bloco">
+              <h3>Movimento</h3>
+              <ul>
+                <li><strong>Entrada:</strong> valor, data e o que foi pedido.</li>
+                <li><strong>Saída:</strong> valor, data, o que foi comprado, onde foi gasto, centro de custo e quem gastou, com a foto do cupom.</li>
+                <li>Períodos <strong>Dia, Semana, Mês e Ano</strong>, com setas e o botão Hoje.</li>
+                <li>Cartões de <strong>Entradas</strong>, <strong>Saídas</strong>, <strong>Saldo do período</strong> e <strong>Saldo em caixa</strong>: o que deveria ter na gaveta no fim do período.</li>
+                <li>Editar, cancelar e ver o histórico de cada lançamento.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Relatórios do caixa</h3>
+              <ul>
+                <li>Onde mais se gastou, por loja ou fornecedor.</li>
+                <li>Por <strong>centro de custo</strong>, <strong>quem mais gastou</strong> e <strong>entradas por pedido</strong>.</li>
+                <li>Gasto médio por saída, maior saída, entrada média e comparação com o período anterior.</li>
+                <li>Gráficos de entradas e saídas por dia, ou por mês na visão do ano.</li>
+                <li><strong>Excel</strong> do período com o resumo e todos os lançamentos.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Bot do caixa</h3>
+              <ul>
+                <li>A pessoa manda a <strong>foto do cupom ou da nota</strong>.</li>
+                <li>O bot lê o <strong>valor a pagar</strong>, nunca o dinheiro entregue nem o troco, a data e a loja. Sem valor legível, ele pergunta.</li>
+                <li>Pergunta <strong>onde foi gasto</strong>, com um botão para usar o nome da loja.</li>
+                <li>Mostra os <strong>centros de custo como botões</strong>, com a opção de cadastrar um novo na hora.</li>
+                <li>O gasto aparece em <strong>Conferência</strong> já preenchido: Lançar com um clique ou Revisar.</li>
+                <li>Comandos <code>/resumo</code>, <code>/cancelar</code> e <code>/ajuda</code>.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Ligado ao resto do sistema</h3>
+              <ul>
+                <li>As saídas entram na <strong>Análise de gastos</strong>, com o cartão Dinheiro (caixa) e o filtro Só dinheiro.</li>
+                <li>Entram no <strong>Fechamento do mês</strong> para o contador, com a foto do cupom no ZIP.</li>
+                <li>Aparecem no <strong>resumo de sexta-feira</strong>.</li>
+                <li>Os cupons ficam na busca de <strong>Comprovantes</strong>.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="secao" id="diesel">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Módulo · Diesel</p>
+            <h2>Quanto de diesel ainda há no posto, e qual máquina está bebendo mais</h2>
+            <p class="lide">Para quem compra combustível adiantado no posto e abastece caminhões e máquinas ao longo da semana. O Fin Pro controla as compras, cada abastecimento, o saldo em reais, o consumo por máquina e manda o relatório sozinho.</p>
+          </div>
+
+          <div class="destaque">
+            <h3>O saldo é em dinheiro, e a conta é esta</h3>
+            <p class="formula">saldo = total pago nas compras − (litros × preço do combustível) de cada abastecimento</p>
+            <p>A compra funciona como um crédito no posto que serve para Diesel S10 e para Diesel comum, e cada um tem o seu preço. Exemplo: R$ 7.450,00 pagos; saem 200 L de comum a R$ 6,75 (R$ 1.350,00) e 200 L de S10 a R$ 7,45 (R$ 1.490,00). O saldo fica em <strong>R$ 4.610,00</strong>, e a tela mostra quantos litros de cada combustível ele ainda compra.</p>
+          </div>
+
+          <figure class="tela" data-galeria>
+            <div class="abas" role="tablist" aria-label="Telas do Diesel">
+              <button type="button" role="tab" aria-selected="true" data-img="img/diesel-mes.webp" data-alt="Painel do diesel no mês com saldo, comprado, abastecido, preço do litro e consumo por máquina" data-legenda="Painel do mês: saldo em reais com os litros equivalentes, comprado, abastecido, preço do litro e o consumo de cada máquina.">Painel do mês</button>
+              <button type="button" role="tab" aria-selected="false" data-img="img/diesel-relatorios-mes.webp" data-alt="Relatório simples do diesel em frases, com quatro números e o gasto por máquina" data-legenda="Relatório Simples: o mês em frases, quatro números e quanto cada máquina gastou.">Relatório simples</button>
+              <button type="button" role="tab" aria-selected="false" data-img="img/diesel-detalhado-mes-2.webp" data-alt="Relatório detalhado do diesel com comparação com o mês anterior, gráfico por dia e tabela por máquina" data-legenda="Relatório Detalhado: comparação com o mês anterior, valor por dia separado por combustível e a tabela por máquina com consumo e variação.">Relatório detalhado</button>
+            </div>
+            <div class="janela">
+              <div class="janela-barra"><i></i><i></i><i></i><span>Fin Pro · Diesel</span></div>
+              <button class="ampliar" type="button" data-ampliar="img/diesel-mes.webp" data-legenda="Painel do mês: saldo em reais com os litros equivalentes, comprado, abastecido, preço do litro e o consumo de cada máquina."><img src="img/diesel-mes.webp" width="1600" height="1000" loading="lazy" alt="Painel do diesel no mês com saldo, comprado, abastecido, preço do litro e consumo por máquina"></button>
+            </div>
+            <figcaption>Painel do mês: saldo em reais com os litros equivalentes, comprado, abastecido, preço do litro e o consumo de cada máquina.</figcaption>
+          </figure>
+
+          <div class="blocos">
+            <article class="bloco">
+              <h3>Saldo e última compra</h3>
+              <ul>
+                <li>Saldo em <strong>R$</strong>, com quantos litros ele ainda compra de cada combustível pelo preço atual.</li>
+                <li><strong>Última compra:</strong> valor pago e quanto já foi abastecido desde então, com barra de progresso.</li>
+                <li>Compras de S10 e de comum no mesmo dia contam como uma só.</li>
+                <li>Abastecimento sem valor no canhoto usa o preço da tabela; sem tabela, o preço médio das compras.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Combustíveis e preços</h3>
+              <ul>
+                <li>Reconhece <strong>Diesel S10</strong>, <strong>Diesel comum (S500)</strong>, <strong>Gasolina</strong>, <strong>Etanol</strong> e <strong>Arla 32</strong>, mesmo escrito grudado.</li>
+                <li>Cartão <strong>Preço do litro</strong> para informar o preço de cada combustível.</li>
+                <li>Se o canhoto traz o preço, vale o dele. Em todo formulário, litros × preço preenche o total.</li>
+                <li>Cada máquina tem o <strong>combustível que usa</strong>, que completa o canhoto que não diz qual é.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Painel do diesel</h3>
+              <ul>
+                <li>Períodos <strong>Semana, Quinzena, Mês e Ano</strong>.</li>
+                <li><strong>Comprado</strong> e <strong>Abastecido</strong> no período, em R$ e litros, com litros por dia e a divisão entre S10 e comum.</li>
+                <li><strong>Consumo por máquina:</strong> litros, R$, % do total, número de abastecimentos e consumo em L/h ou km/L.</li>
+                <li><strong>Lançamentos</strong> com data, hora, máquina ou posto, pedido, combustível, litros, horímetro ou km, valor, preço por litro, quem abasteceu e quem lançou.</li>
+                <li>Ver canhoto, histórico, editar e cancelar.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Lançar pela tela</h3>
+              <ul>
+                <li><strong>Enviar canhoto ou comprovante</strong>, ou arrastar o arquivo para a tela.</li>
+                <li>O formulário abre <strong>já preenchido</strong> para conferir.</li>
+                <li><strong>Canhoto com várias linhas:</strong> cada linha vira um abastecimento e pode ir para uma máquina diferente.</li>
+                <li>O leitor confere <strong>litros × preço = total</strong> em cada linha e acerta números tortos da foto pelos totais do rodapé.</li>
+                <li>Na compra, o posto vem do <strong>favorecido do comprovante</strong> do banco.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Máquinas</h3>
+              <ul>
+                <li>Cadastro com nome, tipo (caminhão, máquina, veículo, gerador ou outro), placa ou prefixo e observações.</li>
+                <li><strong>Medidor:</strong> horímetro, hodômetro ou nenhum.</li>
+                <li>Combustível que usa e situação.</li>
+                <li><strong>Média dos últimos 30 dias</strong> de cada uma.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Bot do diesel</h3>
+              <ul>
+                <li>Lê o <strong>canhoto</strong>: combustíveis, litros e, quando aparecem, data, posto, placa e horímetro ou km.</li>
+                <li>Manda a foto para o <strong>responsável</strong>, que escolhe a máquina em botões. As que usam aquele combustível vêm primeiro, e o caminhão da placa já vem marcado.</li>
+                <li>Pede o horímetro ou km, com a opção Pular.</li>
+                <li>Botões para cadastrar máquina nova, corrigir os litros e escolher o combustível.</li>
+                <li>Responde com o lançamento, o <strong>saldo em R$</strong> e a <strong>média da máquina</strong>. Quem mandou o canhoto também é avisado.</li>
+                <li><strong>Comprovante de compra:</strong> lê valor, litros e combustível e soma ao saldo.</li>
+                <li><strong>Aviso de diesel acabando</strong> quando o saldo fica abaixo do limite, que vem em R$ 1.000 e pode ser mudado.</li>
+              </ul>
+            </article>
+            <article class="bloco largo">
+              <h3>Relatórios em três níveis</h3>
+              <div class="rolagem">
+                <table>
+                  <thead><tr><th>Nível</th><th>Para quem</th><th>O que mostra</th></tr></thead>
+                  <tbody>
+                    <tr><th>Simples</th><td>Quem quer a resposta em um minuto</td><td>O período em frases ("Foram abastecidos R$ 17.093,27 em 15 abastecimentos", "−33% em relação ao mês anterior", "o saldo dá para uns 7 dias", "quem mais gastou"), quatro números e quanto cada máquina gastou. Um botão avisa quando há pontos de atenção.</td></tr>
+                    <tr><th>Detalhado</th><td>Quem acompanha a frota</td><td>Tudo do simples, mais os pontos de atenção, a comparação com o período anterior (valor, litros, abastecimentos e R$ médio por litro), o gráfico por dia separado por combustível, a tabela por máquina (litros, R$, R$/L, %, litros por dia, média por abastecimento, consumo, variação e último), por combustível e as compras.</td></tr>
+                    <tr><th>Completo</th><td>Quem precisa auditar</td><td>Tudo do detalhado, mais cada abastecimento agrupado por máquina com o consumo do trecho desde o abastecimento anterior, o dia a dia, por posto e quem abasteceu, com o link do canhoto.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+            <article class="bloco">
+              <h3>Pontos de atenção que ele aponta sozinho</h3>
+              <ul>
+                <li>Saldo <strong>negativo</strong> (falta lançar uma compra?) ou <strong>abaixo do limite</strong>.</li>
+                <li>Máquina que consumiu <strong>bem acima do costume</strong> dela, pela média dos 90 dias anteriores, só depois de 14 dias de histórico.</li>
+                <li>Abastecimentos <strong>sem horímetro ou km</strong> em máquinas que usam medidor.</li>
+                <li>Abastecimentos <strong>sem preço</strong>, com valor estimado pela tabela.</li>
+                <li>Máquinas <strong>sem abastecimento</strong> no período.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Previsão e filtros</h3>
+              <ul>
+                <li><strong>Quantos dias o saldo dura</strong> no ritmo dos últimos 30 dias, e em que data acaba.</li>
+                <li>Filtros por máquina e por combustível nos níveis Detalhado e Completo.</li>
+                <li>O sistema lembra o último nível escolhido.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>No Telegram e no Excel</h3>
+              <ul>
+                <li><strong>Enviar no Telegram</strong> manda o relatório no nível que está na tela.</li>
+                <li><code>/relatorio</code>, <code>/relatorio mes</code>, <code>/relatorio quinzena detalhado</code>, <code>/relatorio ano completo</code>.</li>
+                <li><strong>Automáticos:</strong> semanal toda segunda, quinzenal nos dias 1 e 16 e mensal no dia 1, no horário e no nível que você escolher.</li>
+                <li><strong>Excel do período</strong>, sempre completo: Resumo, Máquinas, Por dia, Combustíveis, Por posto, Por pessoa, Abastecimentos, Compras e Pontos de atenção.</li>
+                <li>Outros comandos: <code>/saldo</code>, <code>/medias</code>, <code>/maquinas</code>.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>

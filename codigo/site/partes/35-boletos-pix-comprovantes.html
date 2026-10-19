@@ -1,0 +1,212 @@
+
+      <section class="secao" id="boletos">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Módulo · Boletos lançados</p>
+            <h2>Do vencimento ao comprovante, com os juros à vista</h2>
+            <p class="lide">Lista com busca e filtros, calendário de vencimentos, ações em lote e a baixa automática: você manda o comprovante e o sistema descobre de qual boleto ele é, marca como pago e registra quanto foi de juros, multa ou desconto.</p>
+          </div>
+          <figure class="tela" data-galeria>
+            <div class="abas" role="tablist" aria-label="Telas de Boletos lançados">
+              <button type="button" role="tab" aria-selected="true" data-img="img/boletos.webp" data-alt="Lista de boletos lançados com filtros, resumo e ações" data-legenda="Lista com filtros de situação, período e centro de custo. Nos pagos com atraso aparece o valor pago e os juros logo abaixo do valor.">Lista</button>
+              <button type="button" role="tab" aria-selected="false" data-img="img/calendario.webp" data-alt="Calendário de vencimentos do mês com o total de cada dia" data-legenda="Calendário do mês com o total por dia e cores para vencido, vence hoje, a vencer e pago.">Calendário</button>
+            </div>
+            <div class="janela">
+              <div class="janela-barra"><i></i><i></i><i></i><span>Fin Pro · Boletos lançados</span></div>
+              <button class="ampliar" type="button" data-ampliar="img/boletos.webp" data-legenda="Lista com filtros de situação, período e centro de custo. Nos pagos com atraso aparece o valor pago e os juros logo abaixo do valor."><img src="img/boletos.webp" width="1600" height="1000" loading="lazy" alt="Lista de boletos lançados com filtros, resumo e ações"></button>
+            </div>
+            <figcaption>Lista com filtros de situação, período e centro de custo. Nos pagos com atraso aparece o valor pago e os juros logo abaixo do valor.</figcaption>
+          </figure>
+
+          <div class="duas">
+            <div class="recibo" aria-label="Exemplo de comprovante de pagamento com carimbo de pago">
+              <b>COMPROVANTE DE PAGAMENTO</b>
+              <span>Pagamento de boleto</span>
+              <hr>
+              <span class="par"><span>Beneficiário</span><b>AUTO PEÇAS CENTRAL LTDA</b></span>
+              <span class="par"><span>Vencimento</span><b>10/10/2026</b></span>
+              <span class="par"><span>Valor do documento</span><b>R$ 270,35</b></span>
+              <span class="par"><span>Juros e multa</span><b>R$ 5,40</b></span>
+              <span class="par"><span>Valor pago</span><b>R$ 275,75</b></span>
+              <span class="par"><span>Pago em</span><b>15/10/2026</b></span>
+              <hr>
+              <span>Exemplo com dados fictícios</span>
+              <span>&nbsp;</span>
+              <span class="carimbo">Pago<small>baixa automática</small></span>
+            </div>
+            <article class="bloco">
+              <h3>Baixa automática pelo comprovante</h3>
+              <ul>
+                <li>O sistema <strong>percebe que é um comprovante</strong>, e não um boleto, e lê valor pago, valor do documento, juros e multa, desconto, data do pagamento, vencimento, beneficiário, CNPJ, chave Pix e a linha digitável, quando o banco imprime.</li>
+                <li><strong>Descobre de qual lançamento é:</strong> linha igual resolve na hora; sem ela, compara valor, CNPJ, nome e datas.</li>
+                <li><strong>Marca como pago</strong> com a data do comprovante e grava Valor Pago, Juros/Multa e Desconto. Se o comprovante não detalha, a diferença vira juros (a mais) ou desconto (a menos).</li>
+                <li><strong>Na dúvida, não chuta.</strong> Parcelas iguais sem linha digitável aparecem para alguém escolher e clicar em Registrar pagamento.</li>
+                <li>Comprovante de <strong>agendamento</strong> não dá baixa, porque o pagamento ainda não aconteceu.</li>
+                <li>Depois da baixa pela tela aparece o botão <strong>Desfazer</strong>.</li>
+                <li>O comprovante pode chegar pela tela Ler boletos, pelo bot, por e-mail ou pelo botão de histórico da lista.</li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="blocos">
+            <article class="bloco">
+              <h3>Lista</h3>
+              <ul>
+                <li><strong>Busca</strong> por beneficiário, documento, CPF/CNPJ ou linha, com o atalho <kbd>/</kbd>.</li>
+                <li><strong>Situação:</strong> Todos, Pendentes, A vencer, Vencidos, Pagos e Cancelados.</li>
+                <li><strong>Período</strong> por vencimento ou por data de lançamento.</li>
+                <li><strong>Centro de custo.</strong></li>
+                <li>Ordenação por coluna e paginação.</li>
+                <li><strong>Resumo:</strong> valor total, pendente, vencido, pago e "Juros e multas pagos" do que está filtrado.</li>
+                <li>Selos Pendente, Vence hoje, Atrasado, Pago e Cancelado. Nos pagos com juros aparece "+ R$ x juros".</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Ações em cada boleto</h3>
+              <ul>
+                <li><strong>Copiar a linha digitável</strong> só com os números, sem pontos nem espaços, pronta para colar no banco.</li>
+                <li><strong>Marcar como pago</strong>, com data e, se quiser, valor pago, juros e comprovante.</li>
+                <li><strong>Editar</strong> beneficiário, documento, vencimento, valor, situação, centro de custo, observações, valor pago, juros/multa e desconto.</li>
+                <li><strong>Ver o arquivo original</strong> do boleto.</li>
+                <li><strong>Histórico e comprovante:</strong> quem lançou, quem pagou, todas as alterações, e o comprovante para ver, anexar, trocar ou remover.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Ações em lote</h3>
+              <ul>
+                <li>Selecione vários e use <strong>Marcar pagos</strong>, <strong>Marcar pendentes</strong>, <strong>Cancelar</strong>, <strong>Centro de custo</strong> ou <strong>Excluir</strong>.</li>
+                <li>O centro de custo é atribuído a todos de uma vez.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Calendário de vencimentos</h3>
+              <ul>
+                <li>Visão do mês com o <strong>total por dia</strong>.</li>
+                <li>Cores para vencido, vence hoje, a vencer e pago.</li>
+                <li>Resumo do mês, incluindo os juros pagos.</li>
+                <li>Clicar num dia permite marcar como pago, copiar a linha ou editar.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Exportar e abrir no Excel</h3>
+              <ul>
+                <li><strong>Exportar</strong> para Excel ou CSV com os filtros atuais.</li>
+                <li><strong>Abrir no Excel</strong> a planilha que o sistema mantém atualizada.</li>
+                <li>Atalho <strong>Comprovantes</strong> para a busca já filtrada nos boletos.</li>
+                <li>Aviso "Aguardando gravação" quando a planilha está aberta em outro programa: o sistema grava quando ela for fechada.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Importar de outro sistema</h3>
+              <ul>
+                <li>Área restrita, com <strong>senha de administrador</strong>.</li>
+                <li>Aceita <strong>Excel (.xlsx e .xls), CSV e TXT</strong>.</li>
+                <li>As colunas são reconhecidas pelo nome, inclusive sinônimos como "Fornecedor", "Cedente", "Vencto", "Valor Título", "Cód. Barras", "Situação" e "C. Custo". Dá para ajustar, escolher a aba e a linha dos títulos.</li>
+                <li>A <strong>prévia</strong> confere cada linha: dígitos verificadores, valor e vencimento contra o código, boletos já lançados e repetidos no próprio arquivo. Linhas de total são ignoradas.</li>
+                <li>"Pago", "Liquidado" e "Baixado" entram como pagos.</li>
+                <li>As colunas escolhidas ficam salvas, e há uma planilha modelo para baixar.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="secao" id="pix">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Módulo · Pagamentos Pix</p>
+            <h2>Os Pix a pagar entram na mesma fila dos boletos</h2>
+            <p class="lide">Cole o Pix Copia e Cola, envie o print do QR code ou digite a chave. O Pix ganha data prevista, centro de custo, lembretes, comprovante e baixa automática, igual a um boleto.</p>
+          </div>
+          <figure class="tela">
+            <div class="janela">
+              <div class="janela-barra"><i></i><i></i><i></i><span>Fin Pro · Pagamentos Pix</span></div>
+              <button class="ampliar" type="button" data-ampliar="img/pix.webp" data-legenda="Novo Pix por chave, por Copia e Cola ou por imagem do QR code, com a lista e o resumo logo abaixo."><img src="img/pix.webp" width="1600" height="1000" loading="lazy" alt="Tela de Pagamentos Pix com o formulário de novo Pix, o campo de Pix Copia e Cola e a lista de pagamentos"></button>
+            </div>
+            <figcaption>Novo Pix por chave, por Copia e Cola ou por imagem do QR code, com a lista e o resumo logo abaixo.</figcaption>
+          </figure>
+          <div class="blocos">
+            <article class="bloco">
+              <h3>Campos do Pix</h3>
+              <ul>
+                <li><strong>Tipo da chave:</strong> CNPJ/CPF, celular, e-mail ou aleatória.</li>
+                <li><strong>Chave</strong> com máscara e validação: dígitos do CPF/CNPJ, DDD do celular e formato do e-mail.</li>
+                <li><strong>Valor</strong>, <strong>recebedor</strong> e <strong>data prevista</strong>, que funciona como vencimento nos lembretes.</li>
+                <li><strong>Centro de custo</strong> e <strong>descrição</strong>.</li>
+                <li>O <strong>Pix Copia e Cola</strong> fica guardado para pagar depois.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Três formas de lançar</h3>
+              <ul>
+                <li><strong>Formulário</strong> de novo pagamento.</li>
+                <li><strong>Colar o Copia e Cola</strong> em qualquer tela com <kbd>Ctrl</kbd> + <kbd>V</kbd>: abre o Pix já preenchido com chave, valor, recebedor e identificador.</li>
+                <li><strong>QR code:</strong> print, foto ou PDF da cobrança.</li>
+                <li>Pix repetido, com o mesmo Copia e Cola, é bloqueado.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Lista e ações</h3>
+              <ul>
+                <li>Filtros Todos, Pendentes, Atrasados, Pagos e Cancelados, por centro de custo e busca.</li>
+                <li>Resumo com valor total, pendente, atrasado, pago e juros e multas pagos.</li>
+                <li><strong>Copiar a chave</strong>, mostrar o <strong>QR code e o Copia e Cola</strong> para pagar no aplicativo do banco, marcar como pago, editar, histórico e comprovante.</li>
+                <li>Exportação e atalho para os comprovantes dos Pix.</li>
+                <li>Pix vencido entra no Painel, no sininho e nos lembretes.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="secao" id="comprovantes">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Módulo · Comprovantes</p>
+            <h2>Aquele comprovante de três meses atrás aparece em segundos</h2>
+            <p class="lide">Um menu só para buscar os comprovantes de tudo: boletos, Pix, cheques, recebimentos, caixa, notas fiscais e diesel. Com filtros de verdade e download de todos num arquivo ZIP organizado.</p>
+          </div>
+          <figure class="tela">
+            <div class="janela">
+              <div class="janela-barra"><i></i><i></i><i></i><span>Fin Pro · Comprovantes</span></div>
+              <button class="ampliar" type="button" data-ampliar="img/comprovantes.webp" data-legenda="Busca de comprovantes com tipos, período, valor e número, e o total encontrado por tipo."><img src="img/comprovantes.webp" width="1600" height="1000" loading="lazy" alt="Tela Comprovantes com busca, filtros por tipo, período, valor e número, cartões de totais e a lista"></button>
+            </div>
+            <figcaption>Busca de comprovantes com tipos, período, valor e número, e o total encontrado por tipo.</figcaption>
+          </figure>
+          <div class="blocos">
+            <article class="bloco">
+              <h3>Sete tipos num lugar só</h3>
+              <ul>
+                <li><strong>Boleto:</strong> comprovante de pagamento anexado.</li>
+                <li><strong>Pix:</strong> comprovante do Pix pago.</li>
+                <li><strong>Cheque:</strong> foto do cheque.</li>
+                <li><strong>Recebimento:</strong> Pix, TED ou depósito recebido das empresas.</li>
+                <li><strong>Caixa:</strong> cupom ou nota das saídas em dinheiro.</li>
+                <li><strong>Nota fiscal</strong> das empresas.</li>
+                <li><strong>Diesel:</strong> canhotos e comprovantes de compra no posto.</li>
+                <li>Cada pessoa só vê os tipos das telas que tem permissão.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Filtros</h3>
+              <ul>
+                <li><strong>Busca</strong> por beneficiário, empresa, recebedor, pedido ou material.</li>
+                <li><strong>Período</strong> com atalhos: hoje, esta semana, este mês, mês passado, últimos 30 e 90 dias, este ano.</li>
+                <li><strong>Valor exato</strong>: o do documento ou o pago com juros.</li>
+                <li><strong>Mais filtros:</strong> faixa de valor, centro de custo, quem pagou ou lançou e ordenação.</li>
+                <li><strong>Número:</strong> cheque, nota, pedido, documento, ID da transação ou um trecho da linha digitável.</li>
+                <li><strong>Situação:</strong> com comprovante, pagos sem comprovante ou todos.</li>
+              </ul>
+            </article>
+            <article class="bloco">
+              <h3>Ver, baixar e completar</h3>
+              <ul>
+                <li><strong>Ver</strong> abre o comprovante com os dados ao lado. As setas do teclado passam para o próximo.</li>
+                <li><strong>Baixar comprovantes (.zip):</strong> todos os filtrados, em pastas por tipo, com nomes como <code>2026-09-21 - Boleto - FORNECEDOR - R$ 956,70.pdf</code>.</li>
+                <li><strong>Pagos sem comprovante:</strong> lista o que foi pago e ainda não tem comprovante, com o botão Anexar.</li>
+                <li>Atalhos nas telas de Boletos, Pix, Caixa, Empresas e Diesel abrem a busca já filtrada.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>

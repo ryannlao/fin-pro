@@ -150,7 +150,8 @@ def alteracoes_pendentes(raiz: Path | None = None) -> list[str]:
 
 def etiquetas(raiz: Path | None = None) -> list[dict]:
     """As versões guardadas no repositório (etiquetas ``vX.Y.Z``), da mais nova para a mais antiga."""
-    saida = git("for-each-ref", "refs/tags", "--sort=-creatordate",
+    # pelo número da versão: a data de criação tem resolução de segundos e empatava versões guardadas no mesmo segundo
+    saida = git("for-each-ref", "refs/tags", "--sort=-v:refname",
                 "--format=%(refname:short)\t%(creatordate:iso-strict)\t%(objectname:short)\t%(contents:subject)", raiz=raiz)
     lista = []
     for linha in (saida or "").splitlines():

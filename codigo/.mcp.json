@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp"
+    },
+    "chrome-devtools": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "chrome-devtools-mcp@1.11.0"
+      ],
+      "env": {}
+    }
+  }
+}

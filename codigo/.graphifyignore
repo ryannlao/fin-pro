@@ -1,0 +1,35 @@
+# Exclusões do Graphify (grafo do código). Nunca indexar dados reais, segredos ou conteúdo gerado/de terceiros.
+# Gerar: GRAPHIFY_NO_AUTO_REFRESH=1 graphify extract . --code-only --no-cluster  (veja docs/setup.md)
+.git/
+.venv/
+venv/
+node_modules/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+graphify-out/
+.claude/
+.mcp.json
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.log
+package-lock.json
+
+# Dados reais e da demonstração (bancos, comprovantes, tokens e senhas de app)
+dados/
+dados_demo/
+dados_*/
+*.db
+*.xlsx
+
+# Gerado ou cópia: site montado, imagens, anexos gerados da especificação, kit de reconstrução, exemplos
+site/index.html
+site/img/
+docs/especificacao/A*.md
+Kit - Novo Fin Pro/
+exemplos/
+web/icons/
