@@ -38,6 +38,23 @@ Três bancos SQLite em `dados/` (`boletos.db`, `empresas.db`, `diesel.db`), cada
 arquivos originais em `dados/arquivos/`; configurações em `dados/*.json`. Não há ORM nem migrações: o formato evolui no próprio
 `BancoBoletos` ([A2-modelo-de-dados](especificacao/A2-modelo-de-dados.md)). Não há PostgreSQL.
 
+## Instalações e caminho do código
+
+```
+ Este computador (Windows)                         GitHub ryannlao/fin-pro              VPS (EasyPanel + Docker)
+ ┌──────────────────────────────┐  git archive vX.Y.Z  ┌──────────────────┐  Deploy   ┌─────────────────────────────┐
+ │ Git local + etiquetas vX.Y.Z │ ───────────────────▶ │ pasta codigo/    │ ────────▶ │ container Python 3.12       │
+ │ app Windows na porta 8000    │   (ramo + Pull       │ (só o código,    │           │ atrás do Traefik (HTTPS)    │
+ │ dados/  (dados do escritório)│    Request)          │  nunca dados)    │           │ /opt/finpro/dados e /backup │
+ └──────────────────────────────┘                      └──────────────────┘           └─────────────────────────────┘
+          ▲ celulares no Wi-Fi                                                                  ▲ https://fin.fabbiol.tech
+```
+
+As duas instalações rodam o mesmo código com **dados separados**; nada no código sincroniza uma com a outra. O que muda fora do
+Windows (aviso do Windows desligado, backup em `LEITOR_BACKUP_PASTA`) é decidido na partida (`app/main.py`, `app/contexto.py`).
+Na VPS nenhuma requisição é "local" (vem do IP do proxy), então o login vale para todos. Passo a passo de publicação: seção
+"Versão online" do [README](../README.md); hospedagem: [11.7](especificacao/11-backup-rede-demonstracao.md).
+
 ## Decisões
 
 Decisões, alternativas e lições: [14-licoes-aprendidas](especificacao/14-licoes-aprendidas.md) e

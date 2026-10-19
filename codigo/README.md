@@ -16,12 +16,80 @@ Para cada boleto, o sistema extrai:
 > Documentação completa, módulo por módulo: [DOCUMENTACAO_FIN_PRO.md](DOCUMENTACAO_FIN_PRO.md).
 > Especificação técnica para desenvolver ou reconstruir: [docs/especificacao/](docs/especificacao/00-LEIA-ME.md).
 
-## Documentação
+## Para quem vai mexer no sistema
 
-- [Produto e escopo](PRODUCT.md) · [Manual de uso](DOCUMENTACAO_FIN_PRO.md) · [O que mudou em cada versão](VERSOES.md)
+Sistema financeiro de um escritório pequeno (3 pessoas): boletos, Pix, comprovantes, caixa, diesel, gastos, empresas a prazo e
+avisos. O dono não é técnico; mudanças precisam ser explicadas em português simples.
+
+**Tecnologia:** Python 3.12 (funciona a partir do 3.10) com FastAPI e Uvicorn; SQLite (3 bancos) com planilhas Excel geradas a
+partir dele; telas em HTML/CSS/JavaScript puro (módulos ES, **sem build**); aplicativo Windows com pywebview e pystray; OCR local
+(RapidOCR). Node.js só para o ESLint. Não há banco de dados externo nem etapa de compilação.
+
+| Para | Comando (Windows, na pasta do projeto) |
+|---|---|
+| Instalar e abrir o sistema real (porta 8000, pasta `dados/`) | `iniciar.bat` |
+| Demonstração com dados de exemplo (porta 8010, pasta `dados_demo/`, envios bloqueados) | `demonstracao.bat` |
+| Verificação completa: Ruff + ESLint + testes (≈5 min) | `verificar.bat` (com `telas`, inclui os testes no navegador) |
+| Um arquivo de teste | `.venv\Scripts\python -m pytest tests/test_x.py` |
+| Guardar uma versão (roda os testes, grava `VERSOES.md`, commit e etiqueta) | `versoes.bat nova "Título" -m "o que mudou"` |
+| Linux ou Mac (só servidor, sem o aplicativo) | `./iniciar.sh` ou `iniciar.command` |
+
+**Onde fica cada coisa:** `app/` servidor e regras (`app/rotas/` é a API, uma pasta por módulo: `boleto/`, `empresas/`, `caixa/`,
+`diesel/`, `notificacoes/`); `web/` telas; `tests/` testes; `ferramentas/` versões, restauração e especificação; `dados/` os
+dados reais (fora do Git). Mapa completo em [docs/architecture.md](docs/architecture.md) e na seção [Estrutura](#estrutura).
+
+**Regras que não podem ser quebradas:**
+
+- `dados/` tem os dados reais, tokens e senhas de app: não versione, não copie, não teste ali. Teste na demonstração ou com
+  uma pasta temporária (`LEITOR_DADOS_DIR`). Nunca apague a planilha do usuário.
+- O sistema real roda o dia todo na porta 8000. Para aplicar código novo: `POST http://127.0.0.1:8000/api/app/sair` e depois
+  `.venv\Scripts\pythonw.exe -m app`. Nunca mate o processo.
+- Testes nunca enviam de verdade (Telegram, e-mail, IMAP). Dois sistemas com o **mesmo token do Telegram** disputam as
+  mensagens: não ligue os bots em duas instalações ao mesmo tempo.
+- Toda permissão é conferida **no servidor** (`app/acesso.py`, `permissao_da_rota`); esconder um botão não basta. Rota nova
+  que junta dados de várias telas precisa conferir cada parte com `acesso.pode`.
+- Cada mudança entregue vira uma versão (`versoes.bat nova`). `web/js/app.js` (rotas e permissões das telas) só se mexe com
+  autorização do dono.
+
+**Documentação:**
+
+- [Produto e escopo](PRODUCT.md) · [Manual de uso de cada tela](DOCUMENTACAO_FIN_PRO.md) · [O que mudou em cada versão](VERSOES.md)
 - [Preparar e rodar](docs/onboarding.md) · [Código e arquitetura](docs/architecture.md) · [Telas e acessibilidade](docs/design.md)
-- [Verificações e revisão](docs/quality.md) — rode `verificar.bat` para lint e testes
+- [Especificação técnica completa](docs/especificacao/00-LEIA-ME.md) (regras, todas as rotas, campos, decisões e lições)
+- [Acesso e segurança](docs/especificacao/09-acesso-e-seguranca.md) · [Verificações e revisão](docs/quality.md)
 - [Instruções para agentes de IA](AGENTS.md) ([CLAUDE.md](CLAUDE.md) importa as mesmas) · [Ferramentas e evidências do setup](docs/setup.md)
+
+## Versão online (fin.fabbiol.tech)
+
+São **duas instalações separadas** do mesmo código, e cada uma tem os **próprios dados** (não há sincronização entre elas):
+
+| | Computador do escritório | VPS (online) |
+|---|---|---|
+| Endereço | `http://127.0.0.1:8000` e celulares no Wi-Fi | `https://fin.fabbiol.tech` |
+| Como roda | Aplicativo Windows (`iniciar.bat`) | Docker no EasyPanel (`Dockerfile`, `docker-compose.yml`, `requirements.vps.txt`) |
+| Dados | `dados/` nesta pasta | `/opt/finpro/dados` no servidor (backup em `/opt/finpro/backup`) |
+| Login | Livre no próprio computador, a menos que o administrador exija | Sempre: tudo chega pelo proxy (Traefik), que não é "local" |
+| Código vem de | Esta pasta (Git local, etiquetas `vX.Y.Z`) | Pasta `codigo/` do repositório GitHub `ryannlao/fin-pro` |
+
+Variáveis obrigatórias na VPS (aba **Environment** do EasyPanel, se ele não usar o `docker-compose.yml`):
+`LEITOR_URL=https://fin.fabbiol.tech` (sem ela toda chamada é recusada com 403 `origem_recusada`) e, enquanto não houver
+usuários cadastrados, `LEITOR_SENHA_ACESSO` (sem senha e sem usuários, ninguém de fora entra). Nunca use
+`FORWARDED_ALLOW_IPS="*"` no Uvicorn: o endereço falso do cabeçalho passaria a valer como "computador principal".
+
+**Publicar uma mudança:**
+
+1. Aqui: `verificar.bat` e depois `versoes.bat nova "Título" -m "o que mudou"` (cria a etiqueta, ex.: `v1.12.1`).
+2. Num clone do repositório do GitHub, num ramo novo, troque a pasta `codigo/` pela versão guardada:
+   ```bash
+   git rm -rq codigo && mkdir codigo
+   git -C "<pasta deste projeto>" archive v1.12.1 | tar -x -C codigo
+   git add -A codigo && git commit -m "Atualiza para o Fin Pro v1.12.1"
+   git push -u origin <ramo>
+   ```
+3. No GitHub, abra o Pull Request para o `main` de `ryannlao/fin-pro` (num fork, confira o **base repository**) e aceite.
+4. No EasyPanel, clique em **Deploy**. Os dados do servidor não são tocados; só o programa é trocado.
+
+Detalhes da hospedagem e o plano original: [especificação, 11.7](docs/especificacao/11-backup-rede-demonstracao.md).
 
 ## Como usar
 

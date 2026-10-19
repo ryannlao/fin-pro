@@ -4,6 +4,12 @@
 > Este arquivo é atualizado pela ferramenta `ferramentas/versao.py` (não precisa editar à mão).
 > Numeração: **X.Y.Z** — X muda em reformulações grandes, Y em funções novas, Z em correções.
 
+## v1.12.2 — 19/10/2026 — Documentação para quem for mexer no sistema
+- README com a seção "Para quem vai mexer no sistema": tecnologia, comandos, onde fica cada coisa e regras que não podem ser quebradas.
+- README com a seção "Versão online": as duas instalações (computador e VPS) com dados separados, variáveis obrigatórias e o passo a passo para publicar.
+- Arquitetura com o desenho do caminho do código até a VPS.
+- Manual atualizado para a versão 1.12.1: planilha completa, senha do e-mail de avisos, bloqueio por senha errada, segurança e sistema online.
+
 ## v1.12.1 — 19/10/2026 — Correções de segurança da revisão de 19/10
 - Sem senha e sem usuários, nenhum aparelho de fora entra mais (antes, uma VPS nova ou um backup sem usuários deixava os dados abertos para a internet).
 - Trocar o servidor do e-mail de avisos sem digitar a senha apaga a senha guardada: ela não pode mais ser enviada para um servidor de outra pessoa.
