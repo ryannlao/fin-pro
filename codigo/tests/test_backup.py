@@ -148,7 +148,6 @@ def test_sugere_pastas_de_nuvem(tmp_path, monkeypatch):
 # --------------------------------------------------------------------------- backup TOTAL (código, versões, pacote, restauração)
 
 import importlib.util  # noqa: E402
-import json  # noqa: E402
 import shutil  # noqa: E402
 import sqlite3  # noqa: E402
 import subprocess  # noqa: E402

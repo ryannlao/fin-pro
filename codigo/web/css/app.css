@@ -1532,7 +1532,7 @@ body.arrastando .soltar-overlay { display: grid; }
 .fechamento-resumo strong.erro { color: var(--erro); }
 .fechamento-resumo strong.ok { color: var(--ok); }
 .fechamento-resumo strong.info { color: var(--info); }
-.fechamento-secao { display: flex; align-items: center; gap: 8px; margin: 18px 0 6px; font-size: 14px; }
+h4.fechamento-secao { display: flex; align-items: center; gap: 8px; margin: 18px 0 6px; padding: 0; font-size: 14px; }
 
 .emp-envio { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
 .emp-envio h3 { display: flex; align-items: center; gap: 9px; font-size: 15px; margin: 0; }
@@ -1614,6 +1614,7 @@ body.arrastando .soltar-overlay { display: grid; }
 }
 .kpis.kpis-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .kpis.kpis-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.kpis.kpis-5 .kpi-valor, .kpis.kpis-6 .kpi-valor { font-size: clamp(18px, 1.4vw, 25px); }
 @media (max-width: 1100px) { .kpis.kpis-5, .kpis.kpis-6 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 640px) { .kpis.kpis-5, .kpis.kpis-6 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
@@ -1769,8 +1770,3 @@ button.diesel-precos:hover { border-color: var(--marca); }
 .versao-item summary::-webkit-details-marker { display: none; }
 .versao-item summary strong { flex: 1; min-width: 200px; }
 .versao-item .lista-info { margin: 8px 0 2px; }
-
-/* ------------------------------------------------------------------ Configurações: ajustes */
-.btn-icone:disabled { opacity: .35; cursor: not-allowed; }
-.btn-icone:disabled:hover { background: transparent; color: var(--texto-2); }
-.backup-pasta .input { flex: 1 1 auto; }

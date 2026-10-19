@@ -124,7 +124,17 @@ uma etiqueta `vX.Y.Z` e uma entrada em `VERSOES.md`; o número em uso está em `
   (nomes com acento legíveis).
 - Testes: `test_versao.py`.
 
-## 11.7 Preparar para rodar online (decidido em 06/10/2026, ainda não feito)
+## 11.7 Rodar online (decidido em 06/10/2026; no ar em `https://fin.fabbiol.tech` desde 12/10/2026)
+
+**Como está hoje:** EasyPanel na VPS, com `Dockerfile` (Python 3.12 slim, sem a parte de desktop, `requirements.vps.txt` com
+`opencv-python-headless`) e `docker-compose.yml` (uma réplica só, por causa do SQLite e do Telegram; dados em
+`/opt/finpro/dados` → `/app/dados`; backup total em `/opt/finpro/backup` → `/backup`; fuso `America/Cuiaba`;
+`LEITOR_URL=https://fin.fabbiol.tech`, obrigatório desde a v1.11 por causa da conferência de `Host`/`Origin`). Ao abrir fora do
+Windows o sistema desliga sozinho o aviso do Windows e, se a pasta de backup configurada não existir, passa a usar
+`LEITOR_BACKUP_PASTA`. Login: o sistema publicado tem usuários e exige login de todos (conferido em 19/10/2026: `/api/boletos`
+sem login responde 401). O código publicado fica no GitHub dentro da pasta `codigo/` (é a pasta que o EasyPanel constrói).
+
+Plano original (mantido como referência):
 
 Hospedagem escolhida: **VPS Hostinger KVM 2** (2 vCPU, 8 GB, 100 GB NVMe), **Ubuntu 24.04 LTS**, região Brasil.
 Mudanças necessárias no código e na instalação:

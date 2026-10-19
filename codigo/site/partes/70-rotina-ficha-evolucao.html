@@ -1,0 +1,97 @@
+
+      <section class="secao" id="rotina">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Na prática</p>
+            <h2>Um dia e um fim de mês com o Fin Pro</h2>
+            <p class="lide">A rotina cabe em poucos passos, porque o sistema já deixou quase tudo pronto antes de alguém sentar na frente do computador.</p>
+          </div>
+          <div class="duas">
+            <div class="blocos" style="grid-template-columns:minmax(0,1fr)">
+              <article class="bloco">
+                <h3>Para começar o dia</h3>
+                <ol class="passos" style="grid-template-columns:minmax(0,1fr);gap:10px">
+                  <li><p>Abra o <strong>Painel</strong>: vencidos, o que vence em 7 dias e a previsão de saídas.</p></li>
+                  <li><p>Olhe o <strong>sininho</strong> e os contadores do menu: são os arquivos que chegaram e esperam conferência.</p></li>
+                  <li><p>Pague pelo celular com a <strong>linha digitável</strong> que chegou no Telegram e mande o <strong>comprovante</strong> para o bot. A baixa é automática, com os juros.</p></li>
+                </ol>
+              </article>
+            </div>
+            <div class="blocos" style="grid-template-columns:minmax(0,1fr)">
+              <article class="bloco">
+                <h3>Para fechar o mês</h3>
+                <ol class="passos" style="grid-template-columns:minmax(0,1fr);gap:10px">
+                  <li><p><strong>Gastos → Fechamento do mês → Pacote para o contador (.zip).</strong></p></li>
+                  <li><p><strong>Comprovantes → Pagos sem comprovante</strong>, para completar o que faltar.</p></li>
+                  <li><p><strong>Diesel → Relatórios → Mês:</strong> Simples para ver rápido, Completo ou Excel para guardar.</p></li>
+                  <li><p><strong>Empresas → Fechamentos:</strong> o bot já enviou o resumo no dia do fechamento.</p></li>
+                </ol>
+              </article>
+            </div>
+          </div>
+          <article class="bloco">
+            <h3>Atalhos de teclado</h3>
+            <ul class="atalhos">
+              <li><span><kbd>Ctrl</kbd> + <kbd>V</kbd></span><span>Colar imagem, linha digitável ou Pix Copia e Cola</span></li>
+              <li><span>Arrastar arquivo</span><span>Ler boletos e comprovantes; no Diesel, canhotos</span></li>
+              <li><span><kbd>/</kbd></span><span>Buscar em boletos e comprovantes</span></li>
+              <li><span><kbd>Alt</kbd> + <kbd>1</kbd> a <kbd>7</kbd></span><span>Ir direto para as telas principais</span></li>
+              <li><span><kbd>Esc</kbd></span><span>Fechar janelas</span></li>
+              <li><span><kbd>←</kbd> <kbd>→</kbd></span><span>Passar os comprovantes no visualizador</span></li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="secao" id="ficha-tecnica">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Ficha técnica</p>
+            <h2>O que há por baixo</h2>
+            <p class="lide">Para quem cuida da informática do escritório ou quer saber exatamente o que está instalando.</p>
+          </div>
+          <div class="rolagem">
+            <table>
+              <tbody>
+                <tr><th>Onde roda</th><td>Windows 10 ou 11, como aplicativo com janela própria e ícone na bandeja. Pelo navegador, no celular ou em outro computador da mesma rede.</td></tr>
+                <tr><th>Instalação</th><td>Python 3.10 ou superior. O arquivo <code>iniciar.bat</code> instala o que falta na primeira vez e abre o sistema.</td></tr>
+                <tr><th>Servidor</th><td>FastAPI com Uvicorn. Por padrão atende só o próprio computador, na porta 8000.</td></tr>
+                <tr><th>Telas</th><td>HTML, CSS e JavaScript, sem etapa de compilação. Pode ser instalado como aplicativo pelo navegador.</td></tr>
+                <tr><th>Dados</th><td>Três bancos SQLite (boletos, empresas e diesel) e planilhas Excel geradas automaticamente.</td></tr>
+                <tr><th>Leitura</th><td>Código de barras com zxing-cpp, PDF com pypdfium2, OCR local com RapidOCR (modelo latino), modo scanner com OpenCV e fotos HEIC.</td></tr>
+                <tr><th>Validação</th><td>Regras da FEBRABAN: módulo 10, módulo 11, fator de vencimento com o ciclo iniciado em 2025, boletos bancários (47 dígitos) e de arrecadação (48).</td></tr>
+                <tr><th>Entradas</th><td>PDF, JPG, PNG, WEBP e HEIC. XML de NF-e. Excel, CSV e TXT na importação. Pix Copia e Cola e QR code.</td></tr>
+                <tr><th>Saídas</th><td>Excel, CSV, PDF e ZIP, além das planilhas sempre atualizadas.</td></tr>
+                <tr><th>Avisos</th><td>Notificações do Windows, Telegram e e-mail.</td></tr>
+                <tr><th>Segurança</th><td>Senhas em hash PBKDF2-SHA256, bloqueio após 5 tentativas, permissões conferidas no servidor e histórico de alterações.</td></tr>
+                <tr><th>Backup</th><td>Pasta à sua escolha, com dados, arquivos, configurações, código e versões. Manifesto com SHA-256, pacote .zip e restaurador sem dependências.</td></tr>
+                <tr><th>Qualidade</th><td>273 testes automáticos, incluindo testes das telas no navegador e textos reais de OCR.</td></tr>
+                <tr><th>IA</th><td>Opcional e desligada por padrão. Usa o Claude, da Anthropic, com chave própria.</td></tr>
+                <tr><th>Versão online</th><td>Hoje o sistema roda no computador do escritório e na rede local. A versão hospedada em servidor, com login obrigatório e HTTPS, está em preparação.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="secao" id="evolucao">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Evolução</p>
+            <h2>Dez versões em quatro semanas, cada uma a partir de um pedido real</h2>
+            <p class="lide">O Fin Pro nasceu como um leitor de boletos e cresceu módulo por módulo, sempre a partir do que um escritório de verdade precisava naquela semana.</p>
+          </div>
+          <ol class="versoes" reversed>
+            <li class="atual"><span class="v">v1.9 · 10 e 12/10/2026</span><b>Controle de versão e backup total</b><p>Versões guardadas com número e histórico, backup com código e comprovantes, pacote .zip, conferência e restauração com dois cliques.</p></li>
+            <li><span class="v">v1.8 · 07/10/2026</span><b>Documentação e especificação técnica</b><p>Manual de uso completo e especificação em 27 documentos, com anexos gerados do próprio código.</p></li>
+            <li><span class="v">v1.7 · 06/10/2026</span><b>Diesel em reais e relatório em três níveis</b><p>Saldo em dinheiro, relatórios Simples, Detalhado e Completo, pontos de atenção e relatório geral do mês.</p></li>
+            <li><span class="v">v1.6 · 29/09/2026</span><b>Controle de diesel</b><p>Compras no posto, abastecimentos por máquina, consumo em L/h e km/L, bot do diesel e relatórios automáticos.</p></li>
+            <li><span class="v">v1.5 · 24/09/2026</span><b>Juros à vista, central de comprovantes e depósito de cheque</b><p>Juros e multas visíveis em todas as telas, busca de comprovantes com download em ZIP.</p></li>
+            <li><span class="v">v1.4 · 22/09/2026</span><b>Caixa, resumos da semana e demonstração</b><p>Dinheiro em espécie com bot, resumos de segunda e sexta, o nome Fin Pro e a versão de demonstração.</p></li>
+            <li><span class="v">v1.3 · 18/09/2026</span><b>Empresas, cheques e permissões</b><p>Notas fiscais, cheques pré-datados, recebimentos, fechamento no dia 20, bot de notas e permissões por pessoa.</p></li>
+            <li><span class="v">v1.2 · 17/09/2026</span><b>Backup, usuários, comprovantes e banco de dados</b><p>Baixa automática pelo comprovante, boletos por e-mail e Telegram, fechamento para o contador, previsão de saídas e banco SQLite.</p></li>
+            <li><span class="v">v1.1 · 16/09/2026</span><b>Importação, administrador e avisos para várias pessoas</b><p>Importar boletos de outro sistema, sininho com vistos e Telegram para pessoas e grupos.</p></li>
+            <li><span class="v">v1.0 · 14/09/2026</span><b>Leitor de boletos</b><p>Leitura de PDF e foto, planilha como banco de dados, lembretes, aplicativo de Windows, acesso pelo celular, centros de custo e Pix.</p></li>
+          </ol>
+        </div>
+      </section>

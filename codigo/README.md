@@ -16,6 +16,13 @@ Para cada boleto, o sistema extrai:
 > Documentação completa, módulo por módulo: [DOCUMENTACAO_FIN_PRO.md](DOCUMENTACAO_FIN_PRO.md).
 > Especificação técnica para desenvolver ou reconstruir: [docs/especificacao/](docs/especificacao/00-LEIA-ME.md).
 
+## Documentação
+
+- [Produto e escopo](PRODUCT.md) · [Manual de uso](DOCUMENTACAO_FIN_PRO.md) · [O que mudou em cada versão](VERSOES.md)
+- [Preparar e rodar](docs/onboarding.md) · [Código e arquitetura](docs/architecture.md) · [Telas e acessibilidade](docs/design.md)
+- [Verificações e revisão](docs/quality.md) — rode `verificar.bat` para lint e testes
+- [Instruções para agentes de IA](AGENTS.md) ([CLAUDE.md](CLAUDE.md) importa as mesmas) · [Ferramentas e evidências do setup](docs/setup.md)
+
 ## Como usar
 
 1. Dê dois cliques em **`iniciar.bat`**.
@@ -343,6 +350,22 @@ o cartão **Versão do sistema** mostra a versão em uso, o histórico e se há 
 
 As versões guardam só o programa; quem protege os dados é o backup — que também leva o código e este histórico.
 
+## Site de apresentação
+
+A pasta `site\` tem uma página que explica o Fin Pro inteiro, no estilo de página de venda: todos os módulos, os bots,
+segurança, backup, ficha técnica, perguntas frequentes e um **leitor de linha digitável** que funciona na própria página.
+Abra `site\index.html` no navegador, ou copie a pasta `site` (o `index.html` e a pasta `img`) para qualquer hospedagem.
+
+| Arquivo | Para que serve |
+|---|---|
+| `site\index.html` | A página pronta |
+| `site\img\` | As telas, tiradas do sistema com dados de exemplo e nomes inventados |
+| `site\partes\` | Os pedaços de onde a página é montada (estilo, cada grupo de seções e o script) |
+| `python site\montar.py` | Junta os pedaços e gera o `index.html` de novo |
+| `python site\capturar_telas.py` | Refaz as capturas de tela a partir do sistema atual (usa o Microsoft Edge) |
+
+Para mudar um texto, edite o pedaço em `site\partes` e rode `python site\montar.py`.
+
 > Requisito: Python 3.10 ou superior (<https://www.python.org/downloads/>), com a opção "Add to PATH" marcada.
 
 ## Funcionalidades
@@ -496,6 +519,7 @@ app/
 web/               # front-end (HTML, CSS e JavaScript, sem etapa de build)
   js/views/<tela>/ # telas grandes divididas por assunto (leitura, boletos, pix, empresas, configuracoes)
 ferramentas/       # versao.py (guardar/voltar versões), restaurar_backup.py, gerar_especificacao.py
+site/              # site de apresentação (index.html, imagens e os pedaços de onde ele é montado)
 tests/             # testes automatizados + gerador de boletos de exemplo
 VERSOES.md         # o que mudou em cada versão
 ```

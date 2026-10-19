@@ -195,3 +195,29 @@ def test_desligar_o_login_no_computador_desliga_o_pedido_ao_abrir(sistema):
     sistema.definir_pedir_login_ao_abrir(True)
     sistema.definir_exigir_login_no_computador(False)
     assert not sistema.pedir_login_ao_abrir and not sistema.exigir_login_no_computador
+
+
+def test_pedido_de_outro_site_e_recusado(sistema):
+    """Auditoria de 19/10/2026: um site aberto no navegador não pode usar o Fin Pro do próprio computador."""
+    with TestClient(main.app) as cliente:
+        # DNS rebinding: nome de outro site apontando para este computador
+        assert cliente.get("/api/boletos", headers={"Host": "rebind.exemplo-malicioso.com:8000"}).status_code == 403
+        for host in ("127.0.0.1:8000", "localhost:8000", "192.168.0.10:8000", "pc-escritorio:8000", "pc-escritorio.local"):
+            assert cliente.get("/api/boletos", headers={"Host": host}).status_code == 200, host
+        # Pedido forjado: outra origem tentando gravar
+        for origem in ("https://site-qualquer.com", "null"):
+            assert cliente.post("/api/boletos", json={}, headers={"Origin": origem}).status_code == 403, origem
+        # As telas do próprio sistema (mesma origem) e chamadas sem Origin continuam funcionando
+        assert cliente.post("/api/boletos", json={}, headers={"Origin": "http://testserver"}).status_code == 422
+        assert cliente.post("/api/boletos", json={}).status_code == 422
+
+
+def test_arquivo_que_nao_e_pdf_nem_imagem_comum_so_baixa(sistema):
+    """Auditoria de 19/10/2026: um SVG (aceito como image/* pela caixa de e-mail) não pode abrir como página ativa."""
+    meta = contexto.arquivos.salvar(b'<svg xmlns="http://www.w3.org/2000/svg"><script>1</script></svg>', "boleto.svg")
+    with TestClient(main.app) as cliente:
+        resposta = cliente.get(f"/api/arquivos/{meta['id']}")
+    assert resposta.status_code == 200
+    assert resposta.headers["content-type"] == "application/octet-stream"
+    assert resposta.headers["content-disposition"].startswith("attachment")
+    assert resposta.headers["x-content-type-options"] == "nosniff"

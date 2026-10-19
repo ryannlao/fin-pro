@@ -1,0 +1,94 @@
+
+      <section class="secao" id="leitor">
+        <div class="miolo">
+          <div class="secao-cab">
+            <p class="rotulo">Experimente agora</p>
+            <h2>Cole uma linha digitável e veja a conferência acontecer</h2>
+            <p class="lide">É a mesma regra que o Fin Pro aplica a cada boleto. Os dígitos verificadores dizem se a linha está certa, e o vencimento e o valor saem do próprio código. A conta é feita aqui, no seu navegador: nada é enviado.</p>
+          </div>
+
+          <div class="ficha">
+            <div class="ficha-entrada">
+              <label for="linha">Linha digitável (47 ou 48 dígitos) ou código de barras (44 dígitos)</label>
+              <textarea id="linha" rows="2" spellcheck="false" autocomplete="off" inputmode="numeric">34191.09123 34567.812341 56789.012301 9 15950000150075</textarea>
+              <div class="exemplos">
+                <span>Exemplos:</span>
+                <button type="button" data-exemplo="34191.09123 34567.812341 56789.012301 9 15950000150075">Boleto bancário</button>
+                <button type="button" data-exemplo="00190.00009 02817.640002 00123.456170 2 16050000243190">Outro banco</button>
+                <button type="button" data-exemplo="83600000002-3 87430048700-4 18020012026-9 10000000000-8">Conta de luz</button>
+                <button type="button" data-exemplo="82840000001-7 53880211555-0 01234090000-1 00000000000-0">Conta de água</button>
+                <button type="button" data-exemplo="34191.09123 34567.812341 56789.012301 9 15950000150076">Linha com um dígito errado</button>
+              </div>
+            </div>
+            <div class="picote"></div>
+            <div id="resultado" aria-live="polite">
+              <dl class="campos">
+                <div class="campo"><dt>Situação</dt><dd class="bom">Linha válida</dd></div>
+                <div class="campo"><dt>Tipo</dt><dd>Boleto bancário</dd></div>
+                <div class="campo"><dt>Banco</dt><dd>341 · Itaú Unibanco</dd></div>
+                <div class="campo"><dt>Vencimento</dt><dd>10/10/2026</dd></div>
+                <div class="campo"><dt>Valor</dt><dd>R$ 1.500,75</dd></div>
+                <div class="campo"><dt>Dígitos lidos</dt><dd>47</dd></div>
+                <div class="campo c6"><dt>Código de barras</dt><dd class="mono">34199159500001500751091234567812345678901230</dd></div>
+                <div class="campo c12"><dt>Conferência dos dígitos verificadores</dt><dd class="conferencia"><span>Campo 1 confere</span><span>Campo 2 confere</span><span>Campo 3 confere</span><span>Dígito geral confere</span></dd></div>
+              </dl>
+            </div>
+          </div>
+
+          <div class="anatomia">
+            <h3>O que cada pedaço da linha diz</h3>
+            <div class="anatomia-linha">
+              <span><b>34191.09123</b><small>banco 341, moeda 9, começo do campo livre e 1 dígito verificador</small></span>
+              <span><b>34567.812341</b><small>campo livre e dígito verificador</small></span>
+              <span><b>56789.012301</b><small>campo livre e dígito verificador</small></span>
+              <span><b>9</b><small>dígito geral: confere a linha inteira</small></span>
+              <span class="venc"><b>1595</b><small>fator de vencimento: 10/10/2026</small></span>
+              <span class="valor"><b>0000150075</b><small>valor: R$ 1.500,75</small></span>
+            </div>
+            <p class="lide" style="font-size:.98rem">Por isso o vencimento e o valor de um boleto lido pelo código de barras são exatos. Quando a foto está ruim e o OCR troca um dígito, o Fin Pro testa as trocas mais comuns (8 por 3, 5 por 6) e confirma a correção pelo valor e pelo vencimento impressos. Ele também conhece o novo ciclo do fator de vencimento, que recomeçou em 22/02/2025.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="secao" id="como-funciona">
+        <div class="miolo">
+          <div class="secao-cab">
+            <p class="rotulo">Como funciona</p>
+            <h2>O documento chega, o sistema preenche, alguém confere</h2>
+            <p class="lide">O Fin Pro foi construído em torno de uma ideia: digitar o mínimo. Quase tudo entra por foto, PDF, e-mail ou Telegram, e nada é lançado sem que uma pessoa olhe antes.</p>
+          </div>
+          <ol class="passos">
+            <li><h3>Chega do jeito que der</h3><p>Arraste o PDF para qualquer tela, cole com <kbd>Ctrl</kbd> + <kbd>V</kbd>, tire a foto pelo celular, encaminhe o e-mail do fornecedor ou mande para o bot do Telegram.</p></li>
+            <li><h3>O sistema lê e confere</h3><p>Código de barras, texto do PDF e OCR local trabalham juntos. A linha passa pelos dígitos verificadores, e valor e vencimento do código são comparados com o que está impresso.</p></li>
+            <li><h3>Você confere e lança</h3><p>Cada documento vira um cartão já preenchido. Campo com baixa confiança fica amarelo, boleto repetido é bloqueado, e o lançamento sai com um clique.</p></li>
+            <li><h3>Ele acompanha até o fim</h3><p>Avisa antes, no dia e depois do vencimento. Quando o comprovante chega, acha o lançamento certo, marca como pago e registra juros, multa e desconto.</p></li>
+          </ol>
+          <ul class="entradas" aria-label="Documentos que o Fin Pro lê">
+            <li>Boleto bancário</li><li>Conta de luz, água e telefone</li><li>Guias DAS, DARF, GPS, FGTS, IPVA e IPTU</li><li>Carnê com vários boletos</li><li>Pix Copia e Cola e QR code</li><li>Comprovante de pagamento</li><li>Cupom e nota de compra</li><li>Nota fiscal em XML ou DANFE</li><li>Cheque pré-datado</li><li>Comprovante de depósito</li><li>Canhoto de abastecimento</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="secao" id="modulos">
+        <div class="miolo">
+          <div class="secao-cab">
+            <p class="rotulo">Todos os módulos</p>
+            <h2>Contas a pagar, dinheiro, combustível e contas a receber no mesmo lugar</h2>
+            <p class="lide">Cada módulo tem a sua tela, as suas regras e, quando faz sentido, o seu bot. Todos compartilham os centros de custo, os comprovantes, os usuários e os avisos.</p>
+          </div>
+          <nav class="mapa" aria-label="Módulos do Fin Pro">
+            <a href="#painel"><svg class="ic" aria-hidden="true"><use href="#i-painel"/></svg><b>Painel</b><span class="desc">O que pagar, o que venceu e a previsão de saídas das próximas 8 semanas.</span></a>
+            <a href="#ler"><svg class="ic" aria-hidden="true"><use href="#i-ler"/></svg><b>Ler boletos</b><span class="desc">Leitura de PDF e foto com conferência campo a campo antes de lançar.</span></a>
+            <a href="#boletos"><svg class="ic" aria-hidden="true"><use href="#i-boleto"/></svg><b>Boletos lançados</b><span class="desc">Lista, calendário, baixa pelo comprovante, juros e importação de outro sistema.</span></a>
+            <a href="#pix"><svg class="ic" aria-hidden="true"><use href="#i-pix"/></svg><b>Pagamentos Pix</b><span class="desc">Pix a pagar por chave, Copia e Cola ou QR code, com os mesmos avisos dos boletos.</span></a>
+            <a href="#comprovantes"><svg class="ic" aria-hidden="true"><use href="#i-clipe"/></svg><b>Comprovantes</b><span class="desc">Todos os comprovantes do sistema numa busca só, com download em ZIP.</span></a>
+            <a href="#caixa"><svg class="ic" aria-hidden="true"><use href="#i-caixa"/></svg><b>Caixa</b><span class="desc">Entradas e saídas em dinheiro, com foto do cupom e relatórios.</span></a>
+            <a href="#diesel"><svg class="ic" aria-hidden="true"><use href="#i-diesel"/></svg><b>Diesel</b><span class="desc">Compras no posto, abastecimento de cada máquina, saldo em reais e consumo.</span></a>
+            <a href="#gastos"><svg class="ic" aria-hidden="true"><use href="#i-gastos"/></svg><b>Gastos</b><span class="desc">Análise por centro de custo e fechamento do mês pronto para o contador.</span></a>
+            <a href="#relatorios"><svg class="ic" aria-hidden="true"><use href="#i-relatorio"/></svg><b>Relatórios <span class="selo">Em liberação</span></b><span class="desc">Relatório geral do mês e atalhos para todos os relatórios do sistema.</span></a>
+            <a href="#empresas"><svg class="ic" aria-hidden="true"><use href="#i-empresas"/></svg><b>Empresas</b><span class="desc">Vendas a prazo: notas fiscais, cheques pré-datados, recebimentos e fechamento.</span></a>
+            <a href="#notificacoes"><svg class="ic" aria-hidden="true"><use href="#i-sino"/></svg><b>Notificações</b><span class="desc">Lembretes no Windows, Telegram e e-mail, e resumos de segunda e sexta.</span></a>
+            <a href="#backup"><svg class="ic" aria-hidden="true"><use href="#i-ajustes"/></svg><b>Configurações</b><span class="desc">Aplicativo, usuários, backup total, versões, integrações e saúde do sistema.</span></a>
+          </nav>
+        </div>
+      </section>

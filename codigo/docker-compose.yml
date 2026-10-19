@@ -10,6 +10,8 @@ services:
       LEITOR_ABRIR_NAVEGADOR: "0"
       LEITOR_DADOS_DIR: "/app/dados"
       LEITOR_BACKUP_PASTA: "/backup"
+      # Endereço público: o sistema só aceita pedidos feitos por ele (proteção contra outros sites, v1.11)
+      LEITOR_URL: "https://fin.fabbiol.tech"
       TZ: "America/Cuiaba"
     volumes:
       - /opt/finpro/dados:/app/dados

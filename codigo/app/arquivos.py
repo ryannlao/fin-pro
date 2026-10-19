@@ -16,6 +16,8 @@ from .boleto.leitores import abrir_imagem, eh_pdf
 log = logging.getLogger(__name__)
 
 RE_ID = re.compile(r"^[0-9a-f]{32}$")
+# Só estes tipos abrem na tela; o resto (SVG, HTML...) é baixado, porque poderia rodar código dentro do sistema
+TIPOS_SEGUROS = {"application/pdf", "image/jpeg", "image/png", "image/webp", "image/gif", "image/bmp", "image/tiff"}
 
 
 class RepositorioArquivos:
@@ -78,7 +80,8 @@ class RepositorioArquivos:
         previa = self.pasta / f"{arquivo_id}.previa.jpg"
         if previa.exists():
             return previa, "image/jpeg", Path(meta["nome"]).stem + ".jpg"
-        return original, mimetypes.guess_type(original.name)[0] or "application/octet-stream", meta["nome"]
+        tipo = mimetypes.guess_type(original.name)[0]
+        return original, tipo if tipo in TIPOS_SEGUROS else "application/octet-stream", meta["nome"]
 
     def caminho_relativo(self, arquivo_id: str) -> str | None:
         meta = self.meta(arquivo_id)

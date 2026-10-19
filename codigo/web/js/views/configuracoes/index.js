@@ -1,216 +1,176 @@
 // Tela: Configurações, em abas — Geral (com a versão do sistema) · Usuários e acesso · Backup e recebimento · Saúde do sistema.
-// Cada cartão é uma "seção" (um módulo desta pasta) com o mesmo contrato: chave, carregar(), html(dados, erro) e os mapas
-// acoes / alteracoes / formularios (veja tela.js e eventos.js). Esta página monta as abas e carrega as seções da aba aberta.
+// Cada cartão fica no seu próprio arquivo nesta pasta; aqui só se monta a aba escolhida.
 import { api } from "../../api.js";
-import { estado } from "../../estado.js";
+import { estado, ehAdministrador } from "../../estado.js";
 import { icone } from "../../icons.js";
-import { esc, toast } from "../../ui.js";
-import * as aplicativo from "./aplicativo.js";
-import * as backup from "./backup.js";
-import * as entrada from "./entrada.js";
+import { esc } from "../../ui.js";
+import { htmlAplicativo } from "./aplicativo.js";
+import { htmlBackup } from "./backup.js";
+import { htmlEntrada } from "./entrada.js";
 import { aoAlterar, aoClicar, aoEnviar } from "./eventos.js";
-import * as importacao from "./importacao.js";
-import * as rede from "./rede.js";
-import * as saude from "./saude.js";
-import { atualizar, buscar, htmlSecao, tela } from "./tela.js";
-import * as usuarios from "./usuarios.js";
-import * as versao from "./versao.js";
+import { htmlImportacao } from "./importacao.js";
+import { htmlRede } from "./rede.js";
+import { aoClicarSaude, htmlSaude, iniciarSaude, pararSaude } from "./saude.js";
+import { tela } from "./tela.js";
+import { htmlUsuarios } from "./usuarios.js";
+import { htmlVersao } from "./versao.js";
 
-// ------------------------------------------------------------------ Geral: banco de dados, recursos de leitura, ajuda e sobre
-
-const PASSOS = [
-  ["Envie o arquivo", "Arraste PDFs ou fotos, escolha os arquivos, tire uma foto no celular ou cole com Ctrl+V."],
-  ["Código de barras e texto", "Primeiro o código de barras da imagem; depois o texto do PDF."],
-  ["OCR e IA", "Fotos e PDFs escaneados passam pelo OCR local; a IA (opcional) ajuda nas fotos difíceis."],
-  ["Validação", "A linha digitável é conferida pelos dígitos verificadores; vencimento e valor saem do código e são conferidos com o que está impresso."],
-  ["Confira e lance", "Campos com baixa confiança ficam em amarelo. Escolha o centro de custo e clique em Lançar na planilha."],
-];
-
-const ATALHOS = [
-  ["<kbd>Ctrl</kbd> + <kbd>V</kbd>", "Colar imagem, linha digitável ou Pix Copia e Cola"],
-  ["Arrastar arquivo", "Ler boletos e comprovantes, em qualquer tela"],
-  ["<kbd>/</kbd>", "Buscar (boletos, comprovantes)"],
-  ["<kbd>Alt</kbd> + <kbd>1</kbd>…<kbd>9</kbd>", "Painel, Ler, Boletos, Pix, Comprovantes, Caixa, Diesel, Gastos, Empresas"],
-  ["<kbd>Esc</kbd>", "Fechar janelas"],
-  ["<kbd>‹</kbd> <kbd>›</kbd>", "Passar comprovantes no visualizador"],
-];
-
-const recurso = (ic, titulo, texto, chip) => `<li>${icone(ic, 18)}<div class="info"><strong>${titulo}</strong><p>${texto}</p></div>${chip}</li>`;
-const ATIVO = `<span class="chip ok">Ativo</span>`;
-const INDISPONIVEL = `<span class="chip aviso">Indisponível</span>`;
-
-function htmlRecursos(s) {
-  if (!s) return `<li class="sutil">Não foi possível consultar o servidor.</li>`;
-  return [
-    recurso("boleto", "Código de barras", "Lê o código de barras da imagem ou do PDF. A linha digitável sempre passa pela validação dos dígitos verificadores (FEBRABAN).", ATIVO),
-    recurso("arquivo", "Texto de PDF", "PDFs digitais: beneficiário, documento, vencimento e valor lidos direto do texto, pela posição de cada rótulo.", ATIVO),
-    recurso("olho", "OCR local", s.ocr
-      ? `Fotos e PDFs escaneados são lidos neste computador, sem enviar nada para fora.${s.ocr_modelo ? ` Modelo: ${esc(s.ocr_modelo)}.` : " O modelo é carregado na primeira leitura."}`
-      : "O pacote de OCR (RapidOCR) não está instalado: fotos e PDFs escaneados dependem do código de barras ou da IA. Instale as dependências e reinicie o sistema.",
-    s.ocr ? ATIVO : INDISPONIVEL),
-    recurso("camera", "Fotos do iPhone (HEIC)", s.heic ? "Fotos .heic são aceitas como JPG, PNG ou WEBP." : "Instale o pillow-heif para aceitar fotos .heic do iPhone.",
-      s.heic ? ATIVO : INDISPONIVEL),
-    recurso("clipe", "Comprovantes de pagamento", "Envie o comprovante em Ler boletos: o sistema acha o boleto ou o Pix e marca como pago, com juros e desconto.", ATIVO),
-    recurso("ia", "IA (Claude)", s.ia
-      ? `Modelo ${esc(s.ia_modelo)}. ${s.ia_automatica ? "É chamada sozinha quando a leitura local tem baixa confiança." : "Use o botão Analisar com IA na revisão de cada boleto."} O resultado também passa pela validação dos dígitos.`
-      : "Opcional, para fotos difíceis. Para ativar: crie uma chave em console.anthropic.com, coloque ANTHROPIC_API_KEY=… no arquivo .env e reinicie o sistema.",
-    s.ia ? `<span class="chip ia">Ativa</span>` : `<span class="chip apagado">Desativada</span>`),
-  ].join("");
-}
-
-function htmlBanco(s, app) {
-  const windows = Boolean(app?.atalhos?.disponivel || app?.inicializacao?.disponivel);
-  const podeAbrir = windows && app?.local;
-  const n = Number(s?.gravacao_pendente) || 0;
-  let explicacao = "";
-  if (app && !podeAbrir) {
-    explicacao = windows
-      ? "Abrir a planilha e a pasta só funciona no computador onde o Fin Pro está instalado. Daqui, use Baixar cópia."
-      : "Abrir no Excel e abrir a pasta só funcionam no Windows. Use Baixar cópia.";
-  }
-  return `<article class="card" id="cfg-banco">
-    <h3>${icone("planilha", 18)} Banco de dados e planilha</h3>
-    <p class="sutil">Os lançamentos ficam no banco de dados da pasta de dados e a planilha Excel é atualizada sozinha. Pode deixar a
-      planilha aberta no Excel: o que for lançado com ela aberta é gravado quando o arquivo for fechado, e edições feitas no Excel
-      em lançamentos que já existem voltam para o sistema.</p>
-    ${s ? `<span class="sutil">Planilha</span><div class="caminho">${esc(s.planilha)}</div>
-      <span class="sutil">Pasta de dados</span><div class="caminho">${esc(s.pasta_dados)}</div>`
-      : `<div class="esqueleto" style="height:84px"></div>`}
-    ${n > 0 ? `<div class="alerta aviso">${icone("alerta", 16)}<div>${n} alteração(ões) aguardando gravação: a planilha está aberta em outro
-      programa (ex.: Excel).</div></div>` : ""}
-    <div class="linha-botoes">
-      ${podeAbrir ? `<button class="btn" type="button" data-acao="sistema-abrir-planilha">${icone("planilha", 16)} Abrir planilha</button>
-        <button class="btn" type="button" data-acao="sistema-abrir-pasta">${icone("pasta", 16)} Abrir pasta de dados</button>` : ""}
-      <a class="btn" href="${esc(api.urlExportar({ formato: "planilha" }))}" download>${icone("download", 16)} Baixar cópia</a>
-    </div>
-    ${explicacao ? `<p class="sutil">${explicacao}</p>` : ""}
-  </article>`;
-}
-
-/** Seção "sistema" (cartões da aba Geral que vêm de /api/status). Segue o mesmo contrato dos módulos da pasta. */
-const sistema = {
-  chave: "sistema",
-  async carregar() {
-    const [status, app] = await Promise.all([buscar("/api/status"), buscar("/api/app").catch(() => null)]);
-    estado.status = status;
-    return { status, app };
-  },
-  html(dados) {
-    const s = dados?.status || estado.status;
-    return `${htmlBanco(s, dados?.app)}
-    <article class="card" id="cfg-recursos">
-      <h3>${icone("scan", 18)} Recursos de leitura</h3>
-      <ul class="recursos">${htmlRecursos(s)}</ul>
-      ${s ? `<p class="sutil">Arquivos de até ${esc(s.max_upload_mb)} MB · PDF, JPG, PNG, WEBP${s.heic ? " e HEIC" : ""} · vários de uma vez.</p>` : ""}
-    </article>
-    <article class="card col-inteira" id="cfg-leitura">
-      <h3>${icone("info", 18)} Como a leitura funciona</h3>
-      <ol class="passos">${PASSOS.map(([t, d]) => `<li><strong>${t}</strong><p>${d}</p></li>`).join("")}</ol>
-    </article>
-    <article class="card" id="cfg-atalhos">
-      <h3>${icone("teclado", 18)} Atalhos de teclado</h3>
-      <table class="atalhos"><tbody>${ATALHOS.map(([teclas, texto]) => `<tr><td style="white-space:nowrap">${teclas}</td><td>${texto}</td></tr>`).join("")}</tbody></table>
-    </article>
-    <article class="card" id="cfg-sobre">
-      <h3>${icone("info", 18)} Sobre o Fin Pro</h3>
-      ${s ? `<p><strong>${esc(s.nome_app)}</strong> versão ${esc(s.versao)}${s.demonstracao ? ` <span class="chip info">Versão de demonstração</span>` : ""}</p>` : ""}
-      <p class="sutil">Boletos, Pix, comprovantes, caixa, diesel, gastos, empresas e lembretes de vencimento, com a planilha Excel sempre atualizada.</p>
-    </article>`;
-  },
-  acoes: {
-    "sistema-abrir-planilha": async () => {
-      await api.post("/api/planilha/abrir");
-      toast("Abrindo a planilha no Excel… Se lançar boletos com ela aberta, eles serão gravados quando você fechar.", "info", { duracao: 7000 });
-    },
-    "sistema-abrir-pasta": async () => {
-      await api.post("/api/planilha/abrir-pasta");
-      toast("Abrindo a pasta de dados…", "ok");
-    },
-  },
-};
-
-// ------------------------------------------------------------------ abas
-
-/** chave da aba (o ?aba= do endereço), ícone, rótulo e as seções (cartões) na ordem em que aparecem. */
 const ABAS = [
-  { chave: "geral", icone: "config", rotulo: "Geral", secoes: [aplicativo, sistema, versao] },
-  { chave: "usuarios", icone: "usuarios", rotulo: "Usuários e acesso", secoes: [importacao, usuarios, rede] },
-  { chave: "integracoes", icone: "nuvem", rotulo: "Backup e recebimento", secoes: [backup, entrada] },
-  { chave: "saude", icone: "ok", rotulo: "Saúde do sistema", secoes: [saude] },
+  ["geral", "aplicativo", "Geral"],
+  ["usuarios", "usuarios", "Usuários e acesso"],
+  ["integracoes", "nuvem", "Backup e recebimento"],
+  ["saude", "ok", "Saúde do sistema"],
 ];
 
-/** Endereços pelo nome do cartão (ex.: #/config?aba=backup) abrem a aba certa e rolam até o cartão: [aba, id do cartão]. */
-const APELIDOS = {
-  aplicativo: ["geral", "cfg-aplicativo"], versao: ["geral", "cfg-versao"], sistema: ["geral", "cfg-banco"],
-  importacao: ["usuarios", "cfg-importacao"], rede: ["usuarios", "cfg-rede"], acesso: ["usuarios", "cfg-rede"],
-  backup: ["integracoes", "cfg-backup"], entrada: ["integracoes", "cfg-entrada"], recebimento: ["integracoes", "cfg-entrada"],
-};
-
-function htmlAbas() {
-  return `<nav class="alternar-modo sub-abas config-abas" role="tablist" aria-label="Seções das configurações">
-    ${ABAS.map((a) => `<a role="tab" href="#/config?aba=${a.chave}" class="${a.chave === tela.aba ? "ativo" : ""}"
-      aria-selected="${a.chave === tela.aba}">${icone(a.icone, 15)} ${esc(a.rotulo)}${a.chave === "saude"
-        ? `<span class="nav-contador alerta" data-contador-saude title="Itens com problema" hidden></span>` : ""}</a>`).join("")}
-  </nav>`;
+async function aoClicarTela(e) {
+  if (await aoClicarSaude(e)) return;
+  aoClicar(e);
 }
-
-/** Contador de problemas na aba Saúde (só os itens com "Problema"; "Atenção" é comum, ex.: sem OCR). */
-async function contarProblemas() {
-  const vez = tela.vez;
-  try {
-    const d = await buscar("/api/saude");
-    const contador = tela.raiz?.querySelector("[data-contador-saude]");
-    if (vez !== tela.vez || !contador) return;
-    const n = (d.itens || []).filter((i) => i.situacao === "erro").length;
-    contador.textContent = n || "";
-    contador.hidden = !n;
-  } catch { /* sem contador */ }
-}
-
-/** Carrega (de novo) todas as seções da aba; cada cartão se redesenha quando os dados dele chegam. */
-async function carregarAba() {
-  const vez = ++tela.vez;
-  await Promise.all(tela.secoes.map((s) => atualizar(s.chave)));
-  return vez === tela.vez;
-}
-
-function pararSecoes() {
-  tela.secoes.forEach((s) => {
-    try { s.parar?.(); } catch { /* segue */ }
-  });
-}
-
-const aoRecarregar = () => { if (tela.raiz) carregarAba(); };
 
 export async function montar(el, params) {
-  const pedida = (params?.get?.("aba") || "").trim();
-  const [abaDoApelido, cartao] = Object.hasOwn(APELIDOS, pedida) ? APELIDOS[pedida] : [];
-  const aba = ABAS.find((a) => a.chave === (abaDoApelido || pedida)) || ABAS[0];
   tela.raiz = el;
-  tela.aba = aba.chave;
-  tela.secoes = aba.secoes;
-  tela.dados = {};
-  tela.erros = {};
-  el.innerHTML = `${htmlAbas()}<section class="config-grade" id="config-conteudo">${aba.secoes.map(htmlSecao).join("")}</section>`;
-  el.addEventListener("click", aoClicar);
+  const aba = ABAS.some(([chave]) => chave === params?.get("aba")) ? params.get("aba") : "geral";
+  let s = estado.status;
+  if (!s) {
+    try { s = estado.status = await api.get("/api/status"); } catch { s = null; }
+  }
+  if (!s) {
+    el.innerHTML = `<div class="card vazio"><div class="vazio-icone">${icone("alerta", 26)}</div><h3>Servidor indisponível</h3></div>`;
+    return;
+  }
+  el.innerHTML = `
+    <nav class="alternar-modo sub-abas config-abas" role="tablist" aria-label="Seções de Configurações">
+      ${ABAS.map(([chave, ic, rotulo]) => `<a role="tab" href="#/config?aba=${chave}" class="${chave === aba ? "ativo" : ""}"
+        aria-selected="${chave === aba}">${icone(ic, 15)} ${rotulo}</a>`).join("")}
+    </nav>
+    <section class="config-grade" id="config-conteudo"><div class="card esqueleto col-inteira" style="height:240px"></div></section>`;
+  el.addEventListener("click", aoClicarTela);
   el.addEventListener("change", aoAlterar);
   el.addEventListener("submit", aoEnviar);
-  window.addEventListener("config:atualizar", aoRecarregar);
-  aba.secoes.forEach((s) => s.iniciar?.());
-  const carga = carregarAba();
-  contarProblemas();
-  if (!(await carga)) return;
-  if (cartao) el.querySelector(`#${cartao}`)?.scrollIntoView({ block: "start", behavior: "smooth" });
+
+  const conteudo = el.querySelector("#config-conteudo");
+  const html = await (aba === "usuarios" ? htmlAbaUsuarios() : aba === "integracoes" ? htmlAbaIntegracoes()
+    : aba === "saude" ? htmlAbaSaude() : htmlAbaGeral(s));
+  if (tela.raiz !== el) return;
+  conteudo.innerHTML = html;
+  if (aba === "saude") iniciarSaude();
 }
 
 export function desmontar() {
-  pararSecoes();
-  window.removeEventListener("config:atualizar", aoRecarregar);
-  tela.raiz?.removeEventListener("click", aoClicar);
+  pararSaude();
+  tela.raiz?.removeEventListener("click", aoClicarTela);
   tela.raiz?.removeEventListener("change", aoAlterar);
   tela.raiz?.removeEventListener("submit", aoEnviar);
   tela.raiz = null;
-  tela.secoes = [];
-  tela.vez += 1;
 }
 
+// ------------------------------------------------------------------ abas
+
+async function htmlAbaUsuarios() {
+  const [administracao, rede] = await Promise.all([api.get("/api/admin").catch(() => null), api.get("/api/rede").catch(() => null)]);
+  const lista = (administracao?.autorizado || ehAdministrador()) ? await api.get("/api/usuarios").catch(() => null) : null;
+  return `${htmlImportacao(administracao)}${htmlUsuarios(administracao, lista)}${rede ? htmlRede(rede) : ""}`;
+}
+
+async function htmlAbaIntegracoes() {
+  const [administracao, backup, caixa] = await Promise.all([
+    api.get("/api/admin").catch(() => null), api.get("/api/backup").catch(() => null), api.get("/api/entrada").catch(() => null)]);
+  return `${htmlBackup(backup, administracao)}${htmlEntrada(caixa, administracao)}`;
+}
+
+async function htmlAbaSaude() {
+  return htmlSaude(await api.get("/api/saude").catch(() => null));
+}
+
+async function htmlAbaGeral(s) {
+  const [estadoAcesso, aplicativo, saude, versao] = await Promise.all([
+    api.get("/api/acesso/estado").catch(() => null), api.get("/api/app").catch(() => null), api.get("/api/saude").catch(() => null),
+    api.get("/api/versao").catch(() => null)]);
+  const banco = saude?.itens.find((i) => i.chave === "banco")?.detalhes || {};
+  const avisoRede = estadoAcesso?.rede_sem_senha
+    ? `<div class="alerta aviso col-inteira">${icone("escudo", 18)}<div><strong>Acesso pela rede sem senha.</strong>
+        Qualquer aparelho no mesmo Wi-Fi consegue abrir o sistema. Defina <code>LEITOR_SENHA_ACESSO=sua-senha</code> no arquivo
+        <code>.env</code> e reinicie.</div></div>`
+    : "";
+  const avisoSaude = saude && saude.situacao !== "ok"
+    ? `<a class="alerta ${saude.situacao === "erro" ? "erro" : "aviso"} col-inteira alerta-link" href="#/config?aba=saude">${icone("alerta", 18)}
+        <span><strong>${saude.situacao === "erro" ? "Há problemas" : "Há pontos de atenção"} no sistema.</strong>
+        Veja em Saúde do sistema.</span></a>`
+    : "";
+  const recurso = (ok, titulo, descricao, rotuloOk = "Ativo", rotuloOff = "Desativado") => `
+    <li><span class="kpi-icone" style="background:${ok ? "var(--ok-suave)" : "var(--superficie-3)"};color:${ok ? "var(--ok)" : "var(--texto-3)"}">${icone(ok ? "ok" : "erro", 18)}</span>
+      <div class="info"><strong>${titulo}</strong><p>${descricao}</p></div>
+      <span class="chip ${ok ? "ok" : ""}">${ok ? rotuloOk : rotuloOff}</span></li>`;
+  const local = aplicativo?.local !== false;
+
+  return `
+    ${avisoSaude}${avisoRede}
+    ${aplicativo?.local ? htmlAplicativo(aplicativo) : ""}
+    ${htmlVersao(versao)}
+
+    <div class="card">
+      <h3>${icone("planilha", 18)} Banco de dados e planilha</h3>
+      <p style="color:var(--texto-2)">Os boletos e Pix ficam num banco de dados no computador, e a planilha Excel é atualizada
+        sozinha poucos segundos depois de cada alteração${banco.boletos !== undefined ? ` (${banco.boletos} boletos e ${banco.pix} Pix)` : ""}.</p>
+      <div class="caminho mono">${esc(s.planilha)}</div>
+      ${local ? `<div class="linha-botoes">
+        <button class="btn btn-primario" data-acao="abrir">${icone("externo", 16)} Abrir planilha</button>
+        <button class="btn" data-acao="pasta">${icone("pasta", 16)} Abrir pasta de dados</button>
+        <a class="btn" href="/api/exportar?formato=planilha">${icone("download", 16)} Baixar cópia</a>
+      </div>` : ""}
+      <ul class="lista-info">
+        <li>Abas <strong>Boletos</strong>, <strong>Pix</strong>, <strong>Centros de Custo</strong>, <strong>Resumo</strong> (fórmulas) e
+          <strong>Histórico</strong> (quem fez cada alteração).</li>
+        <li><strong>Pode deixar a planilha aberta no Excel:</strong> os lançamentos são gravados na hora, e a planilha é atualizada quando o arquivo for fechado.</li>
+        <li><strong>Editou no Excel e salvou?</strong> As mudanças em boletos já lançados (status, centro de custo, observações…) voltam
+          para o sistema sozinhas. Para lançar ou excluir, use o sistema.</li>
+        <li>Cópia de segurança diária em <code>dados\\backups</code> (últimos 30 dias). Para proteger contra perda do computador,
+          ligue o <a href="#/config?aba=integracoes">backup fora do computador</a>.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>${icone("scan", 18)} Recursos de leitura</h3>
+      <ul class="recursos">
+        ${recurso(true, "Código de barras", "Decodifica o código ITF de 44 dígitos em PDFs e fotos, com valor e vencimento exatos.")}
+        ${recurso(true, "Texto de PDF", "Lê a linha digitável e os campos diretamente da camada de texto de boletos digitais.")}
+        ${recurso(s.ocr, "OCR local", `Reconhece o texto de fotos e PDFs escaneados, sem enviar nada para a internet.${s.ocr_modelo ? ` Modelo: <code>${esc(s.ocr_modelo)}</code>.` : ""} Fotos de papel são recortadas e endireitadas automaticamente.`, "Ativo", "Indisponível")}
+        ${recurso(s.heic, "Fotos do iPhone (HEIC)", "Aceita fotos no formato HEIC/HEIF.", "Suportado", "Não suportado")}
+        ${recurso(true, "Comprovantes de pagamento", "Reconhece o comprovante, acha o boleto ou Pix e dá baixa com valor pago, juros e desconto.")}
+        ${recurso(s.ia, "IA (Claude)", s.ia
+          ? `Botão "Analisar com IA" disponível para fotos difíceis. Modelo: <code>${esc(s.ia_modelo)}</code>${s.ia_automatica ? " · automática quando a confiança é baixa" : ""}.`
+          : `Opcional. Para ativar: copie <code>.env.example</code> para <code>.env</code>, preencha <code>ANTHROPIC_API_KEY</code> e reinicie o sistema.`)}
+      </ul>
+    </div>
+
+    <div class="card col-inteira">
+      <h3>${icone("info", 18)} Como a leitura funciona</h3>
+      <ol class="passos">
+        <li><strong>Envio</strong><p>PDF ou foto enviado pela tela, arrastado, colado (Ctrl+V), fotografado pelo celular, por e-mail ou pelo Telegram.</p></li>
+        <li><strong>Código de barras</strong><p>O código ITF é decodificado; a imagem é girada se estiver de lado.</p></li>
+        <li><strong>Texto e OCR</strong><p>Rótulos como Beneficiário e Nº do Documento são localizados pela posição na página.</p></li>
+        <li><strong>Validação</strong><p>Dígitos verificadores FEBRABAN conferidos; valor e vencimento comparados com o impresso.</p></li>
+        <li><strong>Revisão e lançamento</strong><p>Você confere, ajusta e lança. Duplicados são bloqueados.</p></li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3>${icone("teclado", 18)} Atalhos</h3>
+      <table class="atalhos">
+        <tr><td><kbd>Ctrl</kbd> + <kbd>V</kbd></td><td>Colar imagem ou linha digitável</td></tr>
+        <tr><td>Arrastar arquivos</td><td>Ler boletos (ou comprovantes) a partir de qualquer tela</td></tr>
+        <tr><td><kbd>/</kbd></td><td>Buscar na lista de boletos</td></tr>
+        <tr><td>Colar um Pix Copia e Cola</td><td>Abre a aba Pix já preenchida</td></tr>
+        <tr><td><kbd>Alt</kbd> + <kbd>1</kbd>…<kbd>7</kbd></td><td>Painel, Ler, Boletos, Pix, Gastos, Notificações, Configurações</td></tr>
+        <tr><td><kbd>Esc</kbd></td><td>Fechar janelas</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>${icone("escudo", 18)} Sobre</h3>
+      <p style="color:var(--texto-2)">Fin Pro versão ${esc(s.versao)}. Roda no seu computador: banco de dados, planilha e arquivos
+        ficam na pasta <code>dados</code>. Somente a análise com IA, quando você a aciona, envia o arquivo para a API da Anthropic.</p>
+      <p class="sutil">Suporta boletos bancários (47 dígitos) e de arrecadação — contas de consumo e tributos (48 dígitos) —,
+        incluindo o novo ciclo do fator de vencimento iniciado em 22/02/2025.</p>
+    </div>`;
+}

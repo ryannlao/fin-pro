@@ -31,7 +31,7 @@ from openpyxl import Workbook
 
 from .planilha import (
     ABA_CENTROS, ABA_HISTORICO, ABAS, BACKUPS_MANTIDOS, CAMPOS_DATA, CAMPOS_DATA_HORA, CAMPOS_MOEDA, CENTROS_PADRAO,
-    STATUS_VALIDOS, TIPOS_CHAVE, PlanilhaBloqueadaError, PlanilhaBoletos, RegistroNaoEncontrado, _estilizar_cabecalho,
+    TIPOS_CHAVE, PlanilhaBloqueadaError, PlanilhaBoletos, RegistroNaoEncontrado, _estilizar_cabecalho,
 )
 
 log = logging.getLogger("leitor_boletos.banco")

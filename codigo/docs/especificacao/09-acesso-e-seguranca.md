@@ -19,6 +19,14 @@ backup) enquanto não há usuário administrador, com sessão de **20 minutos** 
 > `127.0.0.1` e seriam tratadas como "computador principal" (sem login). Antes de publicar, a regra
 > `requisicao_local` precisa ignorar o endereço do proxy e o login deve ser obrigatório para todos (capítulo 11).
 
+**Antes de tudo, em toda rota `/api/` (v1.11):** recusa com 403 `origem_recusada` o pedido cujo `Host` não seja IP,
+`localhost`, nome sem ponto (computador na rede), `*.local` ou o host de `LEITOR_URL` (`host_confiavel`, contra DNS rebinding),
+e o pedido de gravação (POST/PUT/PATCH/DELETE) cujo `Origin` exista e seja diferente do `Host`, inclusive `null`
+(`origem_estranha`, contra pedido forjado por outro site). Sem isso, qualquer site aberto no navegador do próprio computador
+usaria o Fin Pro como "computador principal". **Arquivos enviados** (`GET /api/arquivos/{id}`): só PDF e imagens comuns
+(`TIPOS_SEGUROS`) abrem na tela; o resto (SVG, HTML) vai como download `application/octet-stream`, sempre com
+`X-Content-Type-Options: nosniff`. Testes: `test_permissoes.py`.
+
 ## 9.2 Middleware (`acesso.middleware`) — em toda rota `/api/`
 
 1. Identifica o usuário pelo cookie; `request.state.usuario_nome` = nome do usuário, ou "Computador principal", ou

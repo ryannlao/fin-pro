@@ -35,3 +35,6 @@ anthropic>=1.0
 pytest>=8
 httpx>=0.27
 playwright>=1.40  # testes das telas (usa o Microsoft Edge já instalado)
+
+# Qualidade (desenvolvimento): lint do Python, configurado em ruff.toml
+ruff>=0.17

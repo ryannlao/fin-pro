@@ -62,7 +62,7 @@ def bancario_rotulos_inline(destino: Path) -> dict:
     c.drawString(x + 55 * mm, h - 25 * mm, formatar_linha(linha))
     c.setFont("Helvetica", 9.5)
     linhas = [
-        f"Beneficiário: CLÍNICA ODONTOLÓGICA SORRISO FELIZ LTDA - CNPJ: 98.765.432/0001-10",
+        "Beneficiário: CLÍNICA ODONTOLÓGICA SORRISO FELIZ LTDA - CNPJ: 98.765.432/0001-10",
         "Endereço: Av. Brasil, 1500 - Centro - Curitiba/PR",
         f"Vencimento: {venc:%d/%m/%Y}",
         "Nº Documento: 2026-000781",

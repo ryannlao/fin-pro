@@ -1,0 +1,101 @@
+
+      <section class="secao" id="perguntas">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Perguntas frequentes</p>
+            <h2>O que costumam perguntar antes de começar</h2>
+          </div>
+          <div class="perguntas">
+            <details open>
+              <summary>Precisa de internet para funcionar?</summary>
+              <div><p>Não para o principal. O sistema roda no computador do escritório e lê boletos com OCR local, sem enviar nada para fora. A internet é usada para o Telegram, o e-mail, a pasta de nuvem do backup e a IA opcional. Na primeira leitura por OCR, o sistema baixa o modelo de leitura, de cerca de 20 MB.</p></div>
+            </details>
+            <details>
+              <summary>Onde ficam os meus dados?</summary>
+              <div><p>Numa pasta do seu computador: três bancos de dados, as planilhas Excel e os arquivos originais (boletos, comprovantes, cupons, canhotos, cheques e notas). Você escolhe se e para onde vai a cópia de segurança.</p></div>
+            </details>
+            <details>
+              <summary>E se o computador quebrar ou for roubado?</summary>
+              <div><p>Com o backup total ligado para uma pasta de nuvem ou um HD externo, basta instalar o Python em outro computador e dar dois cliques em <code>RESTAURAR.bat</code>. Voltam o programa, os dados, os comprovantes, as configurações e as versões. O menu avisa quando o backup está atrasado.</p></div>
+            </details>
+            <details>
+              <summary>Preciso abandonar a minha planilha?</summary>
+              <div><p>Não. O sistema mantém as planilhas Excel atualizadas sozinho, e as edições feitas no Excel em lançamentos existentes voltam para o sistema. Quem prefere a planilha continua com ela.</p></div>
+            </details>
+            <details>
+              <summary>E se a leitura errar?</summary>
+              <div><p>Nada é lançado sem conferência. A linha digitável só é aceita se os dígitos verificadores fecharem, o valor e o vencimento do código são comparados com os impressos, e os campos com baixa confiança ficam em amarelo. Nos bots, o que o robô não tem certeza espera na Conferência.</p></div>
+            </details>
+            <details>
+              <summary>Que documentos ele lê?</summary>
+              <div><p>Boletos bancários, contas de luz, água e telefone, guias de tributos (DAS, DARF, GPS, FGTS, IPVA, IPTU e DETRAN), carnês, Pix Copia e Cola e QR code, comprovantes de pagamento, cupons e notas de compra, notas fiscais em XML ou DANFE, cheques pré-datados, comprovantes de depósito e canhotos de abastecimento. Em PDF, JPG, PNG, WEBP e HEIC.</p></div>
+            </details>
+            <details>
+              <summary>Funciona no celular?</summary>
+              <div><p>Sim, pela rede Wi-Fi do escritório, com senha e QR code para conectar. A câmera do celular fotografa o boleto e a revisão é feita ali mesmo. Fora do escritório, os bots do Telegram recebem boletos, comprovantes, cupons, notas e canhotos.</p></div>
+            </details>
+            <details>
+              <summary>Dá para usar de fora do escritório, pela internet?</summary>
+              <div><p>Hoje o acesso direto às telas é pelo computador e pela rede local, e o Telegram cobre o que acontece na rua. A versão hospedada em servidor, com login obrigatório para todos e HTTPS, está em preparação.</p></div>
+            </details>
+            <details>
+              <summary>Quantas pessoas podem usar?</summary>
+              <div><p>Quantas você cadastrar. Cada uma tem usuário, senha e as suas permissões, e o sistema registra quem lançou, pagou ou alterou cada coisa. No Telegram, os avisos podem ir para várias pessoas e grupos.</p></div>
+            </details>
+            <details>
+              <summary>Consigo trazer os boletos do sistema que uso hoje?</summary>
+              <div><p>Sim. A importação aceita Excel, CSV e TXT, reconhece as colunas pelo nome, confere cada linha pelos dígitos verificadores e mostra uma prévia antes de gravar. Fica numa área protegida pela senha de administrador.</p></div>
+            </details>
+            <details>
+              <summary>O sistema usa inteligência artificial?</summary>
+              <div><p>A leitura normal não usa: é código de barras, texto do PDF e OCR local. Há um botão opcional de análise com IA para fotos muito difíceis, que vem desligado e precisa de uma chave própria da Anthropic. Mesmo a linha sugerida pela IA passa pela validação.</p></div>
+            </details>
+            <details>
+              <summary>Como sei que o backup está bom?</summary>
+              <div><p>Depois de cada cópia o sistema abre os bancos copiados, confere a integridade e verifica se não falta nenhum comprovante. O botão Verificar backup compara arquivo por arquivo. Qualquer falha aparece no cartão do backup e na Saúde do sistema.</p></div>
+            </details>
+            <details>
+              <summary>E se uma atualização der problema?</summary>
+              <div><p>Cada versão do programa fica guardada. Dá para voltar à anterior sem tocar nos dados: boletos, comprovantes e configurações continuam como estão.</p></div>
+            </details>
+            <details>
+              <summary>O que preciso para instalar?</summary>
+              <div><p>Um computador com Windows 10 ou 11 e o Python 3.10 ou superior. O arquivo <code>iniciar.bat</code> instala o restante na primeira vez. Para os bots, um token do Telegram para cada um, criado no @BotFather.</p></div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section class="secao final" id="comecar">
+        <div class="miolo modulo">
+          <div class="secao-cab">
+            <p class="rotulo">Como começar</p>
+            <h2>Três passos até o primeiro boleto lançado sem digitar</h2>
+            <p class="lide">Comece pela demonstração, que não mexe em nada seu. Quando quiser, abra o sistema de verdade e ligue os avisos e o backup.</p>
+          </div>
+          <ol class="passos">
+            <li><h3>Abra a demonstração</h3><p>Dois cliques em <code>demonstracao.bat</code>. Navegue pelos módulos com dados de exemplo e arraste um boleto seu para a tela Ler boletos.</p></li>
+            <li><h3>Abra o sistema de verdade</h3><p>Dois cliques em <code>iniciar.bat</code>. Crie a senha de administrador, cadastre as pessoas e, se quiser, importe os boletos do sistema antigo.</p></li>
+            <li><h3>Ligue os avisos e o backup</h3><p>Conecte o Telegram em Notificações, escolha os horários dos lembretes e aponte o backup total para uma pasta de nuvem ou um HD externo.</p></li>
+          </ol>
+          <div class="botoes">
+            <a class="botao primario" href="#leitor"><svg class="ic" aria-hidden="true"><use href="#i-ler"/></svg>Testar a leitura agora</a>
+            <a class="botao" href="#modulos">Rever os módulos</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="rodape">
+      <div class="miolo">
+        <span>Fin Pro · sistema financeiro do escritório</span>
+        <span>Telas, nomes e valores desta página são dados de exemplo da versão de demonstração.</span>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<dialog class="ampliada" id="ampliada" aria-label="Tela ampliada">
+  <img id="ampliada-img" alt="">
+  <form method="dialog"><span id="ampliada-legenda"></span><button class="botao" type="submit">Fechar</button></form>
+</dialog>

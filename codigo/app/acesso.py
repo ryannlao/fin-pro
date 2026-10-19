@@ -18,8 +18,10 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import hmac
+import ipaddress
 import threading
 import time
+from urllib.parse import urlsplit
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
@@ -140,6 +142,25 @@ def autorizado(request: Request) -> bool:
     return hmac.compare_digest(request.cookies.get(COOKIE, ""), token)
 
 
+def host_confiavel(host: str | None) -> bool:
+    """Endereço pelo qual o sistema foi chamado: IP, localhost, nome do computador na rede ou o LEITOR_URL.
+    Recusar nomes de outros sites impede o "DNS rebinding" (um site apontando o próprio nome para este computador)."""
+    nome = urlsplit(f"//{host or ''}").hostname or ""
+    if nome in ("localhost", urlsplit(config.URL_APP).hostname) or "." not in nome or nome.endswith(".local"):
+        return True
+    try:
+        ipaddress.ip_address(nome)
+        return True
+    except ValueError:
+        return False
+
+
+def origem_estranha(request: Request) -> bool:
+    """Pedido de gravação feito por outro site aberto no navegador (o navegador manda o cabeçalho Origin)."""
+    origem = request.headers.get("origin")
+    return origem is not None and urlsplit(origem).netloc != request.headers.get("host", "")
+
+
 def segundos_bloqueado(ip: str) -> int:
     agora = time.time()
     with _lock:
@@ -193,6 +214,9 @@ async def middleware(request: Request, call_next):
     caminho = request.url.path
     if not caminho.startswith("/api/"):
         return await call_next(request)
+    if not host_confiavel(request.headers.get("host")) or (request.method in ESCRITA and origem_estranha(request)):
+        return JSONResponse(status_code=403, content={"detail": {
+            "codigo": "origem_recusada", "mensagem": "Pedido recusado: ele não veio das telas do Fin Pro."}})
     local = requisicao_local(request)
     usuario = usuario_do_cookie(request)
     request.state.usuario = usuario

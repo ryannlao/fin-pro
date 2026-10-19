@@ -1,179 +1,136 @@
 // Configurações · Importação de boletos e senha de administrador (área restrita).
-// A senha de administrador só é criada e trocada no computador onde o Fin Pro está instalado (o servidor responde 403
-// "somente_local" de fora). Com a área liberada (senha digitada ou usuário com perfil administrador): importar boletos,
-// baixar a planilha modelo e bloquear. Também exporta o aviso de "área restrita" usado pelos outros cartões.
 import { api } from "../../api.js";
-import { ehAdministrador, estado } from "../../estado.js";
+import { estado } from "../../estado.js";
 import { icone } from "../../icons.js";
-import { esc, mensagemErro, toast } from "../../ui.js";
-import { alertaErro, carregarAcesso, carregarAdmin, liberado, recarregar, tela } from "./tela.js";
+import { abrirModal, confirmar, copiar, dataHoraBR, esc, mensagemErro, pedirTexto, toast } from "../../ui.js";
+import { bloquearAdmin, pedirSenhaAdmin } from "../../admin.js";
+import { tela } from "./tela.js";
+import { atualizarBackup } from "./backup.js";
+import { atualizarEntrada } from "./entrada.js";
+import { atualizarUsuarios } from "./usuarios.js";
 
-export const chave = "importacao";
-
-const MINIMO_SENHA = 6;
-
-/** GET /api/admin e /api/acesso/estado (sempre 200). Devolve o estado da senha de administrador (também em tela.admin). */
-export async function carregar() {
-  const [admin] = await Promise.all([carregarAdmin(), carregarAcesso()]); // antes de qualquer await: pedidos compartilhados
-  return admin;
-}
-
-// ------------------------------------------------------------------ quem pode mexer nas áreas restritas
-
-/** Entrou com um usuário que não é administrador: o servidor responde "sem_permissao" mesmo com a senha digitada. */
-export const usuarioComum = () => Boolean(estado.acesso?.usuario) && !ehAdministrador();
-
-/** Pode mudar configurações restritas (backup, e-mail/Telegram, importação) neste aparelho agora? */
-export const podeAdministrar = () => !usuarioComum() && liberado();
-
-const alerta = (tipo, texto) => `<div class="alerta ${tipo}">${icone(tipo === "info" ? "info" : "alerta", 16)}<div>${texto}</div></div>`;
-
-/**
- * Aviso de área restrita para os cartões de configuração, quando podeAdministrar() é falso.
- * `oque`: o que fica bloqueado (ex.: "a pasta, o horário e os pacotes do backup") · `descricao`: texto da janela da senha.
- */
-export function htmlTravaAdmin(oque, descricao) {
-  const admin = tela.admin;
-  if (usuarioComum()) {
-    return alerta("info", `Só quem tem o perfil de administrador pode mudar ${esc(oque)}. Peça ao administrador do Fin Pro.`);
+export function htmlImportacao(a) {
+  if (!a) {
+    // Nunca esconder a opção: se o servidor ainda não tem a função (versão antiga aberta), explica o que fazer
+    return `<div class="card col-inteira" id="card-admin">
+      <div class="rede-topo">
+        <h3>${icone("planilha", 18)} Importar boletos de outro sistema</h3>
+        <span class="chip aviso">${icone("escudo", 12)} Indisponível</span>
+      </div>
+      <div class="alerta aviso">${icone("alerta", 16)}<span>Não foi possível carregar esta função. Feche o Fin Pro
+        (botão direito no ícone perto do relógio → <strong>Sair</strong>) e abra de novo para ativar a importação.</span></div>
+    </div>`;
   }
-  if (admin && !admin.senha_definida) {
-    if (!admin.local) return alerta("info", `Para mudar ${esc(oque)}, entre com um usuário administrador.`);
-    return `${alerta("aviso", `Área restrita: para mudar ${esc(oque)}, crie primeiro a senha de administrador.`)}
-      <div class="linha-botoes"><a class="btn" href="#/config?aba=usuarios">${icone("escudo", 16)} Criar a senha de administrador</a></div>`;
+  let corpo;
+  if (!a.senha_definida) {
+    corpo = a.local
+      ? `<p style="color:var(--texto-2)">Traga boletos exportados de outro sistema (Excel, CSV ou TXT) para a planilha. Por segurança, esta função
+          fica protegida por uma <strong>senha de administrador</strong>: crie a sua abaixo. Só quem souber a senha consegue importar.</p>
+        <form class="rede-senha" data-admin="criar">
+          <input type="password" class="input" name="senha" placeholder="Senha de administrador (mínimo 6 caracteres)" autocomplete="new-password" minlength="6" required>
+          <input type="password" class="input" name="confirmacao" placeholder="Repita a senha" autocomplete="new-password" minlength="6" required>
+          <button class="btn btn-primario" type="submit">${icone("escudo", 16)} Criar senha</button>
+        </form>
+        <p class="sutil">Use uma senha diferente da senha de acesso pelo celular e não a compartilhe.</p>`
+      : `<div class="alerta info">${icone("info", 16)}<span>A senha de administrador precisa ser criada no computador onde o sistema está instalado.</span></div>`;
+  } else if (a.autorizado) {
+    corpo = `<div class="alerta info">${icone("check", 16)}<span>Área liberada neste aparelho. Ela é bloqueada sozinha após ${a.minutos_sessao} minutos sem uso.</span></div>
+      <div class="linha-botoes">
+        <a class="btn btn-primario" href="#/importar">${icone("upload", 16)} Abrir importação</a>
+        <button class="btn" type="button" data-admin="bloquear">${icone("escudo", 16)} Bloquear agora</button>
+        ${a.local ? `<button class="btn btn-fantasma" type="button" data-admin="trocar">Trocar senha</button>` : ""}
+      </div>`;
+  } else {
+    corpo = `<p style="color:var(--texto-2)">Traga boletos exportados de outro sistema (Excel, CSV ou TXT) para a planilha.
+        Área restrita: só abre com a senha de administrador.</p>
+      <div class="linha-botoes">
+        <button class="btn btn-primario" type="button" data-admin="abrir">${icone("escudo", 16)} Digitar a senha e abrir</button>
+        ${a.local ? `<button class="btn btn-fantasma" type="button" data-admin="trocar">Trocar senha</button>` : ""}
+      </div>`;
   }
-  const espera = Number(admin?.bloqueado_segundos) || 0;
-  return `${alerta("aviso", `Área restrita: digite a senha de administrador para mudar ${esc(oque)}.`)}
-    <div class="linha-botoes"><button class="btn" type="button" data-acao="admin-desbloquear" data-descricao="${esc(descricao)}"
-      ${espera > 0 ? "disabled" : ""}>${icone("escudo", 16)} Digitar a senha</button></div>
-    ${espera > 0 ? `<p class="sutil">Muitas senhas erradas. Tente de novo em ${Math.max(1, Math.round(espera / 60))} minuto(s).</p>` : ""}`;
-}
-
-// ------------------------------------------------------------------ desenho
-
-const campoSenha = (nome, rotulo, autocomplete = "new-password") => `<label class="imp-grupo"><span class="imp-rotulo">${rotulo}</span>
-  <input type="password" class="input" name="${nome}" minlength="${MINIMO_SENHA}" maxlength="200" autocomplete="${autocomplete}" required></label>`;
-
-function htmlCriarSenha() {
-  return `<form class="admin-form" data-acao="importacao-criar-senha" autocomplete="off" novalidate style="max-width:440px">
-      ${campoSenha("senha", "Nova senha de administrador")}
-      ${campoSenha("confirmacao", "Repita a senha")}
-      <p class="admin-erro" data-admin-erro role="alert"></p>
-      <div class="linha-botoes"><button class="btn btn-primario" type="submit" data-espera="Criando…">${icone("escudo", 16)} Criar senha</button></div>
-    </form>
-    <p class="sutil">Mínimo de ${MINIMO_SENHA} caracteres. Esqueceu? Feche o sistema, apague dados\\admin.json e crie outra.</p>`;
-}
-
-function htmlTrocarSenha() {
-  return `<details class="rede-ajuda"><summary>Trocar a senha de administrador</summary>
-    <form class="admin-form" data-acao="importacao-trocar-senha" autocomplete="off" novalidate style="max-width:440px;margin-top:12px">
-      <label class="imp-grupo"><span class="imp-rotulo">Senha atual</span>
-        <input type="password" class="input" name="senha_atual" maxlength="200" autocomplete="current-password" required></label>
-      ${campoSenha("senha", "Nova senha")}
-      ${campoSenha("confirmacao", "Repita a nova senha")}
-      <p class="admin-erro" data-admin-erro role="alert"></p>
-      <div class="linha-botoes"><button class="btn btn-primario" type="submit" data-espera="Trocando…">${icone("chave", 16)} Trocar senha</button></div>
-      <p class="sutil">Trocar a senha bloqueia os outros aparelhos que estavam liberados.</p>
-    </form>
-  </details>`;
-}
-
-function htmlLiberado(admin) {
-  const pelaSenha = Boolean(admin?.autorizado);
-  const local = Boolean(admin?.local);
-  const minutos = Number(admin?.minutos_sessao) || 20;
-  return `<p class="sutil">${pelaSenha
-      ? `Área liberada neste aparelho (fecha sozinha após ${minutos} minutos sem uso).`
-      : "Área liberada para o seu usuário (perfil administrador)."}</p>
-    <div class="linha-botoes">
-      <a class="btn btn-primario" href="#/importar">${icone("upload", 16)} Importar boletos</a>
-      <a class="btn" href="/api/importacao/modelo.xlsx" download>${icone("download", 16)} Baixar planilha modelo</a>
-      ${pelaSenha ? `<button class="btn" type="button" data-acao="admin-bloquear">${icone("escudo", 16)} Bloquear</button>` : ""}
+  return `<div class="card col-inteira" id="card-admin">
+    <div class="rede-topo">
+      <h3>${icone("planilha", 18)} Importar boletos de outro sistema</h3>
+      <span class="chip ${a.senha_definida ? "ok" : "aviso"}">${icone("escudo", 12)} ${a.senha_definida ? "Protegido por senha" : "Senha não criada"}</span>
     </div>
-    ${local && admin?.senha_definida ? htmlTrocarSenha() : ""}
-    ${local && admin && !admin.senha_definida ? `<details class="rede-ajuda"><summary>Criar a senha de administrador</summary>
-      <div style="margin-top:12px">${htmlCriarSenha()}</div></details>` : ""}`;
-}
-
-function htmlBloqueado(admin) {
-  if (usuarioComum()) {
-    return alerta("info", "Só quem tem o perfil de administrador importa boletos de outro sistema. Peça ao administrador do Fin Pro.");
-  }
-  if (admin && !admin.senha_definida) {
-    if (admin.local) return htmlCriarSenha();
-    return alerta("aviso", "A senha de administrador só pode ser criada no computador onde o Fin Pro está instalado. Quem tem o perfil de administrador pode entrar com o próprio usuário.");
-  }
-  const espera = Number(admin?.bloqueado_segundos) || 0;
-  return `${espera > 0 ? alerta("aviso", `Muitas senhas erradas. Tente de novo em ${Math.max(1, Math.round(espera / 60))} minuto(s).`) : ""}
-    <div class="linha-botoes"><button class="btn btn-primario" type="button" data-acao="admin-desbloquear"
-      data-descricao="Digite a senha de administrador para usar a importação de boletos." ${espera > 0 ? "disabled" : ""}>
-      ${icone("escudo", 16)} Digitar a senha</button></div>`;
-}
-
-export function html(admin, erro) {
-  const aberto = admin !== undefined && !erro && !usuarioComum() && liberado();
-  let corpo = `<div class="esqueleto" style="height:60px"></div>`;
-  if (erro) corpo = alertaErro(erro);
-  else if (aberto) corpo = htmlLiberado(admin);
-  else if (admin !== undefined) corpo = htmlBloqueado(admin);
-  const chip = admin === undefined || erro ? ""
-    : aberto ? ` <span class="chip ok">Liberado</span>` : ` <span class="chip aviso">Área restrita</span>`;
-  return `<article class="card col-inteira" id="cfg-importacao">
-    <h3>${icone("planilha", 18)} Importar boletos de outro sistema${chip}</h3>
-    <p class="sutil">Traga as contas a pagar exportadas do seu sistema financeiro ou ERP (Excel, CSV ou TXT). Área restrita: só com a senha de administrador.</p>
     ${corpo}
-  </article>`;
+    ${a.local && a.senha_definida ? `<details class="rede-ajuda"><summary>Esqueceu a senha de administrador?</summary>
+      <p class="sutil">Neste computador, feche o Fin Pro, apague o arquivo <code>dados\\admin.json</code> e abra de novo:
+        será possível criar uma nova senha. Boletos, Pix e a planilha não são afetados.</p></details>` : ""}
+  </div>`;
 }
 
-// ------------------------------------------------------------------ senha de administrador
-
-/** Confere os campos antes de enviar; devolve a mensagem de erro (ou "") e põe o foco no campo certo. */
-function conferirSenhas(form) {
-  const { senha, confirmacao, senha_atual: atual } = form.elements;
-  if (atual && !atual.value) {
-    atual.focus();
-    return "Digite a senha de administrador atual.";
-  }
-  if (senha.value.length < MINIMO_SENHA) {
-    senha.focus();
-    return `A senha de administrador precisa ter pelo menos ${MINIMO_SENHA} caracteres.`;
-  }
-  if (senha.value !== confirmacao.value) {
-    confirmacao.focus();
-    return "As duas senhas não são iguais.";
-  }
-  return "";
+export async function atualizarAdmin() {
+  const dados = await api.get("/api/admin");
+  const card = tela.raiz?.querySelector("#card-admin");
+  if (card) card.outerHTML = htmlImportacao(dados);
+  await Promise.all([atualizarUsuarios(dados), atualizarBackup(), atualizarEntrada(null, dados)]);
 }
 
-/** Envia a senha (criar ou trocar). Erros do servidor aparecem no próprio formulário; sucesso redesenha a aba. */
-async function enviarSenha(form, trocar) {
-  const erro = form.querySelector("[data-admin-erro]");
-  erro.textContent = conferirSenhas(form);
-  if (erro.textContent) return;
-  const { senha, confirmacao, senha_atual: atual } = form.elements;
-  const corpo = { senha: senha.value, confirmacao: confirmacao.value };
-  if (trocar) corpo.senha_atual = atual.value;
-  try {
-    tela.admin = await api.post("/api/admin/senha", corpo);
-  } catch (falha) {
-    erro.textContent = mensagemErro(falha);
-    if (falha?.codigo === "senha_incorreta" && atual) {
-      atual.value = "";
-      atual.focus();
-    } else if (falha?.codigo === "senhas_diferentes") {
-      confirmacao.focus();
-    } else {
-      senha.focus();
-    }
+export async function acaoAdmin(acao) {
+  if (acao === "abrir") {
+    if (await pedirSenhaAdmin({ descricao: "Digite a senha de administrador para abrir a importação de boletos." })) location.hash = "#/importar";
+  } else if (acao === "bloquear") {
+    await bloquearAdmin();
+    await atualizarAdmin();
+    toast("Área de administrador bloqueada.", "info");
+  } else if (acao === "trocar") {
+    trocarSenhaAdmin();
+  }
+}
+
+export async function criarSenhaAdmin(formulario) {
+  const dados = Object.fromEntries(new FormData(formulario).entries());
+  if (dados.senha !== dados.confirmacao) {
+    toast("As duas senhas não são iguais.", "erro");
     return;
   }
-  toast(trocar
-    ? "Senha de administrador trocada. Os outros aparelhos que estavam liberados foram bloqueados."
-    : "Senha de administrador criada. A área restrita está liberada neste aparelho.", "ok", { duracao: 6000 });
-  recarregar(); // a sessão já foi aberta (cookie): os cartões de usuários, backup e e-mail mudam também
+  const botao = formulario.querySelector("button");
+  botao.disabled = true;
+  try {
+    await api.post("/api/admin/senha", dados);
+    await atualizarAdmin();
+    toast("Senha de administrador criada. Só quem souber a senha consegue importar boletos.", "ok", { duracao: 6000 });
+  } catch (erro) {
+    botao.disabled = false;
+    toast(mensagemErro(erro), "erro", { duracao: 6000 });
+  }
 }
 
-export const formularios = {
-  "importacao-criar-senha": (form) => enviarSenha(form, false),
-  "importacao-trocar-senha": (form) => enviarSenha(form, true),
-};
+export function trocarSenhaAdmin() {
+  const { el, fechar } = abrirModal({
+    titulo: "Trocar senha de administrador",
+    corpo: `<form class="grade-campos" data-trocar-admin autocomplete="off">
+      <div class="campo col-2"><label for="adm-atual">Senha atual</label>
+        <input id="adm-atual" type="password" class="input" name="senha_atual" autocomplete="current-password" autofocus></div>
+      <div class="campo"><label for="adm-nova">Nova senha</label>
+        <input id="adm-nova" type="password" class="input" name="senha" autocomplete="new-password" minlength="6"></div>
+      <div class="campo"><label for="adm-conf">Repita a nova senha</label>
+        <input id="adm-conf" type="password" class="input" name="confirmacao" autocomplete="new-password" minlength="6"></div>
+    </form>`,
+    rodape: `<button class="btn btn-fantasma" data-fechar>Cancelar</button>
+             <button class="btn btn-primario" data-salvar>${icone("check", 16)} Trocar senha</button>`,
+  });
+  const formulario = el.querySelector("[data-trocar-admin]");
+  const salvar = async (e) => {
+    e?.preventDefault();
+    const dados = Object.fromEntries(new FormData(formulario).entries());
+    if (dados.senha !== dados.confirmacao) {
+      toast("As duas senhas novas não são iguais.", "erro");
+      return;
+    }
+    const botao = el.querySelector("[data-salvar]");
+    botao.disabled = true;
+    try {
+      await api.post("/api/admin/senha", dados);
+      fechar(true);
+      await atualizarAdmin();
+      toast("Senha de administrador trocada. Os outros aparelhos que estavam liberados foram bloqueados.", "ok", { duracao: 6000 });
+    } catch (erro) {
+      botao.disabled = false;
+      toast(mensagemErro(erro), "erro", { duracao: 6000 });
+    }
+  };
+  formulario.addEventListener("submit", salvar);
+  el.querySelector("[data-salvar]").addEventListener("click", salvar);
+}
