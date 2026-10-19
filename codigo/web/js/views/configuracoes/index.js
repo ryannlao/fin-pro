@@ -89,8 +89,8 @@ async function htmlAbaGeral(s) {
   const banco = saude?.itens.find((i) => i.chave === "banco")?.detalhes || {};
   const avisoRede = estadoAcesso?.rede_sem_senha
     ? `<div class="alerta aviso col-inteira">${icone("escudo", 18)}<div><strong>Acesso pela rede sem senha.</strong>
-        Qualquer aparelho no mesmo Wi-Fi consegue abrir o sistema. Defina <code>LEITOR_SENHA_ACESSO=sua-senha</code> no arquivo
-        <code>.env</code> e reinicie.</div></div>`
+        Por segurança, nenhum outro aparelho consegue entrar. Cadastre os usuários ou defina
+        <code>LEITOR_SENHA_ACESSO=sua-senha</code> no arquivo <code>.env</code> e reinicie.</div></div>`
     : "";
   const avisoSaude = saude && saude.situacao !== "ok"
     ? `<a class="alerta ${saude.situacao === "erro" ? "erro" : "aviso"} col-inteira alerta-link" href="#/config?aba=saude">${icone("alerta", 18)}

@@ -26,6 +26,8 @@ O OCR baixa o modelo de leitura (~20 MB) na primeira vez.
 O sistema publicado (`https://fin.fabbiol.tech`) roda no EasyPanel com `Dockerfile` e `docker-compose.yml` desta pasta. Mudou o
 código: guarde a versão, envie ao GitHub, aceite o Pull Request e clique em "Deploy" no EasyPanel. Os dados e o backup da VPS
 ficam em `/opt/finpro/dados` e `/opt/finpro/backup`, nunca no Git. Detalhes: `docs/especificacao/11-backup-rede-demonstracao.md`, 11.7.
+As variáveis do EasyPanel precisam de `LEITOR_URL=https://fin.fabbiol.tech` (sem ela, toda chamada é recusada) e, numa VPS
+sem usuários cadastrados, de `LEITOR_SENHA_ACESSO` para o primeiro acesso: sem senha e sem usuários, ninguém de fora entra.
 
 ## Dados
 

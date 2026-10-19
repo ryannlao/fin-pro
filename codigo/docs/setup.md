@@ -119,7 +119,8 @@ Nenhuma comparação de candidato foi feita: nenhum caso falhou por causa das in
 |---|---|---|
 | Gancho do RTK e Chrome DevTools MCP sem teste em sessão nova | O PATH e o gancho global só valem numa sessão iniciada depois da instalação | Fechar e abrir o Claude nesta pasta; aprovar `chrome-devtools` se pedir; observar um comando `git status` reescrito pelo RTK |
 | `%USERPROFILE%\.local\bin` fora do PATH de alguns terminais | O instalador do Claude Code avisou | Reiniciar o Windows (o `uv tool update-shell` já gravou no PATH do usuário) |
-| Auditoria de dependências do Python | `pip-audit` não instalado | Instalar com autorização e rodar |
+| Auditoria de dependências do Python | Feita em 19/10/2026 com `uvx pip-audit` (comando em `quality.md`) | `urllib3` atualizada; repetir antes de cada publicação |
+| Revisão de segurança de 19/10/2026 (5 achados) | API aberta sem senha, senha do e-mail enviável, atalhos sem permissão, bloqueio do escritório pelo IP do proxy, comprovante por e-mail dando baixa sozinho | 4 **corrigidos na v1.12.1** com testes; o comprovante por e-mail depende de decisão do dono |
 | B023 (21 ocorrências) | Possíveis defeitos reais em funções criadas dentro de laços | Revisar numa tarefa própria |
 | Pedidos de outros sites aceitos pelo sistema; SVG por e-mail vira código ativo | Achados da auditoria, anteriores ao setup | **Corrigidos na v1.11** com testes (`test_permissoes.py`); ver `especificacao/09-acesso-e-seguranca.md` |
 | Teste das telas quebrado desde a v1.9 (título antigo) e com espera fixa | Achado da revisão | **Corrigido na v1.11**: 4/4 em 3 rodadas seguidas |

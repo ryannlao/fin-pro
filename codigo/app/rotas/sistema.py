@@ -63,8 +63,12 @@ def estado_acesso(request: Request):
 
 @router.post("/api/acesso")
 async def entrar(entrada: SenhaEntrada, request: Request):
-    if acesso.requisicao_local(request) or not acesso.protegido():
+    if acesso.requisicao_local(request):
         return {"autorizado": True}
+    if not acesso.protegido():  # sem senha ninguém de fora entra (revisão de 19/10/2026)
+        return JSONResponse(status_code=401, content={"detail": {"codigo": "sem_senha", "mensagem":
+                            "O Fin Pro ainda não tem senha para acesso de fora: crie os usuários no computador "
+                            "principal ou defina LEITOR_SENHA_ACESSO."}})
     ok, token, bloqueio = await acesso.entrar(entrada.senha, request.client.host)
     if not ok:
         if bloqueio:

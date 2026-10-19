@@ -131,3 +131,14 @@ def test_bloqueio_apos_senhas_erradas(tmp_path):
     token, usuario, _ = usuarios.GerenciadorUsuarios(tmp_path / "usuarios.json").entrar("ana", "senha-ana", "10.0.0.9")
     assert token and usuario["nome"] == "Ana"
     assert "senha-ana" not in (tmp_path / "usuarios.json").read_text(encoding="utf-8")
+
+
+def test_bloqueio_de_um_login_nao_tranca_os_outros_no_mesmo_endereco(tmp_path):
+    """Revisão de 19/10/2026: na VPS todos chegam pelo IP do proxy; errar a senha de um não bloqueia o escritório."""
+    gerenciador = usuarios.GerenciadorUsuarios(tmp_path / "usuarios.json")
+    gerenciador.criar("Ana", "ana", "senha-ana")
+    gerenciador.criar("Bia", "bia", "senha-bia")
+    for _ in range(usuarios.MAX_TENTATIVAS):
+        gerenciador.entrar("ana", "errada", "172.18.0.2")
+    assert gerenciador.entrar("ana", "senha-ana", "172.18.0.2")[2] > 0
+    assert gerenciador.entrar("bia", "senha-bia", "172.18.0.2")[0]

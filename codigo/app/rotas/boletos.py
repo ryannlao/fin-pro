@@ -10,7 +10,7 @@ from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, Field
 
-from .. import config, servicos
+from .. import acesso, config, servicos
 from ..arquivos import RepositorioArquivos
 from ..boleto.codigo import analisar, somente_digitos
 from .. import contexto as ctx
@@ -241,6 +241,7 @@ def historico_do_boleto(id_: int):
 
 @router.get("/api/exportar")
 def exportar(
+    request: Request,
     formato: Literal["csv", "xlsx", "planilha"] = "xlsx",
     q: str = "",
     situacao: str = "",
@@ -253,6 +254,9 @@ def exportar(
 ):
     nome = f"boletos-{date.today():%Y-%m-%d}"
     if formato == "planilha":
+        if not acesso.pode(request, "caixa"):  # o arquivo completo leva a aba do Caixa
+            raise erro(403, "sem_permissao", "A planilha completa inclui o Caixa, que você não tem permissão para ver. "
+                       "Use o Excel com os registros filtrados.")
         ctx.repositorio.garantir()
         if hasattr(ctx.planilha, "exportar"):
             ctx.planilha.exportar()  # a cópia baixada sai com os dados de agora

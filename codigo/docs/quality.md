@@ -76,7 +76,8 @@ não executa o framework Harness2). Resultados e casos não executados ficam em 
 
 ## Dependências
 
-`npm audit` do ESLint: 0 vulnerabilidades na adoção. Python: não há ferramenta de auditoria instalada (`pip-audit` pendente;
-instalar exige autorização). Lint e testes passando não significam auditoria limpa.
+`npm audit`: 0 vulnerabilidades. Python: `pip freeze > req.txt` e `uvx pip-audit -r req.txt --no-deps --disable-pip`
+(em 19/10/2026: só `urllib3` 2.7.0, vinda da `requests`, atualizada para 2.8.0 no `.venv`; a VPS instala a versão nova
+a cada deploy porque os requisitos só fixam o mínimo). Lint e testes passando não significam auditoria limpa.
 
 Atualize este documento junto com scripts e regras que mudarem.

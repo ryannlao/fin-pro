@@ -62,6 +62,17 @@ def ambiente(tmp_path, monkeypatch):
     return planilha, servico, enviados
 
 
+def test_fora_do_windows_desliga_a_notificacao_do_windows(ambiente, monkeypatch):
+    _, servico, _ = ambiente
+    assert servico.config_publica()["windows"]["ativo"]  # padrão: ligada
+    monkeypatch.setattr(canais, "WINDOWS", True)
+    assert not servico.desligar_windows_fora_do_windows() and servico.config_publica()["windows"]["ativo"]
+    monkeypatch.setattr(canais, "WINDOWS", False)
+    assert servico.desligar_windows_fora_do_windows()
+    assert not servico.config_publica()["windows"]["ativo"]
+    assert not servico.desligar_windows_fora_do_windows()  # já estava desligada
+
+
 def _somente_dia_do_vencimento(servico, horarios=("08:00", "12:00", "16:00")):
     servico.atualizar_config({"regras": [{"tipo": "vencimento", "horarios": list(horarios), "canais": ["windows"]}]})
 
@@ -167,6 +178,18 @@ def test_configuracao_valida_regras_e_mascara_segredos(ambiente):
             servico.atualizar_config({"regras": [invalida]})
     with pytest.raises(ValueError):
         servico.atualizar_config({"dias_semana": []})
+
+
+def test_trocar_o_servidor_de_email_apaga_a_senha_guardada(ambiente):
+    """Revisão de 19/10/2026: sem isso, quem só configura avisos mandava a senha do e-mail para um servidor dele."""
+    _, servico, _ = ambiente
+    servico.atualizar_config({"email": {"servidor": "smtp.escritorio.com", "usuario": "fin@escritorio.com", "senha": "s3nha"}})
+    servico.atualizar_config({"email": {"servidor": "smtp.escritorio.com", "senha": MASCARA, "remetente": "Fin"}})
+    assert servico.segredo("email", "senha") == "s3nha"  # salvar sem mexer na conexão mantém a senha
+    servico.atualizar_config({"email": {"servidor": "smtp.atacante.com", "senha": MASCARA}})
+    assert servico.segredo("email", "senha") == ""
+    servico.atualizar_config({"email": {"servidor": "smtp.novo.com", "senha": "outra"}})
+    assert servico.segredo("email", "senha") == "outra"  # trocar digitando a senha nova funciona
 
 
 def test_migra_configuracao_da_versao_anterior(tmp_path):

@@ -180,6 +180,18 @@ def test_configuracao_valida_regras_e_mascara_segredos(ambiente):
         servico.atualizar_config({"dias_semana": []})
 
 
+def test_trocar_o_servidor_de_email_apaga_a_senha_guardada(ambiente):
+    """Revisão de 19/10/2026: sem isso, quem só configura avisos mandava a senha do e-mail para um servidor dele."""
+    _, servico, _ = ambiente
+    servico.atualizar_config({"email": {"servidor": "smtp.escritorio.com", "usuario": "fin@escritorio.com", "senha": "s3nha"}})
+    servico.atualizar_config({"email": {"servidor": "smtp.escritorio.com", "senha": MASCARA, "remetente": "Fin"}})
+    assert servico.segredo("email", "senha") == "s3nha"  # salvar sem mexer na conexão mantém a senha
+    servico.atualizar_config({"email": {"servidor": "smtp.atacante.com", "senha": MASCARA}})
+    assert servico.segredo("email", "senha") == ""
+    servico.atualizar_config({"email": {"servidor": "smtp.novo.com", "senha": "outra"}})
+    assert servico.segredo("email", "senha") == "outra"  # trocar digitando a senha nova funciona
+
+
 def test_migra_configuracao_da_versao_anterior(tmp_path):
     caminho = tmp_path / "notificacoes.json"
     caminho.write_text(json.dumps({"ativo": True, "horario": "07:30", "dias_antes": 5, "avisar_vencidos": False,

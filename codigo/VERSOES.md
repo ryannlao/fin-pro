@@ -4,6 +4,14 @@
 > Este arquivo é atualizado pela ferramenta `ferramentas/versao.py` (não precisa editar à mão).
 > Numeração: **X.Y.Z** — X muda em reformulações grandes, Y em funções novas, Z em correções.
 
+## v1.12.1 — 19/10/2026 — Correções de segurança da revisão de 19/10
+- Sem senha e sem usuários, nenhum aparelho de fora entra mais (antes, uma VPS nova ou um backup sem usuários deixava os dados abertos para a internet).
+- Trocar o servidor do e-mail de avisos sem digitar a senha apaga a senha guardada: ela não pode mais ser enviada para um servidor de outra pessoa.
+- Planilha completa (tem o Caixa), prévia do resumo semanal e cancelar gravação agora respeitam as permissões de cada pessoa.
+- Senha errada bloqueia só aquele usuário naquele endereço: na VPS, um erro não tranca mais o escritório inteiro.
+- As telas não podem mais ser embutidas dentro de outro site (proteção contra cliques enganados).
+- Biblioteca urllib3 atualizada (falhas conhecidas na 2.7.0).
+
 ## v1.12.0 — 19/10/2026 — Versão do computador e versão online juntas
 - Trazido da versão online (VPS): Dockerfile, docker-compose.yml para o EasyPanel, requirements.vps.txt e iniciar.sh/iniciar.command para Linux e Mac.
 - Na VPS, o backup passa sozinho para a pasta do servidor e o aviso do Windows é desligado fora do Windows; a Saúde do sistema não acusa mais falha de canal desligado.
